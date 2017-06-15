@@ -1,4 +1,4 @@
-// Copyright 2005-2016 The Mumble Developers. All rights reserved.
+// Copyright 2005-2017 The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -368,10 +368,6 @@ void ASIOConfig::load(const Settings &r) {
 	qlwSpeaker->clear();
 }
 
-bool ASIOConfig::expert(bool) {
-	return false;
-}
-
 void ASIOConfig::clearQuery() {
 	bOk = false;
 	qlName->setText(QString());
@@ -443,7 +439,7 @@ ASIOInput::ASIOInput() {
 							lBufSize += granSize;
 					}
 				}
-				qWarning("ASIOInput: Buffer mismatch mode. Wanted %d, got %d", wantBuf, lBufSize);
+				qWarning("ASIOInput: Buffer mismatch mode. Wanted %li, got %li", wantBuf, lBufSize);
 			}
 
 

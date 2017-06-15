@@ -1,11 +1,11 @@
-# Copyright 2005-2016 The Mumble Developers. All rights reserved.
+# Copyright 2005-2017 The Mumble Developers. All rights reserved.
 # Use of this source code is governed by a BSD-style license
 # that can be found in the LICENSE file at the root of the
 # Mumble source tree or at <https://www.mumble.info/LICENSE>.
 
 # Overlay payload for Unix-like systems and OS X.
 
-include(../compiler.pri)
+include(../qmake/compiler.pri)
 
 TEMPLATE = lib
 CONFIG -= qt gui
@@ -67,4 +67,4 @@ CONFIG(release, debug|release) {
 	DESTDIR = ../release$(DESTDIR_ADD)
 }
 
-include(../symbols.pri)
+include(../qmake/symbols.pri)

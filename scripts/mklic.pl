@@ -1,6 +1,6 @@
 #! /usr/bin/perl
 #
-# Copyright 2005-2016 The Mumble Developers. All rights reserved.
+# Copyright 2005-2017 The Mumble Developers. All rights reserved.
 # Use of this source code is governed by a BSD-style license
 # that can be found in the LICENSE file at the root of the
 # Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -91,6 +91,7 @@ my @thirdPartyLicenses = (
     ["licenseQQBonjour", "../3rdparty/qqbonjour-src/LICENSE", "QQBonjour", "https://doc.qt.io/archives/qq/qq23-bonjour.html"],
     ["licenseSmallFT", "../3rdparty/smallft-src/LICENSE", "smallft", "https://www.xiph.org"],
     ["licenseOldStyleLicenseHeaders", "../3rdPartyLicenses/mumble-old-license-headers/LICENSE.txt", "Old-style Mumble license headers", "https://www.mumble.info"],
+    ["licenseArc4RandomUniform", "../3rdparty/arc4random-src/LICENSE", "arc4random_uniform", "https://www.openbsd.org"],
 
 );
 

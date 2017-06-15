@@ -1,4 +1,4 @@
-// Copyright 2005-2016 The Mumble Developers. All rights reserved.
+// Copyright 2005-2017 The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -53,7 +53,7 @@ AboutDialog::AboutDialog(QWidget *p) : QDialog(p) {
 		"<p><tt><a href=\"%2\">%2</a></tt></p>"
 	).arg(QLatin1String(MUMBLE_RELEASE))
 	 .arg(QLatin1String("http://www.mumble.info/"))
-	 .arg(QLatin1String("Copyright 2005-2016 The Mumble Developers")));
+	 .arg(QLatin1String("Copyright 2005-2017 The Mumble Developers")));
 	QHBoxLayout *qhbl = new QHBoxLayout(about);
 	qhbl->addWidget(icon);
 	qhbl->addWidget(text);
@@ -61,7 +61,7 @@ AboutDialog::AboutDialog(QWidget *p) : QDialog(p) {
 	qtwTab->addTab(about, tr("&About Mumble"));
 	qtwTab->addTab(qteLicense, tr("&License"));
 	qtwTab->addTab(qteAuthors, tr("A&uthors"));
-	qtwTab->addTab(qtb3rdPartyLicense, tr("3rd &party licenses"));
+	qtwTab->addTab(qtb3rdPartyLicense, tr("&Third-Party Licenses"));
 
 	QPushButton *okButton = new QPushButton(tr("OK"), this);
 	connect(okButton, SIGNAL(clicked()), this, SLOT(accept()));

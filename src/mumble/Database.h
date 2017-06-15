@@ -1,4 +1,4 @@
-// Copyright 2005-2016 The Mumble Developers. All rights reserved.
+// Copyright 2005-2017 The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -7,6 +7,7 @@
 #define MUMBLE_MUMBLE_DATABASE_H_
 
 #include "Settings.h"
+#include "UnresolvedServerAddress.h"
 
 struct FavoriteServer {
 	QString qsName;
@@ -41,8 +42,8 @@ class Database : public QObject {
 		static bool isChannelFiltered(const QByteArray &server_cert_digest, const int channel_id);
 		static void setChannelFiltered(const QByteArray &server_cert_digest, const int channel_id, bool hidden);
 
-		static QMap<QPair<QString, unsigned short>, unsigned int> getPingCache();
-		static void setPingCache(const QMap<QPair<QString, unsigned short>, unsigned int> &cache);
+		static QMap<UnresolvedServerAddress, unsigned int> getPingCache();
+		static void setPingCache(const QMap<UnresolvedServerAddress, unsigned int> &cache);
 
 		static bool seenComment(const QString &hash, const QByteArray &commenthash);
 		static void setSeenComment(const QString &hash, const QByteArray &commenthash);

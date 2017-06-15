@@ -1,4 +1,4 @@
-// Copyright 2005-2016 The Mumble Developers. All rights reserved.
+// Copyright 2005-2017 The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -8,7 +8,6 @@
 
 #include <boost/shared_ptr.hpp>
 #include <QtCore/QDir>
-#include <QtCore/QSharedPointer>
 
 #include "ACL.h"
 #include "Settings.h"
@@ -43,8 +42,8 @@ public:
 	MainWindow *mw;
 	Settings s;
 	boost::shared_ptr<ServerHandler> sh;
-	QSharedPointer<AudioInput> ai;
-	QSharedPointer<AudioOutput> ao;
+	boost::shared_ptr<AudioInput> ai;
+	boost::shared_ptr<AudioOutput> ao;
 	Database *db;
 	Log *l;
 	Plugins *p;

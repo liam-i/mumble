@@ -1,4 +1,4 @@
-// Copyright 2005-2016 The Mumble Developers. All rights reserved.
+// Copyright 2005-2017 The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -210,9 +210,8 @@ void AudioNoiseWidget::paintEvent(QPaintEvent *) {
 	paint.fillRect(rect(), pal.color(QPalette::Background));
 
 	AudioInputPtr ai = g.ai;
-	if (!ai || !ai->sppPreprocess) {
+	if (ai.get() == NULL || ! ai->sppPreprocess)
 		return;
-	}
 
 	QPolygonF poly;
 
@@ -301,9 +300,9 @@ AudioStats::~AudioStats() {
 
 void AudioStats::on_Tick_timeout() {
 	AudioInputPtr ai = g.ai;
-	if (!ai || !ai->sppPreprocess) {
+
+	if (ai.get() == NULL || ! ai->sppPreprocess)
 		return;
-	}
 
 	bool nTalking = ai->isTransmitting();
 

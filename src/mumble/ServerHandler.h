@@ -1,4 +1,4 @@
-// Copyright 2005-2016 The Mumble Developers. All rights reserved.
+// Copyright 2005-2017 The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -32,11 +32,13 @@
 #include "Timer.h"
 #include "Message.h"
 #include "Mumble.pb.h"
+#include "ServerAddress.h"
 
 class Connection;
 class Message;
 class PacketDataStream;
 class QUdpSocket;
+class QSslSocket;
 class VoiceRecorder;
 
 class ServerHandlerMessageEvent : public QEvent {
@@ -82,6 +84,9 @@ class ServerHandler : public QThread {
 		ConnectionPtr cConnection;
 		QByteArray qbaDigest;
 		boost::shared_ptr<VoiceRecorder> recorder;
+		QSslSocket *qtsSock;
+		QList<ServerAddress> qlAddresses;
+		ServerAddress saTargetServer;
 
 		unsigned int uiVersion;
 		QString qsRelease;
@@ -140,6 +145,7 @@ class ServerHandler : public QThread {
 		void serverConnectionClosed(QAbstractSocket::SocketError, const QString &);
 		void setSslErrors(const QList<QSslError> &);
 		void udpReady();
+		void hostnameResolved();
 	public slots:
 		void sendPing();
 };

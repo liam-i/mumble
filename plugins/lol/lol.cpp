@@ -1,4 +1,4 @@
-// Copyright 2005-2016 The Mumble Developers. All rights reserved.
+// Copyright 2005-2017 The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -7,10 +7,10 @@
    Copyright (C) 2005-2012, Thorvald Natvig <thorvald@natvig.com>
 
    All rights reserved.
- 
+
    Redistribution and use in source and binary forms, with or without
    modification, are permitted provided that the following conditions
-   are met: 
+   are met:
 
    - Redistributions of source code must retain the above copyright notice,
      this list of conditions and the following disclaimer.
@@ -81,7 +81,7 @@ static bool calcout(float *pos, float *cam, float *opos, float *ocam) {
 }
 
 static bool refreshPointers(void) {
-	posptr = afrontptr = tmpptr = NULL;
+	posptr = afrontptr = tmpptr = 0;
 	
 	// Avatar front vector pointer
 	tmpptr = peekProc<procptr32_t>(gameptr);
@@ -120,7 +120,7 @@ static int fetch(float *avatar_pos, float *avatar_front, float *avatar_top, floa
 		 peekProc(hostipptr, hostip) &&
 		 peekProc(hostportptr, &hostport, 4);
 
-	if (!ok) 
+	if (!ok)
 		return false;
 
 	// Ensure strings are zero terminated

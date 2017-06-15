@@ -1,4 +1,4 @@
-// Copyright 2005-2016 The Mumble Developers. All rights reserved.
+// Copyright 2005-2017 The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -95,7 +95,7 @@ static int fetch(float *avatar_pos, float *avatar_front, float *avatar_top, floa
 }
 
 static int trylock(const std::multimap<std::wstring, unsigned long long int> &pids) {
-	pos1ptr = pos2ptr = pos3ptr = rot1ptr = rot2ptr = NULL;
+	pos1ptr = pos2ptr = pos3ptr = rot1ptr = rot2ptr = 0;
 
 	if (! initialize(pids, L"etqw.exe", L"gamex86.dll"))
 		return false;
