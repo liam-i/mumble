@@ -1,15 +1,15 @@
-// Copyright 2005-2017 The Mumble Developers. All rights reserved.
+// Copyright 2010-2022 The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
-
-#include "mumble_pch.hpp"
 
 #import <AppKit/AppKit.h>
 #import <Carbon/Carbon.h>
 
 #include "GlobalShortcut_macx.h"
-#include "OverlayClient.h"
+#ifdef USE_OVERLAY
+#	include "OverlayClient.h"
+#endif
 
 #define MOD_OFFSET   0x10000
 #define MOUSE_OFFSET 0x20000
@@ -50,14 +50,16 @@ CGEventRef GlobalShortcutMac::callback(CGEventTapProxy proxy, CGEventType type,
 		case kCGEventLeftMouseDragged:
 		case kCGEventRightMouseDragged:
 		case kCGEventOtherMouseDragged: {
-			if (g.ocIntercept) {
+#ifdef USE_OVERLAY
+			if (Global::get().ocIntercept) {
 				int64_t dx = CGEventGetIntegerValueField(event, kCGMouseEventDeltaX);
 				int64_t dy = CGEventGetIntegerValueField(event, kCGMouseEventDeltaY);
-				g.ocIntercept->iMouseX = qBound<int>(0, g.ocIntercept->iMouseX + static_cast<int>(dx), g.ocIntercept->uiWidth - 1);
-				g.ocIntercept->iMouseY = qBound<int>(0, g.ocIntercept->iMouseY + static_cast<int>(dy), g.ocIntercept->uiHeight - 1);
-				QMetaObject::invokeMethod(g.ocIntercept, "updateMouse", Qt::QueuedConnection);
+				Global::get().ocIntercept->iMouseX = qBound<int>(0, Global::get().ocIntercept->iMouseX + static_cast<int>(dx), Global::get().ocIntercept->uiWidth - 1);
+				Global::get().ocIntercept->iMouseY = qBound<int>(0, Global::get().ocIntercept->iMouseY + static_cast<int>(dy), Global::get().ocIntercept->uiHeight - 1);
+				QMetaObject::invokeMethod(Global::get().ocIntercept, "updateMouse", Qt::QueuedConnection);
 				forward = true;
 			}
+#endif
 			break;
 		}
 
@@ -109,18 +111,25 @@ CGEventRef GlobalShortcutMac::callback(CGEventTapProxy proxy, CGEventType type,
 			break;
 	}
 
-		if (forward && g.ocIntercept) {
+#ifdef USE_OVERLAY
+		if (forward && Global::get().ocIntercept) {
 			NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 			NSEvent *evt = [[NSEvent eventWithCGEvent:event] retain];
 			QMetaObject::invokeMethod(gs, "forwardEvent", Qt::QueuedConnection, Q_ARG(void *, evt));
 			[pool release];
-			return NULL;
+			return nullptr;
 		}
-
-	return suppress ? NULL : event;
+#else
+	// Mark forward as unused in this case
+	(void) forward;
+#endif
+	return suppress ? nullptr : event;
 }
 
-GlobalShortcutMac::GlobalShortcutMac() : modmask(static_cast<CGEventFlags>(0)) {
+GlobalShortcutMac::GlobalShortcutMac()
+    : loop(nullptr)
+    , port(nullptr)
+    , modmask(static_cast<CGEventFlags>(0)) {
 #ifndef QT_NO_DEBUG
 	qWarning("GlobalShortcutMac: Debug build detected. Disabling shortcut engine.");
 	return;
@@ -152,7 +161,7 @@ GlobalShortcutMac::GlobalShortcutMac() : modmask(static_cast<CGEventFlags>(0)) {
 		return;
 	}
 
-	kbdLayout = NULL;
+	kbdLayout = nullptr;
 
 #if MAC_OS_X_VERSION_MAX_ALLOWED >= 1050
 # if MAC_OS_X_VERSION_MIN_REQUIRED < 1050
@@ -186,9 +195,11 @@ GlobalShortcutMac::~GlobalShortcutMac() {
 #ifndef QT_NO_DEBUG
 	return;
 #endif
-	CFRunLoopStop(loop);
-	loop = NULL;
-	wait();
+	if (loop) {
+		CFRunLoopStop(loop);
+		loop = nullptr;
+		wait();
+	}
 }
 
 void GlobalShortcutMac::dumpEventTaps() {
@@ -200,14 +211,10 @@ void GlobalShortcutMac::dumpEventTaps() {
 		for (uint32_t i = 0; i < ntaps; i++) {
 			CGEventTapInformation *info = &table[i];
 
-			ProcessSerialNumber psn;
 			NSString *processName = nil;
-			OSStatus err = GetProcessForPID(info->tappingProcess, &psn);
-			if (err == noErr) {
-				CFStringRef str = NULL;
-				CopyProcessName(&psn, &str);
-				processName = (NSString *) str;
-				[processName autorelease];
+			NSRunningApplication *app = [NSRunningApplication runningApplicationWithProcessIdentifier: info->processBeingTapped];
+			if (app) {
+				processName = [app localizedName];
 			}
 
 			qWarning("{");
@@ -229,50 +236,53 @@ void GlobalShortcutMac::dumpEventTaps() {
 }
 
 void GlobalShortcutMac::forwardEvent(void *evt) {
-	NSEvent *event = (NSEvent *)evt;
+	NSEvent *event = (NSEvent *) evt;
+#ifdef USE_OVERLAY
 	SEL sel = nil;
 
-	if (! g.ocIntercept)
+	if (!Global::get().ocIntercept) {
+		[event release];
 		return;
+	}
 
-	QWidget *vp = g.ocIntercept->qgv.viewport();
+	QWidget *vp  = Global::get().ocIntercept->qgv.viewport();
 	NSView *view = (NSView *) vp->winId();
 
 	switch ([event type]) {
-		case NSLeftMouseDown:
+		case NSEventTypeLeftMouseDown:
 			sel = @selector(mouseDown:);
 			break;
-		case NSLeftMouseUp:
+		case NSEventTypeLeftMouseUp:
 			sel = @selector(mouseUp:);
 			break;
-		case NSLeftMouseDragged:
+		case NSEventTypeLeftMouseDragged:
 			sel = @selector(mouseDragged:);
 			break;
-		case NSRightMouseDown:
+		case NSEventTypeRightMouseDown:
 			sel = @selector(rightMouseDown:);
 			break;
-		case NSRightMouseUp:
+		case NSEventTypeRightMouseUp:
 			sel = @selector(rightMouseUp:);
 			break;
-		case NSRightMouseDragged:
+		case NSEventTypeRightMouseDragged:
 			sel = @selector(rightMouseDragged:);
 			break;
-		case NSOtherMouseDown:
+		case NSEventTypeOtherMouseDown:
 			sel = @selector(otherMouseDown:);
 			break;
-		case NSOtherMouseUp:
+		case NSEventTypeOtherMouseUp:
 			sel = @selector(otherMouseUp:);
 			break;
-		case NSOtherMouseDragged:
+		case NSEventTypeOtherMouseDragged:
 			sel = @selector(otherMouseDragged:);
 			break;
-		case NSMouseEntered:
+		case NSEventTypeMouseEntered:
 			sel = @selector(mouseEntered:);
 			break;
-		case NSMouseExited:
+		case NSEventTypeMouseExited:
 			sel = @selector(mouseExited:);
 			break;
-		case NSMouseMoved:
+		case NSEventTypeMouseMoved:
 			sel = @selector(mouseMoved:);
 			break;
 		default:
@@ -281,8 +291,8 @@ void GlobalShortcutMac::forwardEvent(void *evt) {
 	}
 
 	if (sel) {
-		NSPoint p; p.x = (CGFloat) g.ocIntercept->iMouseX;
-		p.y = (CGFloat) (g.ocIntercept->uiHeight - g.ocIntercept->iMouseY);
+		NSPoint p; p.x = (CGFloat) Global::get().ocIntercept->iMouseX;
+		p.y = (CGFloat) (Global::get().ocIntercept->uiHeight - Global::get().ocIntercept->iMouseY);
 		NSEvent *mouseEvent = [NSEvent mouseEventWithType:[event type] location:p modifierFlags:[event modifierFlags] timestamp:[event timestamp]
 		                               windowNumber:0 context:nil eventNumber:[event eventNumber] clickCount:[event clickCount]
 		                               pressure:[event pressure]];
@@ -293,16 +303,16 @@ void GlobalShortcutMac::forwardEvent(void *evt) {
 	}
 
 	switch ([event type]) {
-		case NSKeyDown:
+		case NSEventTypeKeyDown:
 			sel = @selector(keyDown:);
 			break;
-		case NSKeyUp:
+		case NSEventTypeKeyUp:
 			sel = @selector(keyUp:);
 			break;
-		case NSFlagsChanged:
+		case NSEventTypeFlagsChanged:
 			sel = @selector(flagsChanged:);
 			break;
-		case NSScrollWheel:
+		case NSEventTypeScrollWheel:
 			sel = @selector(scrollWheel:);
 			break;
 		default:
@@ -313,7 +323,7 @@ void GlobalShortcutMac::forwardEvent(void *evt) {
 		if ([view respondsToSelector:sel])
 				[view performSelector:sel withObject:event];
 	}
-
+#endif
 	[event release];
 }
 
@@ -353,7 +363,7 @@ bool GlobalShortcutMac::handleModButton(const CGEventFlags newmask) {
 }
 
 QString GlobalShortcutMac::translateMouseButton(const unsigned int keycode) const {
-	return QString::fromLatin1("Mouse Button %1").arg(keycode-MOUSE_OFFSET+1);
+	return QString::fromLatin1("%1").arg(keycode - MOUSE_OFFSET + 1);
 }
 
 QString GlobalShortcutMac::translateModifierKey(const unsigned int keycode) const {
@@ -425,30 +435,44 @@ QString GlobalShortcutMac::translateKeyName(const unsigned int keycode) const {
 	return QString(reinterpret_cast<const QChar *>(unicodeString), len).toUpper();
 }
 
-QString GlobalShortcutMac::buttonName(const QVariant &v) {
+GlobalShortcutMac::ButtonInfo GlobalShortcutMac::buttonInfo(const QVariant &v) {
 	bool ok;
 	unsigned int key = v.toUInt(&ok);
-	if (!ok)
-		return QString();
-
-	if (key >= MOUSE_OFFSET)
-		return translateMouseButton(key);
-	else if (key >= MOD_OFFSET)
-		return translateModifierKey(key);
-	else {
-		QString str = translateKeyName(key);
-		if (!str.isEmpty())
-			return str;
+	if (!ok) {
+		return ButtonInfo();
 	}
 
-	return QString::fromLatin1("Keycode %1").arg(key);
+	ButtonInfo info;
+
+	if (key >= MOUSE_OFFSET) {
+		info.device = tr("Mouse");
+		info.devicePrefix = QLatin1String("M");
+		info.name = translateMouseButton(key);
+		return info;
+	} else {
+		info.device = tr("Keyboard");
+		info.name = key >= MOD_OFFSET ? translateModifierKey(key) : translateKeyName(key);
+		if (!info.name.isEmpty()) {
+			return info;
+		}
+	}
+
+	info.name = QString::number(key);
+	return info;
 }
 
 void GlobalShortcutMac::setEnabled(bool b) {
-	CGEventTapEnable(port, b);
+	// Since Mojave, passing nullptr to CGEventTapEnable() segfaults.
+	if (port) {
+		CGEventTapEnable(port, b);
+	}
 }
 
 bool GlobalShortcutMac::enabled() {
+	if (!port) {
+		return false;
+	}
+
 	return CGEventTapIsEnabled(port);
 }
 
@@ -459,3 +483,7 @@ bool GlobalShortcutMac::canSuppress() {
 bool GlobalShortcutMac::canDisable() {
 	return true;
 }
+
+#undef MOD_OFFSET
+#undef MOUSE_OFFSET
+#undef MOD_CHANGED

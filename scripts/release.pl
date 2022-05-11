@@ -1,10 +1,11 @@
 #! /usr/bin/perl -w
 #
-# Copyright 2005-2017 The Mumble Developers. All rights reserved.
+# Copyright 2005-2022 The Mumble Developers. All rights reserved.
 # Use of this source code is governed by a BSD-style license
 # that can be found in the LICENSE file at the root of the
 # Mumble source tree or at <https://www.mumble.info/LICENSE>.
-
+#
+# Creates a source tar.gz and zip file with adjusted Version.h file
 use strict;
 use warnings;
 use Carp;
@@ -32,7 +33,7 @@ if ($#ARGV < 0) {
   $ver = $ARGV[0];
 }
 
-print "Adjusting Version.cpp\n";
+print "Adjusting Version.h\n";
 
 open(F, "<src/Version.h") or croak "Could not open src/Version.h for reading";
 my @lines = <F>;
@@ -58,7 +59,6 @@ my $exclusions = join(" --exclude=", ("",
      "${ballname}/3rdparty/speex-src/doc/draft-ietf-avt-rtp-speex-01-tmp.txt",
      "${ballname}/3rdparty/speex-src/doc/draft-ietf-avt-rtp-speex-05-tmp.txt",
      "${ballname}/3rdparty/speex-src/doc/manual.lyx",
-     "${ballname}/3rdparty/celt-0.11.0-src/doc/ietf/draft-valin-celt-rtp-profile-01.txt",
      "${ballname}/3rdparty/celt-0.7.0-src/doc/ietf/draft-valin-celt-rtp-profile-01.txt"
     )
 );

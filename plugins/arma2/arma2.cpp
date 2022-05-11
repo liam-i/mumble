@@ -1,14 +1,18 @@
-// Copyright 2005-2017 The Mumble Developers. All rights reserved.
+// Copyright 2010-2022 The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
 
-#include "../mumble_plugin_win32_32bit.h"
+#define MUMBLE_ALLOW_DEPRECATED_LEGACY_PLUGIN_API
+#include "mumble_legacy_plugin.h"
 
-procptr32_t posptr, frontptr, topptr;
+#include "mumble_positional_audio_main.h"
 
-static int fetch(float *avatar_pos, float *avatar_front, float *avatar_top, float *camera_pos, float *camera_front, float *camera_top, std::string &, std::wstring &) {
-	for (int i=0;i<3;i++)
+procptr_t posptr, frontptr, topptr;
+
+static int fetch(float *avatar_pos, float *avatar_front, float *avatar_top, float *camera_pos, float *camera_front,
+				 float *camera_top, std::string &, std::wstring &) {
+	for (int i = 0; i < 3; i++)
 		avatar_pos[i] = avatar_front[i] = avatar_top[i] = camera_pos[i] = camera_front[i] = camera_top[i] = 0.0f;
 
 	// char state;
@@ -35,9 +39,7 @@ static int fetch(float *avatar_pos, float *avatar_front, float *avatar_top, floa
 		return true; // This results in all vectors beeing zero which tells Mumble to ignore them.
 	*/
 
-	ok = peekProc(posptr, avatar_pos, 12) &&
-	     peekProc(frontptr, avatar_front, 12) &&
-	     peekProc(topptr, avatar_top, 12);
+	ok = peekProc(posptr, avatar_pos, 12) && peekProc(frontptr, avatar_front, 12) && peekProc(topptr, avatar_top, 12);
 
 	if (avatar_pos[1] > 999000000.0)
 		return false;
@@ -51,7 +53,7 @@ static int fetch(float *avatar_pos, float *avatar_front, float *avatar_top, floa
 	peekProc(topptr + 0x18, &top_corrector3, 4);
 	*/
 
-	if (! ok)
+	if (!ok)
 		return false;
 
 	/*
@@ -64,19 +66,19 @@ static int fetch(float *avatar_pos, float *avatar_front, float *avatar_top, floa
 	avatar_top[2] = top_corrector3;
 	*/
 
-	for (int i=0;i<3;i++) {
-		camera_pos[i] = avatar_pos[i];
+	for (int i = 0; i < 3; i++) {
+		camera_pos[i]   = avatar_pos[i];
 		camera_front[i] = avatar_front[i];
-		camera_top[i] = avatar_top[i];
+		camera_top[i]   = avatar_top[i];
 	}
 
 	return true;
 }
 
-static int trylock(const std::multimap<std::wstring, unsigned long long int> &pids) {
+static int trylock(const std::multimap< std::wstring, unsigned long long int > &pids) {
 	posptr = 0;
 
-	if (! initialize(pids, L"arma2.exe"))
+	if (!initialize(pids, L"arma2.exe"))
 		return false;
 
 	/*
@@ -92,15 +94,15 @@ static int trylock(const std::multimap<std::wstring, unsigned long long int> &pi
 	   if (!pModule)
 	*/
 
-	procptr32_t ptr1 = peekProc<procptr32_t>(0x00C500FC);
+	procptr_t ptr1 = peekProcPtr(0x00C500FC);
 
-	procptr32_t ptr2 = peekProc<procptr32_t>(ptr1 + 0x88);
+	procptr_t ptr2 = peekProcPtr(ptr1 + 0x88);
 
-	procptr32_t base = ptr2 + 0x10;
+	procptr_t base = ptr2 + 0x10;
 
-	posptr = base + 0x18;
+	posptr   = base + 0x18;
 	frontptr = base;
-	topptr = base + 0xC;
+	topptr   = base + 0xC;
 
 	float apos[3], afront[3], atop[3], cpos[3], cfront[3], ctop[3];
 	std::string context;
@@ -122,26 +124,13 @@ static std::wstring description(L"ArmA 2 v1.08");
 static std::wstring shortname(L"ArmA 2");
 
 static int trylock1() {
-	return trylock(std::multimap<std::wstring, unsigned long long int>());
+	return trylock(std::multimap< std::wstring, unsigned long long int >());
 }
 
-static MumblePlugin arma2plug = {
-	MUMBLE_PLUGIN_MAGIC,
-	description,
-	shortname,
-	NULL,
-	NULL,
-	trylock1,
-	generic_unlock,
-	longdesc,
-	fetch
-};
+static MumblePlugin arma2plug = { MUMBLE_PLUGIN_MAGIC, description, shortname, nullptr, nullptr, trylock1,
+								  generic_unlock,      longdesc,    fetch };
 
-static MumblePlugin2 arma2plug2 = {
-	MUMBLE_PLUGIN_MAGIC_2,
-	MUMBLE_PLUGIN_VERSION,
-	trylock
-};
+static MumblePlugin2 arma2plug2 = { MUMBLE_PLUGIN_MAGIC_2, MUMBLE_PLUGIN_VERSION, trylock };
 
 extern "C" MUMBLE_PLUGIN_EXPORT MumblePlugin *getMumblePlugin() {
 	return &arma2plug;

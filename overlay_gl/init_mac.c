@@ -1,4 +1,4 @@
-// Copyright 2005-2017 The Mumble Developers. All rights reserved.
+// Copyright 2015-2022 The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -7,7 +7,7 @@
 // Mac-specific overlay initialization.
 
 @implementation NSOpenGLContext (MumbleOverlay)
-- (void) overlayFlushBuffer {
+- (void)overlayFlushBuffer {
 	ods("[NSOpenGLContext flushBuffer] %p %p", self, [self CGLContextObj]);
 
 	Context *c = contexts;
@@ -24,10 +24,10 @@
 			ods("malloc failure");
 			return;
 		}
-		c->next = contexts;
-		c->nsctx = (NSOpenGLContext *)self;
+		c->next   = contexts;
+		c->nsctx  = (NSOpenGLContext *) self;
 		c->cglctx = (CGLContextObj)[self CGLContextObj];
-		contexts = c;
+		contexts  = c;
 		newContext(c);
 	}
 
@@ -35,22 +35,13 @@
 	int width = 0, height = 0;
 	if (v) {
 		NSRect r = [v bounds];
-		width = (int)r.size.width;
-		height = (int)r.size.height;
+		width    = (int) r.size.width;
+		height   = (int) r.size.height;
 	} else {
-		if (AVAIL(CGMainDisplayID)) {
-			CGDirectDisplayID md = CGMainDisplayID();
-			if (CGDisplayIsCaptured(md)) {
-				width = CGDisplayPixelsWide(md);
-				height = CGDisplayPixelsHigh(md);
-			}
-		}
-		if (!width && !height) {
-			GLint viewport[4];
-			glGetIntegerv(GL_VIEWPORT, viewport);
-			width = viewport[2];
-			height = viewport[3];
-		}
+		GLint viewport[4];
+		glGetIntegerv(GL_VIEWPORT, viewport);
+		width  = viewport[2];
+		height = viewport[3];
 	}
 
 	drawContext(c, width, height);
@@ -94,29 +85,20 @@ void CGLFlushDrawableOverride(CGLContextObj ctx) {
 			return;
 		}
 		memset(c, 0, sizeof(Context));
-		c->next = contexts;
+		c->next   = contexts;
 		c->cglctx = ctx;
-		c->nsctx = NULL;
-		contexts = c;
+		c->nsctx  = NULL;
+		contexts  = c;
 		newContext(c);
 	}
 
-	int width = 0, height = 0;
-	if (AVAIL(CGMainDisplayID)) {
-		CGDirectDisplayID md = CGMainDisplayID();
-		if (CGDisplayIsCaptured(md)) {
-			width = CGDisplayPixelsWide(md);
-			height = CGDisplayPixelsHigh(md);
-		}
-	}
-	if (!width && !height) {
-		GLint viewport[4];
-		glGetIntegerv(GL_VIEWPORT, viewport);
-		width = viewport[2];
-		height = viewport[3];
-		/* Are the viewport values crazy? Skip them in that case. */
-		if (height < 0 || width < 0 || height > 5000 || width > 5000)
-			goto skip;
+	GLint viewport[4];
+	glGetIntegerv(GL_VIEWPORT, viewport);
+	int width  = viewport[2];
+	int height = viewport[3];
+	/* Are the viewport values crazy? Skip them in that case. */
+	if (height < 0 || width < 0 || height > 5000 || width > 5000) {
+		goto skip;
 	}
 
 	drawContext(c, width, height);
@@ -135,8 +117,7 @@ CGError CGDisplayHideCursorOverride(CGDirectDisplayID display) {
 	return oCGDisplayHideCursor(display);
 }
 
-__attribute__((constructor))
-static void initializeLibrary() {
+__attribute__((constructor)) static void initializeLibrary() {
 	struct stat buf;
 
 	bDebug = (stat("/Library/Application Support/.mumble_overlay_debug", &buf) == 0);
@@ -145,7 +126,7 @@ static void initializeLibrary() {
 
 	void *nsgl = NULL, *cgl = NULL;
 	nsgl = dlsym(RTLD_DEFAULT, "NSClassFromString");
-	cgl = dlsym(RTLD_DEFAULT, "CGLFlushDrawable");
+	cgl  = dlsym(RTLD_DEFAULT, "CGLFlushDrawable");
 
 	/* Check for GL symbol availability */
 	if (!(AVAIL_ALL_GLSYM)) {
@@ -159,9 +140,10 @@ static void initializeLibrary() {
 		Class c = NSClassFromString(@"NSOpenGLContext");
 		if (c) {
 			Method orig = class_getInstanceMethod(c, @selector(flushBuffer));
-			Method new = class_getInstanceMethod(c, @selector(overlayFlushBuffer));
+			Method new  = class_getInstanceMethod(c, @selector(overlayFlushBuffer));
 			if (class_addMethod(c, @selector(flushBuffer), method_getImplementation(new), method_getTypeEncoding(new)))
-				class_replaceMethod(c, @selector(overlayFlushBuffer), method_getImplementation(orig), method_getTypeEncoding(orig));
+				class_replaceMethod(c, @selector(overlayFlushBuffer), method_getImplementation(orig),
+									method_getTypeEncoding(orig));
 			else
 				method_exchangeImplementations(orig, new);
 		}
@@ -170,7 +152,9 @@ static void initializeLibrary() {
 	/* CGL */
 	if (AVAIL(CGLFlushDrawable)) {
 		ods("Attempting to hook CGL");
-		if (mach_override_ptr(dlsym(RTLD_DEFAULT, "CGLFlushDrawable"), CGLFlushDrawableOverride, (void **) &oCGLFlushDrawable) != 0) {
+		if (mach_override_ptr(dlsym(RTLD_DEFAULT, "CGLFlushDrawable"), CGLFlushDrawableOverride,
+							  (void **) &oCGLFlushDrawable)
+			!= 0) {
 			ods("CGLFlushDrawable override failed.");
 		} else
 			ods("Up running.");
@@ -179,10 +163,14 @@ static void initializeLibrary() {
 	}
 
 	if (AVAIL(CGDisplayHideCursor) && AVAIL(CGDisplayShowCursor)) {
-		if (mach_override_ptr(dlsym(RTLD_DEFAULT, "CGDisplayHideCursor"), CGDisplayHideCursorOverride, (void **) &oCGDisplayHideCursor) != 0) {
+		if (mach_override_ptr(dlsym(RTLD_DEFAULT, "CGDisplayHideCursor"), CGDisplayHideCursorOverride,
+							  (void **) &oCGDisplayHideCursor)
+			!= 0) {
 			ods("CGDisplayHideCursor override failed");
 		}
-		if (mach_override_ptr(dlsym(RTLD_DEFAULT, "CGDisplayShowCursor"), CGDisplayShowCursorOverride, (void **) &oCGDisplayShowCursor) != 0) {
+		if (mach_override_ptr(dlsym(RTLD_DEFAULT, "CGDisplayShowCursor"), CGDisplayShowCursorOverride,
+							  (void **) &oCGDisplayShowCursor)
+			!= 0) {
 			ods("CGDisplayShowCursor override failed");
 		}
 		ods("Hooked CGDisplayShowCursor and CGDisplayHideCursor");

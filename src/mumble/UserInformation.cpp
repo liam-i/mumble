@@ -1,32 +1,18 @@
-// Copyright 2005-2017 The Mumble Developers. All rights reserved.
+// Copyright 2010-2022 The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
-
-#include "mumble_pch.hpp"
 
 #include "UserInformation.h"
 
 #include "Audio.h"
 #include "CELTCodec.h"
-#include "Global.h"
 #include "HostAddress.h"
+#include "QtUtils.h"
 #include "ServerHandler.h"
 #include "ViewCert.h"
+#include "Global.h"
 
-static QString decode_utf8_qssl_string(const QString &input) {
-	QString i = input;
-	return QUrl::fromPercentEncoding(i.replace(QLatin1String("\\x"), QLatin1String("%")).toLatin1());
-}
-
-#if QT_VERSION >= 0x050000
-static QString decode_utf8_qssl_string(const QStringList &list) {
-	if (list.count() > 0) {
-		return decode_utf8_qssl_string(list.at(0));
-	}
-	return QString();
-}
-#endif
 
 UserInformation::UserInformation(const MumbleProto::UserStats &msg, QWidget *p) : QDialog(p) {
 	setupUi(this);
@@ -57,7 +43,7 @@ void UserInformation::tick() {
 
 	bRequested = true;
 
-	g.sh->requestUserStats(uiSession, true);
+	Global::get().sh->requestUserStats(uiSession, true);
 }
 
 void UserInformation::on_qpbCertificate_clicked() {
@@ -70,12 +56,12 @@ void UserInformation::on_qpbCertificate_clicked() {
 QString UserInformation::secsToString(unsigned int secs) {
 	QStringList qsl;
 
-	int weeks = secs / (60 * 60 * 24 * 7);
-	secs = secs % (60 * 60 * 24 * 7);
-	int days = secs / (60 * 60 * 24);
-	secs = secs % (60 * 60 * 24);
-	int hours = secs / (60 * 60);
-	secs = secs % (60 * 60);
+	int weeks   = secs / (60 * 60 * 24 * 7);
+	secs        = secs % (60 * 60 * 24 * 7);
+	int days    = secs / (60 * 60 * 24);
+	secs        = secs % (60 * 60 * 24);
+	int hours   = secs / (60 * 60);
+	secs        = secs % (60 * 60);
 	int minutes = secs / 60;
 	int seconds = secs % 60;
 
@@ -104,25 +90,22 @@ void UserInformation::update(const MumbleProto::UserStats &msg) {
 	if (msg.certificates_size() > 0) {
 		showcon = true;
 		qlCerts.clear();
-		for (int i=0;i<msg.certificates_size(); ++i) {
+		for (int i = 0; i < msg.certificates_size(); ++i) {
 			const std::string &s = msg.certificates(i);
-			QList<QSslCertificate> certs = QSslCertificate::fromData(QByteArray(s.data(), static_cast<int>(s.length())), QSsl::Der);
-			qlCerts <<certs;
+			QList< QSslCertificate > certs =
+				QSslCertificate::fromData(QByteArray(s.data(), static_cast< int >(s.length())), QSsl::Der);
+			qlCerts << certs;
 		}
-		if (! qlCerts.isEmpty()) {
+		if (!qlCerts.isEmpty()) {
 			qpbCertificate->setEnabled(true);
 
-			const QSslCertificate &cert = qlCerts.last();
-
-#if QT_VERSION >= 0x050000
-			const QMultiMap<QSsl::AlternativeNameEntryType, QString> &alts = cert.subjectAlternativeNames();
-#else
-			const QMultiMap<QSsl::AlternateNameEntryType, QString> &alts = cert.alternateSubjectNames();
-#endif
+			const QSslCertificate &cert                                      = qlCerts.last();
+			const QMultiMap< QSsl::AlternativeNameEntryType, QString > &alts = cert.subjectAlternativeNames();
 			if (alts.contains(QSsl::EmailEntry))
 				qlCertificate->setText(QStringList(alts.values(QSsl::EmailEntry)).join(tr(", ")));
 			else
-				qlCertificate->setText(decode_utf8_qssl_string(cert.subjectInfo(QSslCertificate::CommonName)));
+				qlCertificate->setText(
+					Mumble::QtUtils::decode_first_utf8_qssl_string(cert.subjectInfo(QSslCertificate::CommonName)));
 
 			if (msg.strong_certificate()) {
 				QFont f = qfCertificateFont;
@@ -146,14 +129,14 @@ void UserInformation::update(const MumbleProto::UserStats &msg) {
 
 		const MumbleProto::Version &mpv = msg.version();
 
-		qlVersion->setText(tr("%1 (%2)").arg(MumbleVersion::toString(mpv.version())).arg(u8(mpv.release())));
+		qlVersion->setText(tr("%1 (%2)").arg(Version::toString(mpv.version())).arg(u8(mpv.release())));
 		qlOS->setText(tr("%1 (%2)").arg(u8(mpv.os())).arg(u8(mpv.os_version())));
 	}
 	if (msg.celt_versions_size() > 0) {
 		QStringList qsl;
-		for (int i=0;i<msg.celt_versions_size(); ++i) {
-			int v = msg.celt_versions(i);
-			CELTCodec *cc = g.qmCodecs.value(v);
+		for (int i = 0; i < msg.celt_versions_size(); ++i) {
+			int v         = msg.celt_versions(i);
+			CELTCodec *cc = Global::get().qmCodecs.value(v);
 			if (cc)
 				qsl << cc->version();
 			else
@@ -191,8 +174,10 @@ void UserInformation::update(const MumbleProto::UserStats &msg) {
 		qlToResync->setText(QString::number(to.resync()));
 
 		quint32 allFromPackets = from.good() + from.late() + from.lost();
-		qlFromLatePercent->setText(QString::number(allFromPackets > 0 ? from.late() * 100.0 / allFromPackets : 0., 'f', 2));
-		qlFromLostPercent->setText(QString::number(allFromPackets > 0 ? from.lost() * 100.0 / allFromPackets : 0., 'f', 2));
+		qlFromLatePercent->setText(
+			QString::number(allFromPackets > 0 ? from.late() * 100.0 / allFromPackets : 0., 'f', 2));
+		qlFromLostPercent->setText(
+			QString::number(allFromPackets > 0 ? from.lost() * 100.0 / allFromPackets : 0., 'f', 2));
 
 		quint32 allToPackets = to.good() + to.late() + to.lost();
 		qlToLatePercent->setText(QString::number(allToPackets > 0 ? to.late() * 100.0 / allToPackets : 0., 'f', 2));
@@ -203,7 +188,8 @@ void UserInformation::update(const MumbleProto::UserStats &msg) {
 
 	if (msg.has_onlinesecs()) {
 		if (msg.has_idlesecs())
-			qlTime->setText(tr("%1 online (%2 idle)").arg(secsToString(msg.onlinesecs()), secsToString(msg.idlesecs())));
+			qlTime->setText(
+				tr("%1 online (%2 idle)").arg(secsToString(msg.onlinesecs()), secsToString(msg.idlesecs())));
 		else
 			qlTime->setText(tr("%1 online").arg(secsToString(msg.onlinesecs())));
 	}

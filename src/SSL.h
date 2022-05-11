@@ -1,4 +1,4 @@
-// Copyright 2005-2017 The Mumble Developers. All rights reserved.
+// Copyright 2009-2022 The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -6,17 +6,18 @@
 #ifndef MUMBLE_SSL_H_
 #define MUMBLE_SSL_H_
 
-#include <QString>
 #include <QList>
 #include <QSslCipher>
+#include <QString>
 
 class MumbleSSL {
-	public:
-		static void initialize();
-		static QString defaultOpenSSLCipherString();
-		static QList<QSslCipher> ciphersFromOpenSSLCipherString(QString cipherString);
-		static void addSystemCA();
-		static QString protocolToString(QSsl::SslProtocol protocol);
+public:
+	static void initialize();
+	static void destroy();
+	static QString defaultOpenSSLCipherString();
+	static QList< QSslCipher > ciphersFromOpenSSLCipherString(QString cipherString);
+	static void addSystemCA();
+	static QString protocolToString(QSsl::SslProtocol protocol);
 };
 
 #endif

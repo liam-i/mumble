@@ -1,61 +1,60 @@
-// Copyright 2005-2017 The Mumble Developers. All rights reserved.
+// Copyright 2007-2022 The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
 
-#include "mumble_pch.hpp"
-
 #include "OSS.h"
 
-#include <sys/soundcard.h>
-#include <fcntl.h>
 #include <errno.h>
+#include <fcntl.h>
 #include <sys/ioctl.h>
+#include <sys/soundcard.h>
 
+#include "MainWindow.h"
 #include "User.h"
 #include "Global.h"
-#include "MainWindow.h"
 
 #define NBLOCKS 8
 
 class OSSEnumerator {
-	public:
-		QHash<QString,QString> qhInput;
-		QHash<QString,QString> qhOutput;
-		QHash<QString,QString> qhDevices;
-		OSSEnumerator();
+public:
+	QHash< QString, QString > qhInput;
+	QHash< QString, QString > qhOutput;
+	QHash< QString, QString > qhDevices;
+	OSSEnumerator();
 };
 
-static OSSEnumerator *cards = NULL;
+static OSSEnumerator *cards = nullptr;
 
 class OSSInit : public DeferInit {
-		void initialize() {
-			cards = new OSSEnumerator();
-		};
-		void destroy() {
-			delete cards;
-			cards = NULL;
-		};
+	void initialize() { cards = new OSSEnumerator(); };
+	void destroy() {
+		delete cards;
+		cards = nullptr;
+	};
 };
 
 static OSSInit ossi;
 
 class OSSInputRegistrar : public AudioInputRegistrar {
-	public:
-		OSSInputRegistrar();
-		virtual AudioInput *create();
-		virtual const QList<audioDevice> getDeviceChoices();
-		virtual void setDeviceChoice(const QVariant &, Settings &);
-		virtual bool canEcho(const QString &) const;
+public:
+	OSSInputRegistrar();
+	virtual AudioInput *create();
+	virtual const QVariant getDeviceChoice();
+	virtual const QList< audioDevice > getDeviceChoices();
+	virtual void setDeviceChoice(const QVariant &, Settings &);
+	virtual bool canEcho(EchoCancelOptionID echoCancelID, const QString &outputSystem) const;
+	virtual bool isMicrophoneAccessDeniedByOS() { return false; };
 };
 
 
 class OSSOutputRegistrar : public AudioOutputRegistrar {
-	public:
-		OSSOutputRegistrar();
-		virtual AudioOutput *create();
-		virtual const QList<audioDevice> getDeviceChoices();
-		virtual void setDeviceChoice(const QVariant &, Settings &);
+public:
+	OSSOutputRegistrar();
+	virtual AudioOutput *create();
+	virtual const QVariant getDeviceChoice();
+	virtual const QList< audioDevice > getDeviceChoices();
+	virtual void setDeviceChoice(const QVariant &, Settings &);
 };
 
 static OSSInputRegistrar airOSS;
@@ -68,29 +67,28 @@ AudioInput *OSSInputRegistrar::create() {
 	return new OSSInput();
 }
 
-const QList<audioDevice> OSSInputRegistrar::getDeviceChoices() {
-	QList<audioDevice> qlReturn;
+const QVariant OSSInputRegistrar::getDeviceChoice() {
+	return Global::get().s.qsOSSInput;
+}
 
-	QStringList qlInputDevs = cards->qhInput.keys();
-	qSort(qlInputDevs);
+const QList< audioDevice > OSSInputRegistrar::getDeviceChoices() {
+	QList< audioDevice > choices;
 
-	if (qlInputDevs.contains(g.s.qsOSSInput)) {
-		qlInputDevs.removeAll(g.s.qsOSSInput);
-		qlInputDevs.prepend(g.s.qsOSSInput);
+	QStringList keys = cards->qhInput.keys();
+	std::sort(keys.begin(), keys.end());
+
+	for (const auto &key : keys) {
+		choices << audioDevice(cards->qhInput.value(key), key);
 	}
 
-	foreach(const QString &dev, qlInputDevs) {
-		qlReturn << audioDevice(cards->qhInput.value(dev), dev);
-	}
-
-	return qlReturn;
+	return choices;
 }
 
 void OSSInputRegistrar::setDeviceChoice(const QVariant &choice, Settings &s) {
 	s.qsOSSInput = choice.toString();
 }
 
-bool OSSInputRegistrar::canEcho(const QString &) const {
+bool OSSInputRegistrar::canEcho(EchoCancelOptionID, const QString &) const {
 	return false;
 }
 
@@ -101,22 +99,21 @@ AudioOutput *OSSOutputRegistrar::create() {
 	return new OSSOutput();
 }
 
-const QList<audioDevice> OSSOutputRegistrar::getDeviceChoices() {
-	QList<audioDevice> qlReturn;
+const QVariant OSSOutputRegistrar::getDeviceChoice() {
+	return Global::get().s.qsOSSOutput;
+}
 
-	QStringList qlOutputDevs = cards->qhOutput.keys();
-	qSort(qlOutputDevs);
+const QList< audioDevice > OSSOutputRegistrar::getDeviceChoices() {
+	QList< audioDevice > choices;
 
-	if (qlOutputDevs.contains(g.s.qsOSSOutput)) {
-		qlOutputDevs.removeAll(g.s.qsOSSOutput);
-		qlOutputDevs.prepend(g.s.qsOSSOutput);
+	QStringList keys = cards->qhOutput.keys();
+	std::sort(keys.begin(), keys.end());
+
+	for (const auto &key : keys) {
+		choices << audioDevice(cards->qhOutput.value(key), key);
 	}
 
-	foreach(const QString &dev, qlOutputDevs) {
-		qlReturn << audioDevice(cards->qhOutput.value(dev), dev);
-	}
-
-	return qlReturn;
+	return choices;
 }
 
 void OSSOutputRegistrar::setDeviceChoice(const QVariant &choice, Settings &s) {
@@ -142,7 +139,7 @@ OSSEnumerator::OSSEnumerator() {
 		return;
 	}
 
-	for (int i=0;i< sysinfo.numaudios;i++) {
+	for (int i = 0; i < sysinfo.numaudios; i++) {
 		oss_audioinfo ainfo;
 		ainfo.dev = i;
 		if (ioctl(mixerfd, SNDCTL_AUDIOINFO, &ainfo) == -1) {
@@ -151,7 +148,7 @@ OSSEnumerator::OSSEnumerator() {
 		}
 
 		QString handle = QLatin1String(ainfo.handle);
-		QString name = QLatin1String(ainfo.name);
+		QString name   = QLatin1String(ainfo.name);
 		QString device = QLatin1String(ainfo.devnode);
 
 		if (ainfo.caps & PCM_CAP_HIDDEN)
@@ -179,7 +176,7 @@ OSSInput::~OSSInput() {
 }
 
 void OSSInput::run() {
-	QByteArray device = cards->qhDevices.value(g.s.qsOSSInput).toLatin1();
+	QByteArray device = cards->qhDevices.value(Global::get().s.qsOSSInput).toLatin1();
 	if (device.isEmpty()) {
 		qWarning("OSSInput: Stored device not found, falling back to default");
 		device = cards->qhDevices.value(QString()).toLatin1();
@@ -221,7 +218,7 @@ void OSSInput::run() {
 	while (bRunning) {
 		short buffer[iMicLength];
 
-		int len = static_cast<int>(iMicLength * iMicChannels * sizeof(short));
+		int len   = static_cast< int >(iMicLength * iMicChannels * sizeof(short));
 		ssize_t l = read(fd, buffer, len);
 		if (l != len) {
 			qWarning("OSSInput: Read %zd", l);
@@ -231,7 +228,7 @@ void OSSInput::run() {
 	}
 
 	qWarning("OSSInput: Releasing.");
-	ioctl(fd, SNDCTL_DSP_RESET, NULL);
+	ioctl(fd, SNDCTL_DSP_RESET, nullptr);
 
 out:
 	close(fd);
@@ -253,7 +250,7 @@ OSSOutput::~OSSOutput() {
 }
 
 void OSSOutput::run() {
-	QByteArray device = cards->qhDevices.value(g.s.qsOSSOutput).toLatin1();
+	QByteArray device = cards->qhDevices.value(Global::get().s.qsOSSOutput).toLatin1();
 	if (device.isEmpty()) {
 		qWarning("OSSOutput: Stored device not found, falling back to default");
 		device = cards->qhDevices.value(QString()).toLatin1();
@@ -267,7 +264,7 @@ void OSSOutput::run() {
 
 	int ival;
 
-	ival = (g.s.iOutputDelay+1) << 16 | 11;
+	ival = (Global::get().s.iOutputDelay + 1) << 16 | 11;
 
 	if (ioctl(fd, SNDCTL_DSP_SETFRAGMENT, &ival) == -1) {
 		qWarning("OSSOutput: Failed to set fragment");
@@ -281,15 +278,10 @@ void OSSOutput::run() {
 		return;
 	}
 
-	iChannels = 0;
-
-	if (g.s.doPositionalAudio())
-		iChannels = 2;
-	else
-		iChannels = 1;
+	iChannels = 2;
 
 	ival = iChannels;
-	if ((ioctl(fd, SNDCTL_DSP_CHANNELS, &ival) == -1) && (ival == static_cast<int>(iChannels))) {
+	if ((ioctl(fd, SNDCTL_DSP_CHANNELS, &ival) == -1) && (ival == static_cast< int >(iChannels))) {
 		qWarning("OSSOutput: Failed to set channels");
 		return;
 	}
@@ -302,17 +294,9 @@ void OSSOutput::run() {
 	}
 	iMixerFreq = ival;
 
-	const unsigned int chanmasks[32] = {
-		SPEAKER_FRONT_LEFT,
-		SPEAKER_FRONT_RIGHT,
-		SPEAKER_FRONT_CENTER,
-		SPEAKER_LOW_FREQUENCY,
-		SPEAKER_BACK_LEFT,
-		SPEAKER_BACK_RIGHT,
-		SPEAKER_SIDE_LEFT,
-		SPEAKER_SIDE_RIGHT,
-		SPEAKER_BACK_CENTER
-	};
+	const unsigned int chanmasks[32] = { SPEAKER_FRONT_LEFT,    SPEAKER_FRONT_RIGHT, SPEAKER_FRONT_CENTER,
+										 SPEAKER_LOW_FREQUENCY, SPEAKER_BACK_LEFT,   SPEAKER_BACK_RIGHT,
+										 SPEAKER_SIDE_LEFT,     SPEAKER_SIDE_RIGHT,  SPEAKER_BACK_CENTER };
 
 	eSampleFormat = SampleShort;
 
@@ -334,7 +318,7 @@ void OSSOutput::run() {
 				break;
 			}
 		} else {
-			while (! mix(mbuffer, iOutputBlock) && bRunning)
+			while (!mix(mbuffer, iOutputBlock) && bRunning)
 				this->msleep(20);
 			ssize_t l = write(fd, mbuffer, blocklen);
 			if (l != blocklen) {
@@ -344,6 +328,8 @@ void OSSOutput::run() {
 		}
 	}
 	qWarning("OSSOutput: Releasing device");
-	ioctl(fd, SNDCTL_DSP_RESET, NULL);
+	ioctl(fd, SNDCTL_DSP_RESET, nullptr);
 	close(fd);
 }
+
+#undef NBLOCKS

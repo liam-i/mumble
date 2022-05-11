@@ -1,4 +1,4 @@
-// Copyright 2005-2017 The Mumble Developers. All rights reserved.
+// Copyright 2008-2022 The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -6,16 +6,16 @@
 #ifndef MUMBLE_G15_HELPER_H_
 #define MUMBLE_G15_HELPER_H_
 
-#define G15_MAX_DEV         5
-#define G15_MAX_WIDTH       160
-#define G15_MAX_HEIGHT      43
-#define G15_MAX_BPP         1
-#define G15_MAX_FBMEM       (G15_MAX_WIDTH * G15_MAX_HEIGHT * G15_MAX_BPP)
-#define G15_MAX_FBMEM_BITS  (G15_MAX_FBMEM / 8)
+#define G15_MAX_DEV 5
+#define G15_MAX_WIDTH 160
+#define G15_MAX_HEIGHT 43
+#define G15_MAX_BPP 1
+#define G15_MAX_FBMEM (G15_MAX_WIDTH * G15_MAX_HEIGHT * G15_MAX_BPP)
+#define G15_MAX_FBMEM_BITS (G15_MAX_FBMEM / 8)
 #if defined(WIN32)
-#define G15_WIDGET_NAME     L"Mumble G15 Display"
+#	define G15_WIDGET_NAME L"Mumble G15 Display"
 #elif defined(APPLE)
-#define G15_WIDGET_NAME     CFSTR("Mumble G15 Display")
+#	define G15_WIDGET_NAME CFSTR("Mumble G15 Display")
 #endif
 
 enum {

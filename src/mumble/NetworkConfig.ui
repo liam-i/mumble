@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>576</width>
-    <height>567</height>
+    <height>584</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -273,29 +273,6 @@
     </widget>
    </item>
    <item>
-    <widget class="QGroupBox" name="qgbMisc">
-     <property name="title">
-      <string>Misc</string>
-     </property>
-     <layout class="QVBoxLayout" name="verticalLayout_3">
-      <item>
-       <widget class="QCheckBox" name="qcbImageDownload">
-        <property name="toolTip">
-         <string>Prevent log from downloading images</string>
-        </property>
-        <property name="whatsThis">
-         <string>&lt;b&gt;Disable image download&lt;/b&gt;&lt;br/&gt;
-Prevents the client from downloading images embedded into chat messages with the img tag.</string>
-        </property>
-        <property name="text">
-         <string>Disable image download</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </widget>
-   </item>
-   <item>
     <widget class="QGroupBox" name="qgbPrivacy">
      <property name="title">
       <string>Privacy</string>
@@ -338,7 +315,7 @@ Prevents the client from sending potentially identifying information about the o
        </widget>
       </item>
       <item>
-       <widget class="QCheckBox" name="qcbPluginUpdate">
+       <widget class="QCheckBox" name="qcbPluginUpdateCheck">
         <property name="toolTip">
          <string>Check for new releases of plugins automatically.</string>
         </property>
@@ -346,7 +323,14 @@ Prevents the client from sending potentially identifying information about the o
          <string>This will check for new releases of plugins every time you start the program, and download them automatically.</string>
         </property>
         <property name="text">
-         <string>Download plugin and overlay updates on startup</string>
+         <string>Check for plugin updates on startup</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="qcbPluginAutoUpdate">
+        <property name="text">
+         <string>Automatically download and install plugin updates</string>
         </property>
        </widget>
       </item>
@@ -360,6 +344,19 @@ Prevents the client from sending potentially identifying information about the o
         </property>
         <property name="text">
          <string>Submit anonymous statistics</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="qcbDisablePublicList">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="toolTip">
+         <string>When toggled this hides the public server list from the connect dialog</string>
+        </property>
+        <property name="text">
+         <string>Hide public server list</string>
         </property>
        </widget>
       </item>

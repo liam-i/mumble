@@ -1,4 +1,4 @@
-// Copyright 2005-2017 The Mumble Developers. All rights reserved.
+// Copyright 2007-2022 The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -8,6 +8,7 @@
 
 #include "Settings.h"
 #include "UnresolvedServerAddress.h"
+#include <QSqlDatabase>
 
 struct FavoriteServer {
 	QString qsName;
@@ -19,54 +20,68 @@ struct FavoriteServer {
 };
 
 class Database : public QObject {
-	private:
-		Q_OBJECT
-		Q_DISABLE_COPY(Database)
-	public:
-		Database();
-		~Database() Q_DECL_OVERRIDE;
-		static QList<FavoriteServer> getFavorites();
-		static void setFavorites(const QList<FavoriteServer> &servers);
-		static void setPassword(const QString &host, unsigned short port, const QString &user, const QString &pw);
-		static bool fuzzyMatch(QString &name, QString &user, QString &pw, QString &host, unsigned short port);
+private:
+	Q_OBJECT
+	Q_DISABLE_COPY(Database)
 
-		static bool isLocalIgnored(const QString &hash);
-		static void setLocalIgnored(const QString &hash, bool ignored);
+	QSqlDatabase db;
+	/// This function is called when no database location is configured
+	/// in the config file. It tries to find an existing database file and
+	/// creates a new one if none was found.
+	bool findOrCreateDatabase();
 
-		static bool isLocalMuted(const QString &hash);
-		static void setLocalMuted(const QString &hash, bool muted);
+public:
+	Database(const QString &dbname);
+	~Database() Q_DECL_OVERRIDE;
 
-		static float getUserLocalVolume(const QString &hash);
-		static void setUserLocalVolume(const QString &hash, float volume);
+	QList< FavoriteServer > getFavorites();
+	void setFavorites(const QList< FavoriteServer > &servers);
+	void setPassword(const QString &host, unsigned short port, const QString &user, const QString &pw);
+	bool fuzzyMatch(QString &name, QString &user, QString &pw, QString &host, unsigned short port);
 
-		static bool isChannelFiltered(const QByteArray &server_cert_digest, const int channel_id);
-		static void setChannelFiltered(const QByteArray &server_cert_digest, const int channel_id, bool hidden);
+	bool isLocalIgnored(const QString &hash);
+	void setLocalIgnored(const QString &hash, bool ignored);
 
-		static QMap<UnresolvedServerAddress, unsigned int> getPingCache();
-		static void setPingCache(const QMap<UnresolvedServerAddress, unsigned int> &cache);
+	bool isLocalIgnoredTTS(const QString &hash);
+	void setLocalIgnoredTTS(const QString &hash, bool ignoredTTS);
 
-		static bool seenComment(const QString &hash, const QByteArray &commenthash);
-		static void setSeenComment(const QString &hash, const QByteArray &commenthash);
+	bool isLocalMuted(const QString &hash);
+	void setLocalMuted(const QString &hash, bool muted);
 
-		static QByteArray blob(const QByteArray &hash);
-		static void setBlob(const QByteArray &hash, const QByteArray &blob);
+	float getUserLocalVolume(const QString &hash);
+	void setUserLocalVolume(const QString &hash, float volume);
 
-		static QStringList getTokens(const QByteArray &digest);
-		static void setTokens(const QByteArray &digest, QStringList &tokens);
+	QString getUserLocalNickname(const QString &hash);
+	void setUserLocalNickname(const QString &hash, const QString &nickname);
 
-		static QList<Shortcut> getShortcuts(const QByteArray &digest);
-		static bool setShortcuts(const QByteArray &digest, QList<Shortcut> &shortcuts);
+	bool isChannelFiltered(const QByteArray &server_cert_digest, const int channel_id);
+	void setChannelFiltered(const QByteArray &server_cert_digest, const int channel_id, bool hidden);
 
-		static void addFriend(const QString &name, const QString &hash);
-		static void removeFriend(const QString &hash);
-		static const QString getFriend(const QString &hash);
-		static const QMap<QString, QString> getFriends();
+	QMap< UnresolvedServerAddress, unsigned int > getPingCache();
+	void setPingCache(const QMap< UnresolvedServerAddress, unsigned int > &cache);
 
-		static const QString getDigest(const QString &hostname, unsigned short port);
-		static void setDigest(const QString &hostname, unsigned short port, const QString &digest);
+	bool seenComment(const QString &hash, const QByteArray &commenthash);
+	void setSeenComment(const QString &hash, const QByteArray &commenthash);
 
-		static bool getUdp(const QByteArray &digest);
-		static void setUdp(const QByteArray &digest, bool udp);
+	QByteArray blob(const QByteArray &hash);
+	void setBlob(const QByteArray &hash, const QByteArray &blob);
+
+	QStringList getTokens(const QByteArray &digest);
+	void setTokens(const QByteArray &digest, QStringList &tokens);
+
+	QList< Shortcut > getShortcuts(const QByteArray &digest);
+	void setShortcuts(const QByteArray &digest, const QList< Shortcut > &shortcuts);
+
+	void addFriend(const QString &name, const QString &hash);
+	void removeFriend(const QString &hash);
+	const QString getFriend(const QString &hash);
+	const QMap< QString, QString > getFriends();
+
+	const QString getDigest(const QString &hostname, unsigned short port);
+	void setDigest(const QString &hostname, unsigned short port, const QString &digest);
+
+	bool getUdp(const QByteArray &digest);
+	void setUdp(const QByteArray &digest, bool udp);
 };
 
 #endif

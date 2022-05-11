@@ -1,31 +1,29 @@
-// Copyright 2005-2017 The Mumble Developers. All rights reserved.
+// Copyright 2010-2022 The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
 
-#include "mumble_pch.hpp"
-
 #include "OverlayEditor.h"
 
+#include "Channel.h"
+#include "Database.h"
+#include "MainWindow.h"
+#include "NetworkConfig.h"
 #include "OverlayClient.h"
 #include "OverlayText.h"
-#include "User.h"
-#include "Channel.h"
-#include "Global.h"
-#include "Message.h"
-#include "Database.h"
-#include "NetworkConfig.h"
 #include "ServerHandler.h"
-#include "MainWindow.h"
+#include "User.h"
+#include "Utils.h"
+#include "Global.h"
 #include "GlobalShortcut.h"
 
-OverlayEditor::OverlayEditor(QWidget *p, QGraphicsItem *qgi, OverlaySettings *osptr) :
-		QDialog(p),
-		qgiPromote(qgi),
-		oes(g.s.os) {
-	setupUi(this);
+#include <QtWidgets/QGraphicsProxyWidget>
 
-	os = osptr ? osptr : &g.s.os;
+OverlayEditor::OverlayEditor(QWidget *p, QGraphicsItem *qgi, OverlaySettings *osptr)
+	: QDialog(p), qgiPromote(qgi), oes(Global::get().s.os) {
+	setupUi(this);
+	qsZoom->setAccessibleName(tr("Zoom level"));
+	os = osptr ? osptr : &Global::get().s.os;
 
 	connect(qdbbBox->button(QDialogButtonBox::Apply), SIGNAL(clicked()), this, SLOT(apply()));
 	connect(qdbbBox->button(QDialogButtonBox::Reset), SIGNAL(clicked()), this, SLOT(reset()));
@@ -33,11 +31,11 @@ OverlayEditor::OverlayEditor(QWidget *p, QGraphicsItem *qgi, OverlaySettings *os
 	QGraphicsProxyWidget *qgpw = graphicsProxyWidget();
 	if (qgpw) {
 		qgpw->setFlag(QGraphicsItem::ItemIgnoresParentOpacity);
-		if (g.ocIntercept) {
-			qgpw->setPos(iroundf(static_cast<float>(g.ocIntercept->uiWidth) / 16.0f + 0.5f),
-			             iroundf(static_cast<float>(g.ocIntercept->uiHeight) / 16.0f + 0.5f));
-			qgpw->resize(iroundf(static_cast<float>(g.ocIntercept->uiWidth) * 14.0f / 16.0f + 0.5f),
-			             iroundf(static_cast<float>(g.ocIntercept->uiHeight) * 14.0f / 16.0f + 0.5f));
+		if (Global::get().ocIntercept) {
+			qgpw->setPos(iroundf(static_cast< float >(Global::get().ocIntercept->uiWidth) / 16.0f + 0.5f),
+						 iroundf(static_cast< float >(Global::get().ocIntercept->uiHeight) / 16.0f + 0.5f));
+			qgpw->resize(iroundf(static_cast< float >(Global::get().ocIntercept->uiWidth) * 14.0f / 16.0f + 0.5f),
+						 iroundf(static_cast< float >(Global::get().ocIntercept->uiHeight) * 14.0f / 16.0f + 0.5f));
 		}
 	}
 
@@ -47,7 +45,7 @@ OverlayEditor::OverlayEditor(QWidget *p, QGraphicsItem *qgi, OverlaySettings *os
 }
 
 OverlayEditor::~OverlayEditor() {
-	QGraphicsProxyWidget *qgpw = g.mw->graphicsProxyWidget();
+	QGraphicsProxyWidget *qgpw = Global::get().mw->graphicsProxyWidget();
 	if (qgpw)
 		qgpw->setOpacity(0.9f);
 	if (qgiPromote)
@@ -55,7 +53,7 @@ OverlayEditor::~OverlayEditor() {
 }
 
 void OverlayEditor::enterEvent(QEvent *e) {
-	QGraphicsProxyWidget *qgpw = g.mw->graphicsProxyWidget();
+	QGraphicsProxyWidget *qgpw = Global::get().mw->graphicsProxyWidget();
 	if (qgpw)
 		qgpw->setOpacity(0.9f);
 
@@ -70,7 +68,7 @@ void OverlayEditor::enterEvent(QEvent *e) {
 }
 
 void OverlayEditor::leaveEvent(QEvent *e) {
-	QGraphicsProxyWidget *qgpw = g.mw->graphicsProxyWidget();
+	QGraphicsProxyWidget *qgpw = Global::get().mw->graphicsProxyWidget();
 	if (qgpw)
 		qgpw->setOpacity(0.3f);
 
@@ -127,7 +125,7 @@ void OverlayEditor::on_qrbShout_clicked() {
 
 void OverlayEditor::on_qcbAvatar_clicked() {
 	oes.os.bAvatar = qcbAvatar->isChecked();
-	if (! oes.os.bAvatar && ! oes.os.bUserName) {
+	if (!oes.os.bAvatar && !oes.os.bUserName) {
 		qcbUser->setChecked(true);
 		oes.os.bUserName = true;
 		oes.updateUserName();
@@ -137,7 +135,7 @@ void OverlayEditor::on_qcbAvatar_clicked() {
 
 void OverlayEditor::on_qcbUser_clicked() {
 	oes.os.bUserName = qcbUser->isChecked();
-	if (! oes.os.bAvatar && ! oes.os.bUserName) {
+	if (!oes.os.bAvatar && !oes.os.bUserName) {
 		qcbAvatar->setChecked(true);
 		oes.os.bAvatar = true;
 		oes.updateAvatar();

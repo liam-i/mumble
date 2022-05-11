@@ -1,3 +1,8 @@
+// Copyright 2009-2022 The Mumble Developers. All rights reserved.
+// Use of this source code is governed by a BSD-style license
+// that can be found in the LICENSE file at the root of the
+// Mumble source tree or at <https://www.mumble.info/LICENSE>.
+
 /**
  * Benchmark of storage mechanisms; array, vector, Qt collections.
  */
@@ -12,17 +17,14 @@ using namespace std;
 #define SL 10000
 #define NE 300
 
-template<class T>
-class QListSet {
-	public:
-		QList<T> l;
-		void insert(const T &i) {
-			if (! l.contains(i))
-				l.append(i);
-		}
-		void remove(const T &i) {
-			l.removeAll(i);
-		}
+template< class T > class QListSet {
+public:
+	QList< T > l;
+	void insert(const T &i) {
+		if (!l.contains(i))
+			l.append(i);
+	}
+	void remove(const T &i) { l.removeAll(i); }
 };
 
 int main(int argc, char **argv) {
@@ -32,14 +34,14 @@ int main(int argc, char **argv) {
 
 	{
 		t.restart();
-		QSet<int> s;
+		QSet< int > s;
 		s.reserve(NE);
-		for (int i=0;i<NE;i++)
+		for (int i = 0; i < NE; i++)
 			s.insert(i);
 		usins = t.restart();
-		sum = 0;
-		for (int j=0;j<SL;j++)
-			foreach(int v, s)
+		sum   = 0;
+		for (int j = 0; j < SL; j++)
+			foreach (int v, s)
 				sum += v;
 		usiter = t.restart();
 	}
@@ -47,13 +49,13 @@ int main(int argc, char **argv) {
 
 	{
 		t.restart();
-		QList<int> s;
-		for (int i=0;i<NE;i++)
+		QList< int > s;
+		for (int i = 0; i < NE; i++)
 			s.append(i);
 		usins = t.restart();
-		sum = 0;
-		for (int j=0;j<SL;j++)
-			foreach(int v, s)
+		sum   = 0;
+		for (int j = 0; j < SL; j++)
+			foreach (int v, s)
 				sum += v;
 		usiter = t.restart();
 	}
@@ -61,14 +63,14 @@ int main(int argc, char **argv) {
 
 	{
 		t.restart();
-		QVector<int> s;
+		QVector< int > s;
 		s.reserve(NE);
-		for (int i=0;i<NE;i++)
+		for (int i = 0; i < NE; i++)
 			s.append(i);
 		usins = t.restart();
-		sum = 0;
-		for (int j=0;j<SL;j++)
-			foreach(int v, s)
+		sum   = 0;
+		for (int j = 0; j < SL; j++)
+			foreach (int v, s)
 				sum += v;
 		usiter = t.restart();
 	}
@@ -76,14 +78,14 @@ int main(int argc, char **argv) {
 
 	{
 		t.restart();
-		vector<int> s;
-		for (int i=0;i<NE;i++)
+		vector< int > s;
+		for (int i = 0; i < NE; i++)
 			s.push_back(i);
-		usins = t.restart();
-		sum = 0;
+		usins  = t.restart();
+		sum    = 0;
 		int sz = s.size();
-		for (int j=0;j<SL;j++)
-			for (int i=0;i<sz;i++)
+		for (int j = 0; j < SL; j++)
+			for (int i = 0; i < sz; i++)
 				sum += s[i];
 		usiter = t.restart();
 	}
@@ -92,12 +94,12 @@ int main(int argc, char **argv) {
 	{
 		t.restart();
 		int s[NE];
-		for (int i=0;i<NE;i++)
-			s[i]=i;
+		for (int i = 0; i < NE; i++)
+			s[i] = i;
 		usins = t.restart();
-		sum = 0;
-		for (int j=0;j<SL;j++)
-			for (int i=0;i<NE;i++)
+		sum   = 0;
+		for (int j = 0; j < SL; j++)
+			for (int i = 0; i < NE; i++)
 				sum += s[i];
 		usiter = t.restart();
 	}
@@ -106,15 +108,18 @@ int main(int argc, char **argv) {
 
 	{
 		t.restart();
-		QListSet<int> s;
-		for (int i=0;i<NE;i++)
+		QListSet< int > s;
+		for (int i = 0; i < NE; i++)
 			s.insert(i);
 		usins = t.restart();
-		sum = 0;
-		for (int j=0;j<SL;j++)
-			foreach(int v, s.l)
+		sum   = 0;
+		for (int j = 0; j < SL; j++)
+			foreach (int v, s.l)
 				sum += v;
 		usiter = t.restart();
 	}
 	qWarning("QListSet: %lldus insert, %lldus iterate: %d", usins, usiter, sum);
 }
+
+#undef SL
+#undef NE

@@ -1,23 +1,27 @@
-// Copyright 2005-2017 The Mumble Developers. All rights reserved.
+// Copyright 2010-2022 The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
-
-#include "mumble_pch.hpp"
 
 #include "SocketRPC.h"
 
 #include "Channel.h"
 #include "ClientUser.h"
-#include "Global.h"
 #include "MainWindow.h"
 #include "ServerHandler.h"
+#include "Global.h"
 
-SocketRPCClient::SocketRPCClient(QLocalSocket *s, QObject *p) : QObject(p), qlsSocket(s), qbBuffer(NULL) {
+#include <QtCore/QProcessEnvironment>
+#include <QtCore/QUrlQuery>
+#include <QtNetwork/QLocalServer>
+#include <QtXml/QDomDocument>
+
+SocketRPCClient::SocketRPCClient(QLocalSocket *s, QObject *p) : QObject(p), qlsSocket(s), qbBuffer(nullptr) {
 	qlsSocket->setParent(this);
 
 	connect(qlsSocket, SIGNAL(disconnected()), this, SLOT(disconnected()));
-	connect(qlsSocket, SIGNAL(error(QLocalSocket::LocalSocketError)), this, SLOT(error(QLocalSocket::LocalSocketError)));
+	connect(qlsSocket, SIGNAL(error(QLocalSocket::LocalSocketError)), this,
+			SLOT(error(QLocalSocket::LocalSocketError)));
 	connect(qlsSocket, SIGNAL(readyRead()), this, SLOT(readyRead()));
 
 	qxsrReader.setDevice(qlsSocket);
@@ -39,29 +43,27 @@ void SocketRPCClient::readyRead() {
 	forever {
 		switch (qxsrReader.readNext()) {
 			case QXmlStreamReader::Invalid: {
-					if (qxsrReader.error() != QXmlStreamReader::PrematureEndOfDocumentError) {
-						qWarning() << "Malformed" << qxsrReader.error();
-						qlsSocket->abort();
-					}
-					return;
+				if (qxsrReader.error() != QXmlStreamReader::PrematureEndOfDocumentError) {
+					qWarning() << "Malformed" << qxsrReader.error();
+					qlsSocket->abort();
 				}
-				break;
+				return;
+			} break;
 			case QXmlStreamReader::EndDocument: {
-					qxswWriter.writeCurrentToken(qxsrReader);
+				qxswWriter.writeCurrentToken(qxsrReader);
 
-					processXml();
+				processXml();
 
-					qxsrReader.clear();
-					qxsrReader.setDevice(qlsSocket);
+				qxsrReader.clear();
+				qxsrReader.setDevice(qlsSocket);
 
-					qxswWriter.setDevice(NULL);
-					delete qbBuffer;
-					qbaOutput = QByteArray();
-					qbBuffer = new QBuffer(&qbaOutput, this);
-					qbBuffer->open(QIODevice::WriteOnly);
-					qxswWriter.setDevice(qbBuffer);
-				}
-				break;
+				qxswWriter.setDevice(nullptr);
+				delete qbBuffer;
+				qbaOutput = QByteArray();
+				qbBuffer  = new QBuffer(&qbaOutput, this);
+				qbBuffer->open(QIODevice::WriteOnly);
+				qxswWriter.setDevice(qbBuffer);
+			} break;
 			default:
 				qxswWriter.writeCurrentToken(qxsrReader);
 				break;
@@ -75,21 +77,21 @@ void SocketRPCClient::processXml() {
 
 	QDomElement request = qdd.firstChildElement();
 
-	if (! request.isNull()) {
+	if (!request.isNull()) {
 		bool ack = false;
-		QMap<QString, QVariant> qmRequest;
-		QMap<QString, QVariant> qmReply;
-		QMap<QString, QVariant>::const_iterator iter;
+		QMap< QString, QVariant > qmRequest;
+		QMap< QString, QVariant > qmReply;
+		QMap< QString, QVariant >::const_iterator iter;
 
 		QDomNamedNodeMap attributes = request.attributes();
-		for (int i=0;i<attributes.count();++i) {
+		for (int i = 0; i < attributes.count(); ++i) {
 			QDomAttr attr = attributes.item(i).toAttr();
 			qmRequest.insert(attr.name(), attr.value());
 		}
 		QDomNodeList childNodes = request.childNodes();
-		for (int i=0;i<childNodes.count();++i) {
+		for (int i = 0; i < childNodes.count(); ++i) {
 			QDomElement child = childNodes.item(i).toElement();
-			if (! child.isNull())
+			if (!child.isNull())
 				qmRequest.insert(child.nodeName(), child.text());
 		}
 
@@ -98,89 +100,93 @@ void SocketRPCClient::processXml() {
 			qmReply.insert(iter.key(), iter.value());
 
 		if (request.nodeName() == QLatin1String("focus")) {
-			g.mw->show();
-			g.mw->raise();
-			g.mw->activateWindow();
+			Global::get().mw->show();
+			Global::get().mw->raise();
+			Global::get().mw->activateWindow();
 
 			ack = true;
 		} else if (request.nodeName() == QLatin1String("self")) {
 			iter = qmRequest.find(QLatin1String("mute"));
 			if (iter != qmRequest.constEnd()) {
 				bool set = iter.value().toBool();
-				if (set != g.s.bMute) {
-					g.mw->qaAudioMute->setChecked(! set);
-					g.mw->qaAudioMute->trigger();
+				if (set != Global::get().s.bMute) {
+					Global::get().mw->qaAudioMute->setChecked(!set);
+					Global::get().mw->qaAudioMute->trigger();
 				}
 			}
 			iter = qmRequest.find(QLatin1String("unmute"));
 			if (iter != qmRequest.constEnd()) {
 				bool set = iter.value().toBool();
-				if (set == g.s.bMute) {
-					g.mw->qaAudioMute->setChecked(set);
-					g.mw->qaAudioMute->trigger();
+				if (set == Global::get().s.bMute) {
+					Global::get().mw->qaAudioMute->setChecked(set);
+					Global::get().mw->qaAudioMute->trigger();
 				}
 			}
 			iter = qmRequest.find(QLatin1String("togglemute"));
 			if (iter != qmRequest.constEnd()) {
 				bool set = iter.value().toBool();
-				if (set == g.s.bMute) {
-					g.mw->qaAudioMute->setChecked(set);
-					g.mw->qaAudioMute->trigger();
+				if (set == Global::get().s.bMute) {
+					Global::get().mw->qaAudioMute->setChecked(set);
+					Global::get().mw->qaAudioMute->trigger();
 				} else {
-					g.mw->qaAudioMute->setChecked(! set);
-					g.mw->qaAudioMute->trigger();
+					Global::get().mw->qaAudioMute->setChecked(!set);
+					Global::get().mw->qaAudioMute->trigger();
 				}
 			}
 			iter = qmRequest.find(QLatin1String("deaf"));
 			if (iter != qmRequest.constEnd()) {
 				bool set = iter.value().toBool();
-				if (set != g.s.bDeaf) {
-					g.mw->qaAudioDeaf->setChecked(! set);
-					g.mw->qaAudioDeaf->trigger();
+				if (set != Global::get().s.bDeaf) {
+					Global::get().mw->qaAudioDeaf->setChecked(!set);
+					Global::get().mw->qaAudioDeaf->trigger();
 				}
 			}
 			iter = qmRequest.find(QLatin1String("undeaf"));
 			if (iter != qmRequest.constEnd()) {
 				bool set = iter.value().toBool();
-				if (set == g.s.bDeaf) {
-					g.mw->qaAudioDeaf->setChecked(set);
-					g.mw->qaAudioDeaf->trigger();
+				if (set == Global::get().s.bDeaf) {
+					Global::get().mw->qaAudioDeaf->setChecked(set);
+					Global::get().mw->qaAudioDeaf->trigger();
 				}
 			}
 			iter = qmRequest.find(QLatin1String("toggledeaf"));
 			if (iter != qmRequest.constEnd()) {
 				bool set = iter.value().toBool();
-				if (set == g.s.bDeaf) {
-					g.mw->qaAudioDeaf->setChecked(set);
-					g.mw->qaAudioDeaf->trigger();
+				if (set == Global::get().s.bDeaf) {
+					Global::get().mw->qaAudioDeaf->setChecked(set);
+					Global::get().mw->qaAudioDeaf->trigger();
 				} else {
-					g.mw->qaAudioDeaf->setChecked(! set);
-					g.mw->qaAudioDeaf->trigger();
+					Global::get().mw->qaAudioDeaf->setChecked(!set);
+					Global::get().mw->qaAudioDeaf->trigger();
 				}
+			}
+			iter = qmRequest.find(QLatin1String("starttalking"));
+			if (iter != qmRequest.constEnd()) {
+				Global::get().mw->on_PushToTalk_triggered(true, QVariant());
+			}
+			iter = qmRequest.find(QLatin1String("stoptalking"));
+			if (iter != qmRequest.constEnd()) {
+				Global::get().mw->on_PushToTalk_triggered(false, QVariant());
 			}
 			ack = true;
 		} else if (request.nodeName() == QLatin1String("url")) {
-			if (g.sh && g.sh->isRunning() && g.uiSession) {
+			if (Global::get().sh && Global::get().sh->isRunning() && Global::get().uiSession) {
 				QString host, user, pw;
 				unsigned short port;
 				QUrl u;
 
-				g.sh->getConnectionInfo(host, port, user, pw);
+				Global::get().sh->getConnectionInfo(host, port, user, pw);
 				u.setScheme(QLatin1String("mumble"));
 				u.setHost(host);
 				u.setPort(port);
 				u.setUserName(user);
 
-#if QT_VERSION >= 0x050000
 				QUrlQuery query;
 				query.addQueryItem(QLatin1String("version"), QLatin1String("1.2.0"));
 				u.setQuery(query);
-#else
-				u.addQueryItem(QLatin1String("version"), QLatin1String("1.2.0"));
-#endif
 
 				QStringList path;
-				Channel *c = ClientUser::get(g.uiSession)->cChannel;
+				Channel *c = ClientUser::get(Global::get().uiSession)->cChannel;
 				while (c->cParent) {
 					path.prepend(c->qsName);
 					c = c->cParent;
@@ -194,7 +200,7 @@ void SocketRPCClient::processXml() {
 				QUrl u = iter.value().toUrl();
 				if (u.isValid() && u.scheme() == QLatin1String("mumble")) {
 					OpenURLEvent *oue = new OpenURLEvent(u);
-					qApp->postEvent(g.mw, oue);
+					qApp->postEvent(Global::get().mw, oue);
 					ack = true;
 				}
 			} else {
@@ -209,7 +215,7 @@ void SocketRPCClient::processXml() {
 
 		for (iter = qmReply.constBegin(); iter != qmReply.constEnd(); ++iter) {
 			QDomElement elem = replydoc.createElement(iter.key());
-			QDomText text = replydoc.createTextNode(iter.value().toString());
+			QDomText text    = replydoc.createTextNode(iter.value().toString());
 			elem.appendChild(text);
 			reply.appendChild(elem);
 		}
@@ -230,9 +236,9 @@ SocketRPC::SocketRPC(const QString &basename, QObject *p) : QObject(p) {
 #else
 	{
 		QString xdgRuntimePath = QProcessEnvironment::systemEnvironment().value(QLatin1String("XDG_RUNTIME_DIR"));
-		QDir xdgRuntimeDir = QDir(xdgRuntimePath);
+		QDir xdgRuntimeDir     = QDir(xdgRuntimePath);
 
-		if (! xdgRuntimePath.isNull() && xdgRuntimeDir.exists()) {
+		if (!xdgRuntimePath.isNull() && xdgRuntimeDir.exists()) {
 			pipepath = xdgRuntimeDir.absoluteFilePath(basename + QLatin1String("Socket"));
 		} else {
 			pipepath = QDir::home().absoluteFilePath(QLatin1String(".") + basename + QLatin1String("Socket"));
@@ -248,10 +254,10 @@ SocketRPC::SocketRPC(const QString &basename, QObject *p) : QObject(p) {
 	}
 #endif
 
-	if (! qlsServer->listen(pipepath)) {
+	if (!qlsServer->listen(pipepath)) {
 		qWarning() << "SocketRPC: Listen failed";
 		delete qlsServer;
-		qlsServer = NULL;
+		qlsServer = nullptr;
 	} else {
 		connect(qlsServer, SIGNAL(newConnection()), this, SLOT(newConnection()));
 	}
@@ -260,13 +266,13 @@ SocketRPC::SocketRPC(const QString &basename, QObject *p) : QObject(p) {
 void SocketRPC::newConnection() {
 	while (true) {
 		QLocalSocket *qls = qlsServer->nextPendingConnection();
-		if (! qls)
+		if (!qls)
 			break;
 		new SocketRPCClient(qls, this);
 	}
 }
 
-bool SocketRPC::send(const QString &basename, const QString &request, const QMap<QString, QVariant> &param) {
+bool SocketRPC::send(const QString &basename, const QString &request, const QMap< QString, QVariant > &param) {
 	QString pipepath;
 
 #ifdef Q_OS_WIN
@@ -274,9 +280,9 @@ bool SocketRPC::send(const QString &basename, const QString &request, const QMap
 #else
 	{
 		QString xdgRuntimePath = QProcessEnvironment::systemEnvironment().value(QLatin1String("XDG_RUNTIME_DIR"));
-		QDir xdgRuntimeDir = QDir(xdgRuntimePath);
+		QDir xdgRuntimeDir     = QDir(xdgRuntimePath);
 
-		if (! xdgRuntimePath.isNull() && xdgRuntimeDir.exists()) {
+		if (!xdgRuntimePath.isNull() && xdgRuntimeDir.exists()) {
 			pipepath = xdgRuntimeDir.absoluteFilePath(basename + QLatin1String("Socket"));
 		} else {
 			pipepath = QDir::home().absoluteFilePath(QLatin1String(".") + basename + QLatin1String("Socket"));
@@ -286,15 +292,15 @@ bool SocketRPC::send(const QString &basename, const QString &request, const QMap
 
 	QLocalSocket qls;
 	qls.connectToServer(pipepath);
-	if (! qls.waitForConnected(1000)) {
+	if (!qls.waitForConnected(1000)) {
 		return false;
 	}
 
 	QDomDocument requestdoc;
 	QDomElement req = requestdoc.createElement(request);
-	for (QMap<QString, QVariant>::const_iterator iter = param.constBegin(); iter != param.constEnd(); ++iter) {
+	for (QMap< QString, QVariant >::const_iterator iter = param.constBegin(); iter != param.constEnd(); ++iter) {
 		QDomElement elem = requestdoc.createElement(iter.key());
-		QDomText text = requestdoc.createTextNode(iter.value().toString());
+		QDomText text    = requestdoc.createTextNode(iter.value().toString());
 		elem.appendChild(text);
 		req.appendChild(elem);
 	}
@@ -303,7 +309,7 @@ bool SocketRPC::send(const QString &basename, const QString &request, const QMap
 	qls.write(requestdoc.toByteArray());
 	qls.flush();
 
-	if (! qls.waitForReadyRead(2000)) {
+	if (!qls.waitForReadyRead(2000)) {
 		return false;
 	}
 
@@ -313,7 +319,7 @@ bool SocketRPC::send(const QString &basename, const QString &request, const QMap
 	replydoc.setContent(qba);
 
 	QDomElement succ = replydoc.firstChildElement(QLatin1String("reply"));
-	succ = succ.firstChildElement(QLatin1String("succeeded"));
+	succ             = succ.firstChildElement(QLatin1String("succeeded"));
 	if (succ.isNull())
 		return false;
 

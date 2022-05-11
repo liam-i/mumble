@@ -1,19 +1,26 @@
-// Copyright 2005-2017 The Mumble Developers. All rights reserved.
+// Copyright 2009-2022 The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
 
-#include "mumble_pch.hpp"
-
 #include "CustomElements.h"
 
 #include "ClientUser.h"
-#include "Global.h"
-#include "MainWindow.h"
 #include "Log.h"
+#include "MainWindow.h"
+#include "Utils.h"
+#include "Global.h"
 
+#include <QMimeData>
+#include <QtCore/QTimer>
+#include <QtGui/QAbstractTextDocumentLayout>
+#include <QtGui/QClipboard>
+#include <QtGui/QContextMenuEvent>
+#include <QtGui/QKeyEvent>
+#include <QtWidgets/QScrollBar>
 
-LogTextBrowser::LogTextBrowser(QWidget *p) : QTextBrowser(p) {}
+LogTextBrowser::LogTextBrowser(QWidget *p) : QTextBrowser(p) {
+}
 
 void LogTextBrowser::resizeEvent(QResizeEvent *e) {
 	scrollLogToBottom();
@@ -80,6 +87,7 @@ void ChatbarTextEdit::contextMenuEvent(QContextMenuEvent *qcme) {
 	QMenu *menu = createStandardContextMenu();
 
 	QAction *action = new QAction(tr("Paste and &Send") + QLatin1Char('\t'), menu);
+	action->setShortcut(Qt::CTRL + Qt::Key_Shift + Qt::Key_V);
 	action->setEnabled(!QApplication::clipboard()->text().isEmpty());
 	connect(action, SIGNAL(triggered()), this, SLOT(pasteAndSend_triggered()));
 	if (menu->actions().count() > 6)
@@ -91,9 +99,23 @@ void ChatbarTextEdit::contextMenuEvent(QContextMenuEvent *qcme) {
 	delete menu;
 }
 
+void ChatbarTextEdit::dragEnterEvent(QDragEnterEvent *evt) {
+	inFocus(true);
+	evt->acceptProposedAction();
+}
+
+void ChatbarTextEdit::dragMoveEvent(QDragMoveEvent *evt) {
+	inFocus(true);
+	evt->acceptProposedAction();
+}
+
 void ChatbarTextEdit::dropEvent(QDropEvent *evt) {
 	inFocus(true);
-	QTextEdit::dropEvent(evt);
+	if (sendImagesFromMimeData(evt->mimeData())) {
+		evt->acceptProposedAction();
+	} else {
+		QTextEdit::dropEvent(evt);
+	}
 }
 
 ChatbarTextEdit::ChatbarTextEdit(QWidget *p) : QTextEdit(p), iHistoryIndex(-1) {
@@ -105,6 +127,7 @@ ChatbarTextEdit::ChatbarTextEdit(QWidget *p) : QTextEdit(p), iHistoryIndex(-1) {
 
 	bDefaultVisible = true;
 	setDefaultText(tr("<center>Type chat message here</center>"));
+	setAcceptDrops(true);
 }
 
 QSize ChatbarTextEdit::minimumSizeHint() const {
@@ -112,9 +135,11 @@ QSize ChatbarTextEdit::minimumSizeHint() const {
 }
 
 QSize ChatbarTextEdit::sizeHint() const {
-	QSize sh = QTextEdit::sizeHint();
-	sh.setHeight(static_cast<qint32>(document()->documentLayout()->documentSize().height()));
-	const_cast<ChatbarTextEdit *>(this)->setMaximumHeight(sh.height());
+	QSize sh                 = QTextEdit::sizeHint();
+	const int minHeight      = minimumSizeHint().height();
+	const int documentHeight = document()->documentLayout()->documentSize().height();
+	sh.setHeight(std::max(minHeight, documentHeight));
+	const_cast< ChatbarTextEdit * >(this)->setMaximumHeight(sh.height());
 	return sh;
 }
 
@@ -145,13 +170,69 @@ void ChatbarTextEdit::setDefaultText(const QString &new_default, bool force) {
 	}
 }
 
+void ChatbarTextEdit::insertFromMimeData(const QMimeData *source) {
+	if (!sendImagesFromMimeData(source)) {
+		QTextEdit::insertFromMimeData(source);
+	}
+}
+
+bool ChatbarTextEdit::sendImagesFromMimeData(const QMimeData *source) {
+	if ((source->hasImage() || source->hasUrls())) {
+		if (Global::get().bAllowHTML) {
+			if (source->hasImage()) {
+				// Process the image pasted onto the chatbar.
+				QImage image = qvariant_cast< QImage >(source->imageData());
+				if (emitPastedImage(image)) {
+					return true;
+				} else {
+					Global::get().l->log(Log::Information, tr("Unable to send image: too large."));
+					return false;
+				}
+
+			} else if (source->hasUrls()) {
+				// Process the files dropped onto the chatbar. URLs here should be understood as the URIs of files.
+				QList< QUrl > urlList = source->urls();
+
+				int count = 0;
+				for (int i = 0; i < urlList.size(); ++i) {
+					QString path = urlList[i].toLocalFile();
+					QImage image(path);
+
+					if (image.isNull())
+						continue;
+					if (emitPastedImage(image)) {
+						++count;
+					} else {
+						Global::get().l->log(Log::Information, tr("Unable to send image %1: too large.").arg(path));
+					}
+				}
+
+				return (count > 0);
+			}
+		} else {
+			Global::get().l->log(Log::Information, tr("This server does not allow sending images."));
+		}
+	}
+	return false;
+}
+
+bool ChatbarTextEdit::emitPastedImage(QImage image) {
+	QString processedImage = Log::imageToImg(image, Global::get().uiImageLength);
+	if (processedImage.length() > 0) {
+		QString imgHtml = QLatin1String("<br />") + processedImage;
+		emit pastedImage(imgHtml);
+		return true;
+	}
+	return false;
+}
+
 bool ChatbarTextEdit::event(QEvent *evt) {
 	if (evt->type() == QEvent::ShortcutOverride) {
 		return false;
 	}
 
 	if (evt->type() == QEvent::KeyPress) {
-		QKeyEvent *kev = static_cast<QKeyEvent*>(evt);
+		QKeyEvent *kev = static_cast< QKeyEvent * >(evt);
 		if ((kev->key() == Qt::Key_Enter || kev->key() == Qt::Key_Return) && !(kev->modifiers() & Qt::ShiftModifier)) {
 			const QString msg = toPlainText();
 			if (!msg.isEmpty()) {
@@ -175,6 +256,10 @@ bool ChatbarTextEdit::event(QEvent *evt) {
 		} else if (kev->key() == Qt::Key_Down && kev->modifiers() == Qt::ControlModifier) {
 			historyDown();
 			return true;
+		} else if (kev->key() == Qt::Key_V && (kev->modifiers() & Qt::ControlModifier)
+				   && (kev->modifiers() & Qt::ShiftModifier)) {
+			pasteAndSend_triggered();
+			return true;
 		}
 	}
 	return QTextEdit::event(evt);
@@ -190,13 +275,12 @@ unsigned int ChatbarTextEdit::completeAtCursor() {
 	// Get an alphabetically sorted list of usernames
 	unsigned int id = 0;
 
-	QList<QString> qlsUsernames;
+	QList< QString > qlsUsernames;
 
-	if (ClientUser::c_qmUsers.empty()) return id;
-	foreach(ClientUser *usr, ClientUser::c_qmUsers) {
-		qlsUsernames.append(usr->qsName);
-	}
-	qSort(qlsUsernames);
+	if (ClientUser::c_qmUsers.empty())
+		return id;
+	foreach (ClientUser *usr, ClientUser::c_qmUsers) { qlsUsernames.append(usr->qsName); }
+	std::sort(qlsUsernames.begin(), qlsUsernames.end());
 
 	QString target = QString();
 	QTextCursor tc = textCursor();
@@ -206,23 +290,24 @@ unsigned int ChatbarTextEdit::completeAtCursor() {
 		tc.insertText(target);
 	} else {
 		bool bBaseIsName = false;
-		int iend = tc.position();
-		int istart = toPlainText().lastIndexOf(QLatin1Char(' '), iend - 1) + 1;
-		QString base = toPlainText().mid(istart, iend - istart);
+		int iend         = tc.position();
+		int istart       = toPlainText().lastIndexOf(QLatin1Char(' '), iend - 1) + 1;
+		QString base     = toPlainText().mid(istart, iend - istart);
 		tc.setPosition(istart);
 		tc.setPosition(iend, QTextCursor::KeepAnchor);
 
 		if (qlsUsernames.last() == base) {
 			bBaseIsName = true;
-			target = qlsUsernames.first();
+			target      = qlsUsernames.first();
 		} else {
 			if (qlsUsernames.contains(base)) {
 				// Prevent to complete to what's already there
-				while (qlsUsernames.takeFirst() != base) {}
+				while (qlsUsernames.takeFirst() != base) {
+				}
 				bBaseIsName = true;
 			}
 
-			foreach(QString name, qlsUsernames) {
+			foreach (QString name, qlsUsernames) {
 				if (name.startsWith(base, Qt::CaseInsensitive)) {
 					target = name;
 					break;
@@ -243,7 +328,7 @@ unsigned int ChatbarTextEdit::completeAtCursor() {
 	if (!target.isEmpty()) {
 		setTextCursor(tc);
 
-		foreach(ClientUser *usr, ClientUser::c_qmUsers) {
+		foreach (ClientUser *usr, ClientUser::c_qmUsers) {
 			if (usr->qsName == target) {
 				id = usr->uiSession;
 				break;
@@ -307,13 +392,13 @@ QSize DockTitleBar::sizeHint() const {
 }
 
 QSize DockTitleBar::minimumSizeHint() const {
-	return QSize(size,size);
+	return QSize(size, size);
 }
 
 bool DockTitleBar::eventFilter(QObject *, QEvent *evt) {
-	QDockWidget *qdw = qobject_cast<QDockWidget*>(parentWidget());
+	QDockWidget *qdw = qobject_cast< QDockWidget * >(parentWidget());
 
-	if (! this->isEnabled())
+	if (!this->isEnabled())
 		return false;
 
 	switch (evt->type()) {
@@ -321,17 +406,18 @@ bool DockTitleBar::eventFilter(QObject *, QEvent *evt) {
 		case QEvent::Enter:
 		case QEvent::MouseMove:
 		case QEvent::MouseButtonRelease: {
-				newsize = 0;
-				QPoint p = qdw->mapFromGlobal(QCursor::pos());
-				if ((p.x() >= iroundf(static_cast<float>(qdw->width()) * 0.1f + 0.5f)) && (p.x() < iroundf(static_cast<float>(qdw->width()) * 0.9f + 0.5f))  && (p.y() >= 0) && (p.y() < 15))
-					newsize = 15;
-				if (newsize > 0 && !qtTick->isActive())
-					qtTick->start(500);
-				else if ((newsize == size) && qtTick->isActive())
-					qtTick->stop();
-				else if (newsize == 0)
-					tick();
-			}
+			newsize  = 0;
+			QPoint p = qdw->mapFromGlobal(QCursor::pos());
+			if ((p.x() >= iroundf(static_cast< float >(qdw->width()) * 0.1f + 0.5f))
+				&& (p.x() < iroundf(static_cast< float >(qdw->width()) * 0.9f + 0.5f)) && (p.y() >= 0) && (p.y() < 15))
+				newsize = 15;
+			if (newsize > 0 && !qtTick->isActive())
+				qtTick->start(500);
+			else if ((newsize == size) && qtTick->isActive())
+				qtTick->stop();
+			else if (newsize == 0)
+				tick();
+		}
 		default:
 			break;
 	}
@@ -340,7 +426,7 @@ bool DockTitleBar::eventFilter(QObject *, QEvent *evt) {
 }
 
 void DockTitleBar::tick() {
-	QDockWidget *qdw = qobject_cast<QDockWidget*>(parentWidget());
+	QDockWidget *qdw = qobject_cast< QDockWidget * >(parentWidget());
 
 	if (newsize == size)
 		return;

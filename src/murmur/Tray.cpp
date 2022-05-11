@@ -1,17 +1,22 @@
-// Copyright 2005-2017 The Mumble Developers. All rights reserved.
+// Copyright 2007-2022 The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
 
-#include "murmur_pch.h"
-
 #include "Tray.h"
 
 #include "About.h"
+#include "LogEmitter.h"
 #include "Meta.h"
 #include "Server.h"
 #include "Version.h"
-#include "LogEmitter.h"
+
+#include <QtWidgets/QAction>
+#include <QtWidgets/QApplication>
+#include <QtWidgets/QMainWindow>
+#include <QtWidgets/QMenu>
+#include <QtWidgets/QMessageBox>
+#include <QtWidgets/QTextBrowser>
 
 Tray::Tray(QObject *p, LogEmitter *logger) : QObject(p) {
 	le = logger;
@@ -33,7 +38,7 @@ Tray::Tray(QObject *p, LogEmitter *logger) : QObject(p) {
 
 	// Can't construct a QMenu which decends from QObject, and qsti is a QObject.
 	// Qt bug?
-	qm = new QMenu(tr("Murmur"), NULL);
+	qm = new QMenu(tr("Murmur"), nullptr);
 	qm->addAction(qaShowLog);
 	qm->addSeparator();
 	qm->addAction(qaAbout);
@@ -49,18 +54,21 @@ Tray::Tray(QObject *p, LogEmitter *logger) : QObject(p) {
 
 void Tray::on_Tray_activated(QSystemTrayIcon::ActivationReason r) {
 	if (r == QSystemTrayIcon::Trigger) {
-		qsti->showMessage(tr("Murmur"), tr("%1 server running.").arg(meta->qhServers.count()), QSystemTrayIcon::Information, 5000);
+		qsti->showMessage(tr("Murmur"), tr("%1 server running.").arg(meta->qhServers.count()),
+						  QSystemTrayIcon::Information, 5000);
 	}
 }
 
 void Tray::on_Quit_triggered() {
-	if (QMessageBox::question(NULL, tr("Murmur"), tr("Are you sure you want to quit Murmur?"), QMessageBox::Yes | QMessageBox::No, QMessageBox::No) == QMessageBox::Yes) {
+	if (QMessageBox::question(nullptr, tr("Murmur"), tr("Are you sure you want to quit Murmur?"),
+							  QMessageBox::Yes | QMessageBox::No, QMessageBox::No)
+		== QMessageBox::Yes) {
 		qApp->quit();
 	}
 }
 
 void Tray::on_About_triggered() {
-	AboutDialog ad(NULL);
+	AboutDialog ad(nullptr);
 	ad.exec();
 }
 
@@ -74,7 +82,7 @@ void Tray::on_ShowLog_triggered() {
 
 	connect(le, SIGNAL(newLogEntry(const QString &)), tb, SLOT(append(const QString &)));
 
-	foreach(const QString &m, qlLog)
+	foreach (const QString &m, qlLog)
 		tb->append(m);
 
 	mw->show();

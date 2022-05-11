@@ -1,4 +1,4 @@
-// Copyright 2005-2017 The Mumble Developers. All rights reserved.
+// Copyright 2012-2022 The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -6,8 +6,8 @@
 #ifndef MUMBLE_MUMBLE_WASAPINOTIFICATIONCLIENT_H_
 #define MUMBLE_MUMBLE_WASAPINOTIFICATIONCLIENT_H_
 
-#include <QtCore/QObject>
 #include <QtCore/QMutex>
+#include <QtCore/QObject>
 #include <mmdeviceapi.h>
 
 /**
@@ -30,7 +30,7 @@ public:
 	void enlistDefaultDeviceAsUsed(LPCWSTR pwstrDefaultDevice);
 
 	void enlistDeviceAsUsed(LPCWSTR pwstrDevice);
-	void enlistDeviceAsUsed(const QString& device);
+	void enlistDeviceAsUsed(const QString &device);
 
 	void unlistDevice(LPCWSTR pwstrDevice);
 
@@ -40,23 +40,23 @@ public:
 	/**
 	 * @return Singleton instance reference.
 	 */
-	static WASAPINotificationClient& get();
+	static WASAPINotificationClient &get();
 
 private:
 	WASAPINotificationClient();
 	~WASAPINotificationClient() Q_DECL_OVERRIDE;
 
-	WASAPINotificationClient(const WASAPINotificationClient&);
-	WASAPINotificationClient& operator=(const WASAPINotificationClient&);
+	WASAPINotificationClient(const WASAPINotificationClient &);
+	WASAPINotificationClient &operator=(const WASAPINotificationClient &);
 
-	static WASAPINotificationClient& doGet();
+	static WASAPINotificationClient &doGet();
 	static void doGetOnce();
 
 	void restartAudio();
 
 	/* _fu = Non locking versions */
 	void _clearUsedDeviceLists();
-	void _enlistDeviceAsUsed(const QString& device);
+	void _enlistDeviceAsUsed(const QString &device);
 
 	QStringList usedDefaultDevices;
 	QStringList usedDevices;

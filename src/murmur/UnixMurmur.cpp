@@ -1,14 +1,33 @@
-// Copyright 2005-2017 The Mumble Developers. All rights reserved.
+// Copyright 2007-2022 The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
 
-#include "murmur_pch.h"
-
 #include "UnixMurmur.h"
 
-#include "Meta.h"
 #include "EnvUtils.h"
+#include "Meta.h"
+
+#include <QtCore/QAbstractEventDispatcher>
+#include <QtCore/QCoreApplication>
+#include <QtCore/QMutex>
+#include <QtCore/QSocketNotifier>
+#include <QtCore/QWaitCondition>
+
+#include <grp.h>
+#include <signal.h>
+
+#ifdef Q_OS_LINUX
+#	include <sys/capability.h>
+#	include <sys/prctl.h>
+#	include <sys/resource.h>
+#endif
+
+#include <sys/socket.h>
+#include <sys/stat.h>
+#include <unistd.h>
+
+#include <limits>
 
 QMutex *LimitTest::qm;
 QWaitCondition *LimitTest::qw;
@@ -28,11 +47,13 @@ void LimitTest::run() {
 void LimitTest::testLimits(QCoreApplication &a) {
 	QAbstractEventDispatcher *ed = QAbstractEventDispatcher::instance();
 	if (QLatin1String(ed->metaObject()->className()) != QLatin1String("QEventDispatcherGlib"))
-		qWarning("Not running with glib. While you may be able to open more descriptors, sockets above %d will not work", FD_SETSIZE);
+		qWarning(
+			"Not running with glib. While you may be able to open more descriptors, sockets above %d will not work",
+			FD_SETSIZE);
 	qWarning("Running descriptor test.");
 	int count;
-	QList<QFile *> ql;
-	for (count=0;count < 524288; ++count) {
+	QList< QFile * > ql;
+	for (count = 0; count < 524288; ++count) {
 		QFile *qf = new QFile(a.applicationFilePath());
 		if (qf->open(QIODevice::ReadOnly))
 			ql.prepend(qf);
@@ -41,13 +62,13 @@ void LimitTest::testLimits(QCoreApplication &a) {
 		if ((count & 1023) == 0)
 			qWarning("%d descriptors...", count);
 	}
-	foreach(QFile *qf, ql)
+	foreach (QFile *qf, ql)
 		delete qf;
 	ql.clear();
 	qCritical("Managed to open %d descriptors", count);
 
-	qm = new QMutex();
-	qw = new QWaitCondition();
+	qm      = new QMutex();
+	qw      = new QWaitCondition();
 	qstartw = new QWaitCondition();
 
 	int fdcount = count / 8;
@@ -55,16 +76,16 @@ void LimitTest::testLimits(QCoreApplication &a) {
 		if (fdcount > 1024)
 			fdcount = 1024;
 
-	QList<LimitTest *> qtl;
-	for (count=0;count < fdcount; ++count) {
+	QList< LimitTest * > qtl;
+	for (count = 0; count < fdcount; ++count) {
 		LimitTest *t = new LimitTest();
-		t->tid = count;
+		t->tid       = count;
 		qtl << t;
 		qm->lock();
 		t->start();
 		qstartw->wait(qm);
 		qm->unlock();
-		if (! t->isRunning())
+		if (!t->isRunning())
 			break;
 		if ((count & 511) == 0)
 			qWarning("%d threads...", count);
@@ -73,8 +94,8 @@ void LimitTest::testLimits(QCoreApplication &a) {
 	qw->wakeAll();
 	qm->unlock();
 
-	foreach(LimitTest *qt, qtl) {
-		if (! qt->wait(1000)) {
+	foreach (LimitTest *qt, qtl) {
+		if (!qt->wait(1000)) {
 			qWarning("Thread %d failed to terminate...", qt->tid);
 			qt->terminate();
 		}
@@ -89,7 +110,7 @@ int UnixMurmur::iTermFd[2];
 int UnixMurmur::iUsr1Fd[2];
 
 UnixMurmur::UnixMurmur() {
-	bRoot = true;
+	bRoot       = true;
 	logToSyslog = false;
 
 	if (geteuid() != 0 && getuid() != 0) {
@@ -104,7 +125,7 @@ UnixMurmur::UnixMurmur() {
 	if (::socketpair(AF_UNIX, SOCK_STREAM, 0, iUsr1Fd))
 		qFatal("Couldn't create USR1 socketpair");
 
-	qsnHup = new QSocketNotifier(iHupFd[1], QSocketNotifier::Read, this);
+	qsnHup  = new QSocketNotifier(iHupFd[1], QSocketNotifier::Read, this);
 	qsnTerm = new QSocketNotifier(iTermFd[1], QSocketNotifier::Read, this);
 	qsnUsr1 = new QSocketNotifier(iUsr1Fd[1], QSocketNotifier::Read, this);
 
@@ -118,21 +139,21 @@ UnixMurmur::UnixMurmur() {
 	sigemptyset(&hup.sa_mask);
 	hup.sa_flags = SA_RESTART;
 
-	if (sigaction(SIGHUP, &hup, NULL))
+	if (sigaction(SIGHUP, &hup, nullptr))
 		qFatal("Failed to install SIGHUP handler");
 
 	term.sa_handler = termSignalHandler;
 	sigemptyset(&term.sa_mask);
 	term.sa_flags = SA_RESTART;
 
-	if (sigaction(SIGTERM, &term, NULL))
+	if (sigaction(SIGTERM, &term, nullptr))
 		qFatal("Failed to install SIGTERM handler");
 
 	usr1.sa_handler = usr1SignalHandler;
 	sigemptyset(&usr1.sa_mask);
 	usr1.sa_flags = SA_RESTART;
 
-	if (sigaction(SIGUSR1, &usr1, NULL))
+	if (sigaction(SIGUSR1, &usr1, nullptr))
 		qFatal("Failed to install SIGUSR1 handler");
 
 	umask(S_IRWXO);
@@ -143,9 +164,9 @@ UnixMurmur::~UnixMurmur() {
 	delete qsnTerm;
 	delete qsnUsr1;
 
-	qsnHup = NULL;
-	qsnTerm = NULL;
-	qsnUsr1 = NULL;
+	qsnHup  = nullptr;
+	qsnTerm = nullptr;
+	qsnUsr1 = nullptr;
 
 	close(iHupFd[0]);
 	close(iHupFd[1]);
@@ -156,19 +177,19 @@ UnixMurmur::~UnixMurmur() {
 }
 
 void UnixMurmur::hupSignalHandler(int) {
-	char a = 1;
+	char a      = 1;
 	ssize_t len = ::write(iHupFd[0], &a, sizeof(a));
 	Q_UNUSED(len);
 }
 
 void UnixMurmur::termSignalHandler(int) {
-	char a = 1;
+	char a      = 1;
 	ssize_t len = ::write(iTermFd[0], &a, sizeof(a));
 	Q_UNUSED(len);
 }
 
 void UnixMurmur::usr1SignalHandler(int) {
-	char a = 1;
+	char a      = 1;
 	ssize_t len = ::write(iUsr1Fd[0], &a, sizeof(a));
 	Q_UNUSED(len);
 }
@@ -184,17 +205,17 @@ void UnixMurmur::handleSigHup() {
 
 	if (logToSyslog) {
 		qWarning("Caught SIGHUP, but logging to syslog");
-	} else if (! qfLog) {
+	} else if (!qfLog) {
 		qWarning("Caught SIGHUP, but logfile not in use");
-	} else if (! qfLog->isOpen()) {
+	} else if (!qfLog->isOpen()) {
 		qWarning("Caught SIGHUP, but logfile not in use -- interpreting as hint to quit");
 		QCoreApplication::instance()->quit();
 	} else {
 		qWarning("Caught SIGHUP, will reopen %s", qPrintable(Meta::mp.qsLogfile));
 
 		QFile *newlog = new QFile(Meta::mp.qsLogfile);
-		bool result = newlog->open(QIODevice::WriteOnly | QIODevice::Append | QIODevice::Text);
-		if (! result) {
+		bool result   = newlog->open(QIODevice::WriteOnly | QIODevice::Append | QIODevice::Text);
+		if (!result) {
 			delete newlog;
 			qCritical("Failed to reopen logfile for writing, keeping old log");
 		} else {
@@ -235,7 +256,8 @@ void UnixMurmur::handleSigUsr1() {
 		if (ok) {
 			qWarning("UnixMurmur: Done reloading SSL settings.");
 		} else {
-			qWarning("UnixMurmur: Failed to reload SSL settings. Server state is intact and fully operational. No configuration changes were made.");
+			qWarning("UnixMurmur: Failed to reload SSL settings. Server state is intact and fully operational. No "
+					 "configuration changes were made.");
 		}
 	}
 
@@ -246,7 +268,7 @@ void UnixMurmur::setuid() {
 	if (Meta::mp.uiUid != 0) {
 #ifdef Q_OS_DARWIN
 		qCritical("WARNING: You are launching murmurd as root on Mac OS X or Darwin. Murmur does not need "
-		          "special privileges to set itself up on these systems, so this behavior is highly discouraged.");
+				  "special privileges to set itself up on these systems, so this behavior is highly discouraged.");
 
 		if (::setgid(Meta::mp.uiGid) != 0)
 			qFatal("Failed to switch to gid %d", Meta::mp.uiGid);
@@ -255,8 +277,7 @@ void UnixMurmur::setuid() {
 
 		uid_t uid = getuid(), euid = geteuid();
 		gid_t gid = getgid(), egid = getegid();
-		if (uid == Meta::mp.uiUid && euid == Meta::mp.uiUid
-		        && gid == Meta::mp.uiGid && egid == Meta::mp.uiGid) {
+		if (uid == Meta::mp.uiUid && euid == Meta::mp.uiUid && gid == Meta::mp.uiGid && egid == Meta::mp.uiGid) {
 			qCritical("Successfully switched to uid %d", Meta::mp.uiUid);
 		} else
 			qFatal("Couldn't switch uid/gid.");
@@ -275,22 +296,23 @@ void UnixMurmur::setuid() {
 			// QDir::homePath is broken. It only looks at $HOME
 			// instead of getpwuid() so we have to set our home
 			// ourselves
-			EnvUtils::setenv(QLatin1String("HOME"), qPrintable(Meta::mp.qsHome));
+			EnvUtils::setenv(QLatin1String("HOME"), Meta::mp.qsHome);
 		}
 #endif
 	} else if (bRoot) {
-		qCritical("WARNING: You are running murmurd as root, without setting a uname in the ini file. This might be a security risk.");
+		qCritical("WARNING: You are running murmurd as root, without setting a uname in the ini file. This might be a "
+				  "security risk.");
 	}
 }
 
 void UnixMurmur::initialcap() {
 #ifdef Q_OS_LINUX
-	cap_value_t caps[] = {CAP_NET_ADMIN, CAP_SETUID, CAP_SETGID, CAP_CHOWN, CAP_SYS_RESOURCE, CAP_DAC_OVERRIDE };
+	cap_value_t caps[] = { CAP_NET_ADMIN, CAP_SETUID, CAP_SETGID, CAP_CHOWN, CAP_SYS_RESOURCE, CAP_DAC_OVERRIDE };
 
-	if (! bRoot)
+	if (!bRoot)
 		return;
 
-	int ncap = sizeof(caps)/sizeof(cap_value_t);
+	int ncap = sizeof(caps) / sizeof(cap_value_t);
 
 	if (geteuid() != 0)
 		ncap--;
@@ -311,23 +333,29 @@ void UnixMurmur::initialcap() {
 
 void UnixMurmur::finalcap() {
 #ifdef Q_OS_LINUX
-	cap_value_t caps[] = {CAP_SYS_RESOURCE};
+	cap_value_t caps[] = { CAP_SYS_RESOURCE };
 	struct rlimit r;
 
-	if (! bRoot)
+	if (!bRoot)
 		return;
 
 	if (getrlimit(RLIMIT_RTPRIO, &r) != 0) {
 		qCritical("Failed to get priority limits.");
 	} else {
-		qWarning("Resource limits were %ld %ld", r.rlim_cur, r.rlim_max);
+		using ulong_t = unsigned long long int;
+		static_assert(std::numeric_limits< ulong_t >::max() >= std::numeric_limits< rlim_t >::max(),
+					  "rlim_t is unexpectedly large");
+		ulong_t current = r.rlim_cur;
+		ulong_t max     = r.rlim_max;
+		qWarning("Resource limits were %llu %llu", current, max);
+
 		r.rlim_cur = r.rlim_max = 1;
 		if (setrlimit(RLIMIT_RTPRIO, &r) != 0) {
 			qCritical("Failed to set priority limits.");
 		}
 	}
 
-	int ncap = sizeof(caps)/sizeof(cap_value_t);
+	int ncap = sizeof(caps) / sizeof(cap_value_t);
 
 	cap_t c = cap_init();
 	cap_clear(c);
@@ -342,7 +370,7 @@ void UnixMurmur::finalcap() {
 #endif
 }
 
-const QString UnixMurmur::trySystemIniFiles(const QString& fname) {
+const QString UnixMurmur::trySystemIniFiles(const QString &fname) {
 	QString file = fname;
 	if (!file.isEmpty())
 		return file;
@@ -357,7 +385,7 @@ const QString UnixMurmur::trySystemIniFiles(const QString& fname) {
 	inipaths << QLatin1String("/etc/mumble-server.ini");
 	inipaths << QLatin1String("/etc/murmur.ini");
 
-	foreach(const QString &f, inipaths) {
+	foreach (const QString &f, inipaths) {
 		QFileInfo fi(f);
 		if (fi.exists() && fi.isReadable()) {
 			file = fi.absoluteFilePath();

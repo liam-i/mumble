@@ -1,4 +1,4 @@
-// Copyright 2005-2017 The Mumble Developers. All rights reserved.
+// Copyright 2007-2022 The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -11,25 +11,26 @@
 // All timer resolutions are in microseconds.
 
 class Timer {
-	protected:
-		quint64 uiStart;
-		static quint64 now();
-	public:
-		Timer(bool start = true);
-		bool isElapsed(quint64 us);
-		quint64 elapsed() const;
-		quint64 restart();
-		bool isStarted() const;
+protected:
+	quint64 uiStart;
+	static quint64 now();
 
-		/**
-		 * Compares the elapsed time, not the start time
-		 */
-		bool operator<(const Timer &other) const;
+public:
+	Timer(bool start = true);
+	bool isElapsed(quint64 us);
+	quint64 elapsed() const;
+	quint64 restart();
+	bool isStarted() const;
 
-		/**
-		 * Compares the elapsed time, not the start time
-		 */
-		bool operator>(const Timer &other) const;
+	/**
+	 * Compares the elapsed time, not the start time
+	 */
+	bool operator<(const Timer &other) const;
+
+	/**
+	 * Compares the elapsed time, not the start time
+	 */
+	bool operator>(const Timer &other) const;
 };
 
 #endif

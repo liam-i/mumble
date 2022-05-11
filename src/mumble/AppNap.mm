@@ -1,9 +1,11 @@
-// Copyright 2005-2017 The Mumble Developers. All rights reserved.
+// Copyright 2015-2022 The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
 
-#include "mumble_pch.hpp"
+#include "MumbleApplication.h"
+
+#include <Foundation/Foundation.h>
 
 #if MAC_OS_X_VERSION_MAX_ALLOWED >= 1070
 static bool appNapSuppressed = false;

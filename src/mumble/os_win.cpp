@@ -1,42 +1,53 @@
-// Copyright 2005-2017 The Mumble Developers. All rights reserved.
+// Copyright 2007-2022 The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
 
-#include "mumble_pch.hpp"
-
-#include <windows.h>
-#include <tlhelp32.h>
-#include <dbghelp.h>
-#include <emmintrin.h>
-#include <math.h>
-#include <float.h>
-#include <shobjidl.h>
-#include <shlobj.h>
-#include <share.h> // For share flags for _wfsopen
-
-#include "Global.h"
-#include "Version.h"
 #include "LogEmitter.h"
+#include "MumbleApplication.h"
+
+#ifdef _MSC_VER
+#	include "Utils.h"
+#endif
+
+#include "Version.h"
+#include "win.h"
+#include "Global.h"
+
+#include <cfloat>
+#include <cmath>
+
+#include <dbghelp.h>
+#include <tlhelp32.h>
+#include <wincrypt.h>
+
+#ifdef _MSC_VER
+#	include <delayimp.h>
+#endif
+
+#include <emmintrin.h>
+#include <share.h> // For share flags for _wfsopen
+#include <shlobj.h>
+#include <shobjidl.h>
 
 extern "C" {
-	void __cpuid(int a[4], int b);
-	void mumble_speex_init();
+void __cpuid(int a[4], int b);
+void mumble_speex_init();
 };
 
 #define DUMP_BUFFER_SIZE 1024
 
 static wchar_t wcCrashDumpPath[DUMP_BUFFER_SIZE];
-static FILE *fConsole = NULL;
+static FILE *fConsole = nullptr;
 
 static wchar_t wcComment[DUMP_BUFFER_SIZE] = L"";
 static MINIDUMP_USER_STREAM musComment;
 
-static QSharedPointer<LogEmitter> le;
+static QSharedPointer< LogEmitter > le;
 
 static int cpuinfo[4];
 
-bool bIsWin7 = false;
+bool bIsWin7     = false;
 bool bIsVistaSP1 = false;
 
 HWND mumble_mw_hwnd = 0;
@@ -45,16 +56,16 @@ static void mumbleMessageOutputQString(QtMsgType type, const QString &msg) {
 	char c;
 	switch (type) {
 		case QtDebugMsg:
-			c='D';
+			c = 'D';
 			break;
 		case QtWarningMsg:
-			c='W';
+			c = 'W';
 			break;
 		case QtFatalMsg:
-			c='F';
+			c = 'F';
 			break;
 		default:
-			c='X';
+			c = 'X';
 	}
 	QString date = QDateTime::currentDateTime().toString(QLatin1String("yyyy-MM-dd hh:mm:ss.zzz"));
 	QString fmsg = QString::fromLatin1("<%1>%2 %3").arg(c).arg(date).arg(msg);
@@ -63,27 +74,19 @@ static void mumbleMessageOutputQString(QtMsgType type, const QString &msg) {
 	OutputDebugStringA(qPrintable(fmsg));
 	le->addLogEntry(fmsg);
 	if (type == QtFatalMsg) {
-		::MessageBoxA(NULL, qPrintable(msg), "Mumble", MB_OK | MB_ICONERROR);
+		::MessageBoxA(nullptr, qPrintable(msg), "Mumble", MB_OK | MB_ICONERROR);
 		exit(0);
 	}
 }
 
-#if QT_VERSION < 0x050000
-static void mumbleMessageOutput(QtMsgType type, const char *msg) {
-	mumbleMessageOutputQString(type, QString::fromUtf8(msg));
-}
-#endif
-
-#if QT_VERSION >= 0x050000
 static void mumbleMessageOutputWithContext(QtMsgType type, const QMessageLogContext &ctx, const QString &msg) {
 	Q_UNUSED(ctx);
 	mumbleMessageOutputQString(type, msg);
 }
-#endif
 
-static LONG WINAPI MumbleUnhandledExceptionFilter(struct _EXCEPTION_POINTERS* ExceptionInfo) {
+static LONG WINAPI MumbleUnhandledExceptionFilter(struct _EXCEPTION_POINTERS *ExceptionInfo) {
 	MINIDUMP_EXCEPTION_INFORMATION i;
-	i.ThreadId = GetCurrentThreadId();
+	i.ThreadId          = GetCurrentThreadId();
 	i.ExceptionPointers = ExceptionInfo;
 
 	MINIDUMP_USER_STREAM_INFORMATION musi;
@@ -91,9 +94,13 @@ static LONG WINAPI MumbleUnhandledExceptionFilter(struct _EXCEPTION_POINTERS* Ex
 	musi.UserStreamCount = 1;
 	musi.UserStreamArray = &musComment;
 
-	HANDLE hMinidump = CreateFile(wcCrashDumpPath, GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+	HANDLE hMinidump =
+		CreateFile(wcCrashDumpPath, GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
 	if (hMinidump != INVALID_HANDLE_VALUE) {
-		if (MiniDumpWriteDump(GetCurrentProcess(), GetCurrentProcessId(), hMinidump, static_cast<MINIDUMP_TYPE>(MiniDumpWithIndirectlyReferencedMemory | MiniDumpWithThreadInfo), &i, &musi, NULL)) {
+		if (MiniDumpWriteDump(
+				GetCurrentProcess(), GetCurrentProcessId(), hMinidump,
+				static_cast< MINIDUMP_TYPE >(MiniDumpWithIndirectlyReferencedMemory | MiniDumpWithThreadInfo), &i,
+				&musi, nullptr)) {
 			FlushFileBuffers(hMinidump);
 		}
 		CloseHandle(hMinidump);
@@ -109,18 +116,16 @@ static void enableCrashOnCrashes() {
 	// See http://support.microsoft.com/kb/976038
 	//     http://www.altdevblogaday.com/2012/07/06/when-even-crashing-doesnt-work/
 
-	typedef BOOL (WINAPI *tGetPolicy)(LPDWORD lpFlags);
-	typedef BOOL (WINAPI *tSetPolicy)(DWORD dwFlags);
+	typedef BOOL(WINAPI * tGetPolicy)(LPDWORD lpFlags);
+	typedef BOOL(WINAPI * tSetPolicy)(DWORD dwFlags);
 
 	const DWORD PROCESS_CALLBACK_FILTER_ENABLED = 0x01;
 
 	HMODULE kernel32 = LoadLibrary(L"kernel32.dll");
 
-	tGetPolicy pGetPolicy = (tGetPolicy) GetProcAddress(kernel32,
-		"GetProcessUserModeExceptionPolicy");
+	tGetPolicy pGetPolicy = (tGetPolicy) GetProcAddress(kernel32, "GetProcessUserModeExceptionPolicy");
 
-	tSetPolicy pSetPolicy = (tSetPolicy) GetProcAddress(kernel32,
-		"SetProcessUserModeExceptionPolicy");
+	tSetPolicy pSetPolicy = (tSetPolicy) GetProcAddress(kernel32, "SetProcessUserModeExceptionPolicy");
 
 	if (pGetPolicy && pSetPolicy) { // Only available as of Vista SP2 / Win7 SP1
 		DWORD dwFlags;
@@ -135,21 +140,21 @@ static void enableCrashOnCrashes() {
 
 BOOL SetHeapOptions() {
 	HMODULE hLib = LoadLibrary(L"kernel32.dll");
-	if (hLib == NULL)
+	if (!hLib)
 		return FALSE;
 
-	typedef BOOL (WINAPI *HSI)(HANDLE, HEAP_INFORMATION_CLASS, PVOID, SIZE_T);
-	HSI pHsi = (HSI)GetProcAddress(hLib, "HeapSetInformation");
+	typedef BOOL(WINAPI * HSI)(HANDLE, HEAP_INFORMATION_CLASS, PVOID, SIZE_T);
+	HSI pHsi = (HSI) GetProcAddress(hLib, "HeapSetInformation");
 	if (!pHsi) {
 		FreeLibrary(hLib);
 		return FALSE;
 	}
 
 #ifndef HeapEnableTerminationOnCorruption
-#define HeapEnableTerminationOnCorruption (HEAP_INFORMATION_CLASS)1
+#	define HeapEnableTerminationOnCorruption (HEAP_INFORMATION_CLASS) 1
 #endif
 
-	BOOL fRet = (pHsi)(NULL, HeapEnableTerminationOnCorruption, NULL, 0) ? TRUE : FALSE;
+	BOOL fRet = (pHsi)(nullptr, HeapEnableTerminationOnCorruption, nullptr, 0) ? TRUE : FALSE;
 	if (hLib)
 		FreeLibrary(hLib);
 
@@ -175,7 +180,7 @@ FARPROC WINAPI delayHook(unsigned dliNotify, PDelayLoadInfo pdli) {
 	size_t offset = 0;
 
 	if (_stricmp(filename + length - 4, ".dll") == 0)
-		offset = length-4;
+		offset = length - 4;
 	else
 		offset = length;
 
@@ -216,7 +221,8 @@ void os_init() {
 
 #define MMXSSE 0x02800000
 	if ((cpuinfo[3] & MMXSSE) != MMXSSE) {
-		::MessageBoxA(NULL, "Mumble requires a SSE capable processor (Pentium 3 / Ahtlon-XP)", "Mumble", MB_OK | MB_ICONERROR);
+		::MessageBoxA(nullptr, "Mumble requires a SSE capable processor (Pentium 3 / Ahtlon-XP)", "Mumble",
+					  MB_OK | MB_ICONERROR);
 		exit(0);
 	}
 
@@ -224,9 +230,9 @@ void os_init() {
 	memset(&ovi, 0, sizeof(ovi));
 
 	ovi.dwOSVersionInfoSize = sizeof(ovi);
-	GetVersionEx(reinterpret_cast<OSVERSIONINFOW *>(&ovi));
-	bIsWin7 = (ovi.dwMajorVersion >= 7) || ((ovi.dwMajorVersion == 6) &&(ovi.dwBuildNumber >= 7100));
-	bIsVistaSP1 = (ovi.dwMajorVersion >= 7) || ((ovi.dwMajorVersion == 6) &&(ovi.dwBuildNumber >= 6001));
+	GetVersionEx(reinterpret_cast< OSVERSIONINFOW * >(&ovi));
+	bIsWin7     = (ovi.dwMajorVersion >= 7) || ((ovi.dwMajorVersion == 6) && (ovi.dwBuildNumber >= 7100));
+	bIsVistaSP1 = (ovi.dwMajorVersion >= 7) || ((ovi.dwMajorVersion == 6) && (ovi.dwBuildNumber >= 6001));
 
 #if _MSC_VER == 1800 && defined(_M_X64)
 	// Disable MSVC 2013's FMA-optimized math routines on Windows
@@ -249,23 +255,19 @@ void os_init() {
 	// Make a copy of the global LogEmitter, such that
 	// os_win.cpp doesn't have to consider the deletion
 	// of the Global object and its LogEmitter object.
-	le = g.le;
+	le = Global::get().le;
 
 #ifdef QT_NO_DEBUG
-	QString console = g.qdBasePath.filePath(QLatin1String("Console.txt"));
-	fConsole = _wfsopen(console.toStdWString().c_str(), L"a+", _SH_DENYWR);
+	QString console = Global::get().qdBasePath.filePath(QLatin1String("Console.txt"));
+	fConsole        = _wfsopen(console.toStdWString().c_str(), L"a+", _SH_DENYWR);
 
 	if (fConsole) {
-#if QT_VERSION >= 0x050000
 		qInstallMessageHandler(mumbleMessageOutputWithContext);
-#else
-		qInstallMsgHandler(mumbleMessageOutput);
-#endif
 	}
 
 	QString hash;
 	QFile f(qApp->applicationFilePath());
-	if (! f.open(QIODevice::ReadOnly)) {
+	if (!f.open(QIODevice::ReadOnly)) {
 		qWarning("VersionCheck: Failed to open binary");
 	} else {
 		QByteArray a = f.readAll();
@@ -276,14 +278,15 @@ void os_init() {
 		}
 	}
 
-	QString comment = QString::fromLatin1("%1\n%2\n%3").arg(QString::fromLatin1(MUMBLE_RELEASE), QString::fromLatin1(MUMTEXT(MUMBLE_VERSION_STRING)), hash);
+	QString comment = QString::fromLatin1("%1\n%2\n%3")
+						  .arg(QString::fromLatin1(MUMBLE_RELEASE), QString::fromLatin1(MUMTEXT(MUMBLE_VERSION)), hash);
 
 	wcscpy_s(wcComment, DUMP_BUFFER_SIZE, comment.toStdWString().c_str());
-	musComment.Type = CommentStreamW;
-	musComment.Buffer = wcComment;
-	musComment.BufferSize = static_cast<ULONG>(wcslen(wcComment) * sizeof(wchar_t));
+	musComment.Type       = CommentStreamW;
+	musComment.Buffer     = wcComment;
+	musComment.BufferSize = static_cast< ULONG >(wcslen(wcComment) * sizeof(wchar_t));
 
-	QString dump = g.qdBasePath.filePath(QLatin1String("mumble.dmp"));
+	QString dump = Global::get().qdBasePath.filePath(QLatin1String("mumble.dmp"));
 
 	QFileInfo fi(dump);
 	QDir::root().mkpath(fi.absolutePath());
@@ -293,34 +296,31 @@ void os_init() {
 
 #endif
 
-	g.qdBasePath.mkpath(QLatin1String("Snapshots"));
+	Global::get().qdBasePath.mkpath(QLatin1String("Snapshots"));
 	if (bIsWin7)
 		SetCurrentProcessExplicitAppUserModelID(L"net.sourceforge.mumble.Mumble");
 }
 
-DWORD WinVerifySslCert(const QByteArray& cert) {
+DWORD WinVerifySslCert(const QByteArray &cert) {
 	DWORD errorStatus = -1;
 
-	PCCERT_CONTEXT certContext = CertCreateCertificateContext(X509_ASN_ENCODING, reinterpret_cast<const BYTE*>(cert.constData()), cert.size());
+	PCCERT_CONTEXT certContext = CertCreateCertificateContext(
+		X509_ASN_ENCODING, reinterpret_cast< const BYTE * >(cert.constData()), cert.size());
 	if (!certContext) {
 		return errorStatus;
 	}
 
-	LPCSTR usage[] = {
-		szOID_PKIX_KP_SERVER_AUTH,
-		szOID_SERVER_GATED_CRYPTO,
-		szOID_SGC_NETSCAPE
-	};
+	LPCSTR usage[] = { szOID_PKIX_KP_SERVER_AUTH, szOID_SERVER_GATED_CRYPTO, szOID_SGC_NETSCAPE };
 
 	CERT_CHAIN_PARA chainParameter;
 	memset(&chainParameter, 0, sizeof(CERT_CHAIN_PARA));
-	chainParameter.cbSize = sizeof(CERT_CHAIN_PARA);
-	chainParameter.RequestedUsage.dwType = USAGE_MATCH_TYPE_OR;
-	chainParameter.RequestedUsage.Usage.cUsageIdentifier = ARRAYSIZE(usage);
-	chainParameter.RequestedUsage.Usage.rgpszUsageIdentifier = const_cast<LPSTR *>(usage);
+	chainParameter.cbSize                                    = sizeof(CERT_CHAIN_PARA);
+	chainParameter.RequestedUsage.dwType                     = USAGE_MATCH_TYPE_OR;
+	chainParameter.RequestedUsage.Usage.cUsageIdentifier     = ARRAYSIZE(usage);
+	chainParameter.RequestedUsage.Usage.rgpszUsageIdentifier = const_cast< LPSTR * >(usage);
 
-	PCCERT_CHAIN_CONTEXT chainContext = NULL;
-	CertGetCertificateChain(NULL, certContext, NULL, NULL, &chainParameter, 0, NULL, &chainContext);
+	PCCERT_CHAIN_CONTEXT chainContext = nullptr;
+	CertGetCertificateChain(nullptr, certContext, nullptr, nullptr, &chainParameter, 0, nullptr, &chainContext);
 
 	if (chainContext) {
 		errorStatus = chainContext->TrustStatus.dwErrorStatus;
@@ -331,3 +331,7 @@ DWORD WinVerifySslCert(const QByteArray& cert) {
 
 	return errorStatus;
 }
+
+#undef DUMP_BUFFER_SIZE
+#undef HeapEnableTerminationOnCorruption
+#undef MMXSSE

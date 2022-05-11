@@ -1,9 +1,10 @@
-// Copyright 2005-2017 The Mumble Developers. All rights reserved.
+// Copyright 2013-2022 The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
 
-#include <windows.h>
+#include "win.h"
+
 #include <shlwapi.h>
 #include <stdio.h>
 
@@ -16,7 +17,7 @@ typedef int (*DLL_DEBUG_MAIN)(int, char **);
 
 // Alert shows a fatal error dialog and waits for the user to click OK.
 static void Alert(LPCWSTR title, LPCWSTR msg) {
-	MessageBox(NULL, msg, title, MB_OK|MB_ICONERROR);
+	MessageBox(nullptr, msg, title, MB_OK | MB_ICONERROR);
 }
 
 // Get the current Mumble version built into this executable.
@@ -24,8 +25,8 @@ static void Alert(LPCWSTR title, LPCWSTR msg) {
 // string.
 static const std::wstring GetMumbleVersion() {
 #ifdef MUMBLE_VERSION
-# define MUMXTEXT(X) L#X
-# define MUMTEXT(X) MUMXTEXT(X)
+#	define MUMXTEXT(X) L#    X
+#	define MUMTEXT(X) MUMXTEXT(X)
 	const std::wstring version(MUMTEXT(MUMBLE_VERSION));
 	return version;
 #else
@@ -38,7 +39,7 @@ static const std::wstring GetMumbleVersion() {
 static const std::wstring GetExecutableDirPath() {
 	wchar_t path[MAX_PATH];
 
-	if (GetModuleFileNameW(NULL, path, MAX_PATH) == 0)
+	if (GetModuleFileNameW(nullptr, path, MAX_PATH) == 0)
 		return std::wstring();
 
 	if (!PathRemoveFileSpecW(path))
@@ -160,13 +161,13 @@ int main(int argc, char **argv) {
 		return -2;
 	}
 
-	HMODULE dll = LoadLibraryExW(abs_dll_path.c_str(), NULL, LOAD_WITH_ALTERED_SEARCH_PATH);
+	HMODULE dll = LoadLibraryExW(abs_dll_path.c_str(), nullptr, LOAD_WITH_ALTERED_SEARCH_PATH);
 	if (!dll) {
 		Alert(L"Mumble Launcher Error -3", L"Failed to load mumble_app.dll.");
 		return -3;
 	}
 
-	DLL_DEBUG_MAIN entry_point = reinterpret_cast<DLL_DEBUG_MAIN>(GetProcAddress(dll, "main"));
+	DLL_DEBUG_MAIN entry_point = reinterpret_cast< DLL_DEBUG_MAIN >(GetProcAddress(dll, "main"));
 	if (!entry_point) {
 		Alert(L"Mumble Launcher Error -4", L"Unable to find expected entry point ('main') in mumble_app.dll.");
 		return -4;
@@ -176,7 +177,7 @@ int main(int argc, char **argv) {
 
 	return rc;
 }
-#endif  // DEBUG
+#endif // DEBUG
 
 int APIENTRY wWinMain(HINSTANCE instance, HINSTANCE prevInstance, wchar_t *cmdArg, int cmdShow) {
 	if (!ConfigureEnvironment()) {
@@ -203,20 +204,20 @@ int APIENTRY wWinMain(HINSTANCE instance, HINSTANCE prevInstance, wchar_t *cmdAr
 		return -2;
 	}
 
-	HMODULE dll = LoadLibraryExW(abs_dll_path.c_str(), NULL, LOAD_WITH_ALTERED_SEARCH_PATH);
+	HMODULE dll = LoadLibraryExW(abs_dll_path.c_str(), nullptr, LOAD_WITH_ALTERED_SEARCH_PATH);
 	if (!dll) {
 		Alert(L"Mumble Launcher Error -3", L"Failed to load mumble_app.dll.");
 		return -3;
 	}
 
-	DLL_MAIN entry_point = reinterpret_cast<DLL_MAIN>(GetProcAddress(dll, "MumbleMain"));
+	DLL_MAIN entry_point = reinterpret_cast< DLL_MAIN >(GetProcAddress(dll, "MumbleMain"));
 	if (!entry_point) {
 		Alert(L"Mumble Launcher Error -4", L"Unable to find expected entry point ('MumbleMain') in mumble_app.dll.");
 		return -4;
 	}
 
 	(void) cmdArg;
-	int rc = entry_point(instance, prevInstance, NULL, cmdShow);
+	int rc = entry_point(instance, prevInstance, nullptr, cmdShow);
 
 	return rc;
 }

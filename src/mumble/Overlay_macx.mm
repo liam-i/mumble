@@ -1,16 +1,19 @@
-// Copyright 2005-2017 The Mumble Developers. All rights reserved.
+// Copyright 2010-2022 The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
 
-#include "mumble_pch.hpp"
+#include "OverlayConfig.h"
+#include "OverlayClient.h"
+#include "MainWindow.h"
+#include "Global.h"
+
+#include <QtCore/QProcess>
+#include <QtCore/QXmlStreamReader>
+
 #import <ScriptingBridge/ScriptingBridge.h>
 #import <Cocoa/Cocoa.h>
 #include <Carbon/Carbon.h>
-#include "OverlayConfig.h"
-#include "OverlayClient.h"
-#include "Global.h"
-#include "MainWindow.h"
 
 extern "C" {
 #include <xar/xar.h>
@@ -21,6 +24,15 @@ extern "C" {
 
 static NSString *MumbleOverlayLoaderBundle = @"/Library/ScriptingAdditions/MumbleOverlay.osax";
 static NSString *MumbleOverlayLoaderBundleIdentifier = @"net.sourceforge.mumble.OverlayScriptingAddition";
+
+pid_t getForegroundProcessId() {
+	NSRunningApplication *app = [[NSWorkspace sharedWorkspace] frontmostApplication];
+	if (app) {
+		return [app processIdentifier];
+	}
+
+	return 0;
+}
 
 @interface OverlayInjectorMac : NSObject {
 	BOOL active;
@@ -76,20 +88,20 @@ static NSString *MumbleOverlayLoaderBundleIdentifier = @"net.sourceforge.mumble.
 
 		QString qsBundleIdentifier = QString::fromUtf8([bundleId UTF8String]);
 
-		switch (g.s.os.oemOverlayExcludeMode) {
+		switch (Global::get().s.os.oemOverlayExcludeMode) {
 			case OverlaySettings::LauncherFilterExclusionMode: {
 				qWarning("Overlay_macx: launcher filter mode not implemented on macOS, allowing everything");
 				overlayEnabled = YES;
 				break;
 			}
 			case OverlaySettings::WhitelistExclusionMode: {
-				if (g.s.os.qslWhitelist.contains(qsBundleIdentifier)) {
+				if (Global::get().s.os.qslWhitelist.contains(qsBundleIdentifier)) {
 					overlayEnabled = YES;
 				}
 				break;
 			}
 			case OverlaySettings::BlacklistExclusionMode: {
-				if (! g.s.os.qslBlacklist.contains(qsBundleIdentifier)) {
+				if (! Global::get().s.os.qslBlacklist.contains(qsBundleIdentifier)) {
 					overlayEnabled = YES;
 				}
 				break;
@@ -103,7 +115,7 @@ static NSString *MumbleOverlayLoaderBundleIdentifier = @"net.sourceforge.mumble.
 
 			// This timeout is specified in 'ticks'.
 			// A tick defined as: "[...] (a tick is approximately 1/60 of a second) [...]" in the
-			// Apple Event Manager Refernce documentation:
+			// Apple Event Manager Reference documentation:
 			// http://developer.apple.com/legacy/mac/library/documentation/Carbon/reference/Event_Manager/Event_Manager.pdf
 			[app setTimeout:10*60];
 
@@ -161,8 +173,11 @@ void Overlay::platformInit() {
 	d = new OverlayPrivateMac(this);
 }
 
-void Overlay::setActive(bool act) {
-	static_cast<OverlayPrivateMac *>(d)->setActive(act);
+void Overlay::setActiveInternal(bool act) {
+	if (d) {
+		/// Only act if the private instance has been created already
+		static_cast<OverlayPrivateMac *>(d)->setActive(act);
+	}
 }
 
 bool OverlayConfig::supportsInstallableOverlay() {
@@ -190,7 +205,7 @@ void OverlayClient::updateMouse() {
 	QPixmap pm = qmCursors.value(csShape);
 	if (pm.isNull()) {
 		NSImage *img = [cursor image];
-		CGImageRef cgimg = NULL;
+		CGImageRef cgimg = nullptr;
 		NSArray *reps = [img representations];
 		for (NSUInteger i = 0; i < [reps count]; i++) {
 			NSImageRep *rep = [reps objectAtIndex:i];
@@ -198,13 +213,6 @@ void OverlayClient::updateMouse() {
 				cgimg = [(NSBitmapImageRep *)rep CGImage];
 			}
 		}
-
-#if QT_VERSION < 0x050000
-		if (cgimg) {
-			pm = QPixmap::fromMacCGImageRef(cgimg);
-			qmCursors.insert(csShape, pm);
-		}
-#endif
 	}
 
 	NSPoint p = [cursor hotSpot];
@@ -228,7 +236,7 @@ bool OverlayConfig::isInstalled() {
 
 	// Determine if the installed bundle is correctly installed (i.e. it's loadable)
 	NSBundle *bundle = [NSBundle bundleWithPath:MumbleOverlayLoaderBundle];
-	ret = [bundle preflightAndReturnError:NULL];
+	ret = [bundle preflightAndReturnError:nullptr];
 
 	// Do the bundle identifiers match?
 	if (ret) {
@@ -239,37 +247,37 @@ bool OverlayConfig::isInstalled() {
 }
 
 // Check whether this installer installs something 'newer' than what we already have.
-// Also checks whether the new installer is compatiable with the current version of
+// Also checks whether the new installer is compatible with the current version of
 // Mumble.
 static bool isInstallerNewer(QString path, NSUInteger curVer) {
-	xar_t pkg = NULL;
-	xar_iter_t iter = NULL;
-	xar_file_t file = NULL;
-	char *data = NULL;
+	xar_t pkg = nullptr;
+	xar_iter_t iter = nullptr;
+	xar_file_t file = nullptr;
+	char *data = nullptr;
 	size_t size = 0;
 	bool ret = false;
 	QString qsMinVer, qsOverlayVer;
 
 	pkg = xar_open(path.toUtf8().constData(), READ);
-	if (pkg == NULL) {
+	if (!pkg) {
 		qWarning("isInstallerNewer: Unable to open pkg.");
 		goto out;
 	}
 
 	iter = xar_iter_new();
-	if (iter == NULL) {
+	if (!iter) {
 		qWarning("isInstallerNewer: Unable to allocate iter");
 		goto out;
 	}
 
 	file = xar_file_first(pkg, iter);
-	while (file != NULL) {
+	while (file) {
 		if (!strcmp(xar_get_path(file), "upgrade.xml"))
 			break;
 		file = xar_file_next(iter);
 	}
 
-	if (file != NULL) {
+	if (file) {
 		if (xar_extract_tobuffersz(pkg, file, &data, &size) == -1) {
 			goto out;
 		}
@@ -295,7 +303,7 @@ static bool isInstallerNewer(QString path, NSUInteger curVer) {
 		QRegExp rx(QLatin1String("(\\d+)\\.(\\d+)\\.(\\d+)"));
 		int major, minor, patch;
 		int minmajor, minminor, minpatch;
-		if (! rx.exactMatch(QLatin1String(MUMTEXT(MUMBLE_VERSION_STRING))))
+		if (! rx.exactMatch(QLatin1String(MUMTEXT(MUMBLE_VERSION))))
 			goto out;
 		major = rx.cap(1).toInt();
 		minor = rx.cap(2).toInt();
@@ -335,7 +343,7 @@ static bool authExec(AuthorizationRef ref, const char **argv) {
 	OSStatus err = noErr;
 	int pid = 0, status = 0;
 
-	err = AuthorizationExecuteWithPrivileges(ref, argv[0], kAuthorizationFlagDefaults, const_cast<char * const *>(&argv[1]), NULL);
+	err = AuthorizationExecuteWithPrivileges(ref, argv[0], kAuthorizationFlagDefaults, const_cast<char * const *>(&argv[1]), nullptr);
 	if (err == errAuthorizationSuccess) {
 		do {
 			pid = wait(&status);
@@ -383,10 +391,10 @@ bool OverlayConfig::uninstallFiles() {
 
 	// Perform uninstallation using Authorization Services. (Pops up a dialog asking for admin privileges)
 	if (bundleOk) {
-		err = AuthorizationCreate(NULL, kAuthorizationEmptyEnvironment, kAuthorizationFlagDefaults, &auth);
+		err = AuthorizationCreate(nullptr, kAuthorizationEmptyEnvironment, kAuthorizationFlagDefaults, &auth);
 		if (err == errAuthorizationSuccess) {
 			QByteArray tmp = QString::fromLatin1("/tmp/%1_Uninstalled_MumbleOverlay.osax").arg(QDateTime::currentMSecsSinceEpoch()).toLocal8Bit();
-			const char *remove[] = { "/bin/mv", [MumbleOverlayLoaderBundle UTF8String], tmp.constData(), NULL };
+			const char *remove[] = { "/bin/mv", [MumbleOverlayLoaderBundle UTF8String], tmp.constData(), nullptr };
 			ret = authExec(auth, remove);
 		}
 		AuthorizationFree(auth, kAuthorizationFlagDefaults);

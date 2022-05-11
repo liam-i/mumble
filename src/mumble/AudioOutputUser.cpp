@@ -1,22 +1,16 @@
-// Copyright 2005-2017 The Mumble Developers. All rights reserved.
+// Copyright 2011-2022 The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
 
-#include "mumble_pch.hpp"
-
 #include "AudioOutputUser.h"
 
-AudioOutputUser::AudioOutputUser(const QString& name) : qsName(name) {
-	iBufferSize = 0;
-	pfBuffer = NULL;
-	pfVolume = NULL;
-	fPos[0]=fPos[1]=fPos[2]=0.0;
+AudioOutputUser::AudioOutputUser(const QString &name) : qsName(name) {
 }
 
 AudioOutputUser::~AudioOutputUser() {
-	delete [] pfBuffer;
-	delete [] pfVolume;
+	delete[] pfBuffer;
+	delete[] pfVolume;
 }
 
 void AudioOutputUser::resizeBuffer(unsigned int newsize) {
@@ -24,9 +18,9 @@ void AudioOutputUser::resizeBuffer(unsigned int newsize) {
 		float *n = new float[newsize];
 		if (pfBuffer) {
 			memcpy(n, pfBuffer, sizeof(float) * iBufferSize);
-			delete [] pfBuffer;
+			delete[] pfBuffer;
 		}
-		pfBuffer = n;
+		pfBuffer    = n;
 		iBufferSize = newsize;
 	}
 }

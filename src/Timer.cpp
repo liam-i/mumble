@@ -1,9 +1,7 @@
-// Copyright 2005-2017 The Mumble Developers. All rights reserved.
+// Copyright 2007-2022 The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
-
-#include "murmur_pch.h"
 
 #include <boost/version.hpp>
 
@@ -19,7 +17,7 @@
 // vs.
 //  https://github.com/boostorg/system/blob/boost-1.55.0/include/boost/system/error_code.hpp#L515-L517
 #if BOOST_VERSION >= 105600 && !defined(__MINGW32__)
-# define USE_BOOST_CHRONO
+#	define USE_BOOST_CHRONO
 #endif
 
 #include "Timer.h"
@@ -45,7 +43,7 @@ bool Timer::isElapsed(quint64 us) {
 quint64 Timer::restart() {
 	quint64 n = now();
 	quint64 e = n - uiStart;
-	uiStart = n;
+	uiStart   = n;
 	return e;
 }
 
@@ -63,22 +61,22 @@ bool Timer::operator>(const Timer &other) const {
 
 #ifdef USE_BOOST_CHRONO
 // Ensure boost_system is header only.
-#define BOOST_ERROR_CODE_HEADER_ONLY
+#	define BOOST_ERROR_CODE_HEADER_ONLY
 // Ensure boost_chrono is header only.
-#define BOOST_CHRONO_DONT_PROVIDE_HYBRID_ERROR_HANDLING
-#define BOOST_CHRONO_HEADER_ONLY
+#	define BOOST_CHRONO_DONT_PROVIDE_HYBRID_ERROR_HANDLING
+#	define BOOST_CHRONO_HEADER_ONLY
 
-#include <boost/chrono.hpp>
+#	include <boost/chrono.hpp>
 
 quint64 Timer::now() {
 	using namespace boost::chrono;
-	time_point<steady_clock> now = steady_clock::now();
-	time_point<steady_clock>::duration epochDuration = now.time_since_epoch();
-	microseconds epochDurationUsec = duration_cast<microseconds>(epochDuration);
-	return static_cast<quint64>(epochDurationUsec.count());
+	time_point< steady_clock > now                     = steady_clock::now();
+	time_point< steady_clock >::duration epochDuration = now.time_since_epoch();
+	microseconds epochDurationUsec                     = duration_cast< microseconds >(epochDuration);
+	return static_cast< quint64 >(epochDurationUsec.count());
 }
 #elif defined(Q_OS_WIN)
-#include <windows.h>
+#	include "win.h"
 
 quint64 Timer::now() {
 	static double scale = 0;
@@ -93,14 +91,14 @@ quint64 Timer::now() {
 	QueryPerformanceCounter(&li);
 	quint64 e = li.QuadPart;
 
-	return static_cast<quint64>(e * scale);
+	return static_cast< quint64 >(e * scale);
 }
 #elif defined(Q_OS_UNIX)
-# include <errno.h>
-# include <string.h>
-# include <unistd.h>
-# include <sys/time.h>
-# if defined(_POSIX_TIMERS) && defined(_POSIX_MONOTONIC_CLOCK)
+#	include <errno.h>
+#	include <string.h>
+#	include <time.h>
+#	include <unistd.h>
+#	if defined(_POSIX_TIMERS) && defined(_POSIX_MONOTONIC_CLOCK)
 quint64 Timer::now() {
 	struct timespec ts;
 	if (clock_gettime(CLOCK_MONOTONIC, &ts) != 0) {
@@ -110,15 +108,15 @@ quint64 Timer::now() {
 	e += ts.tv_nsec / 1000LL;
 	return e;
 }
-# else
+#	else
 quint64 Timer::now() {
 	struct timeval tv;
-	gettimeofday(&tv, NULL);
-	quint64 e= tv.tv_sec * 1000000LL;
+	gettimeofday(&tv, nullptr);
+	quint64 e = tv.tv_sec * 1000000LL;
 	e += tv.tv_usec;
 	return e;
 }
-# endif
+#	endif
 #else
 quint64 Timer::now() {
 	static QTime ticker;

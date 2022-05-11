@@ -1,4 +1,4 @@
-// Copyright 2005-2017 The Mumble Developers. All rights reserved.
+// Copyright 2017-2022 The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -16,8 +16,8 @@
 /// Returns false on failure, and does not touch |parent|.
 static bool findParentProcessForChild(DWORD childpid, PROCESSENTRY32 *parent) {
 	DWORD parentpid = 0;
-	HANDLE hSnap = NULL;
-	bool done = false;
+	HANDLE hSnap    = nullptr;
+	bool done       = false;
 
 	PROCESSENTRY32 pe;
 	pe.dwSize = sizeof(pe);
@@ -60,7 +60,7 @@ static bool findParentProcessForChild(DWORD childpid, PROCESSENTRY32 *parent) {
 		while (ok) {
 			if (pe.th32ProcessID == parentpid) {
 				memcpy(parent, &pe, sizeof(pe));
-				ok = FALSE;
+				ok   = FALSE;
 				done = true;
 				break;
 			}
@@ -78,8 +78,8 @@ static bool findParentProcessForChild(DWORD childpid, PROCESSENTRY32 *parent) {
 /// Returns true on success, and fills out |module| with the proper MODULEENTRY32 entry.
 /// Returns false on failure, and does not touch |module|.
 static bool getModuleForParent(PROCESSENTRY32 *parent, MODULEENTRY32 *module) {
-	HANDLE hSnap = NULL;
-	bool done = false;
+	HANDLE hSnap = nullptr;
+	bool done    = false;
 
 	MODULEENTRY32 me;
 	me.dwSize = sizeof(me);
@@ -101,14 +101,15 @@ out:
 	return done;
 }
 
-bool GetProcessAncestorChain(std::vector<std::string> &absAncestorExeNames, std::vector<std::string> &ancestorExeNames) {
+bool GetProcessAncestorChain(std::vector< std::string > &absAncestorExeNames,
+							 std::vector< std::string > &ancestorExeNames) {
 	PROCESSENTRY32 parent;
 	MODULEENTRY32 module;
 
-	std::vector<std::string> abs;
-	std::vector<std::string> rel;
+	std::vector< std::string > abs;
+	std::vector< std::string > rel;
 
-	bool ok = true;
+	bool ok        = true;
 	DWORD childpid = GetCurrentProcessId();
 	while (ok) {
 		ok = findParentProcessForChild(childpid, &parent);
@@ -125,7 +126,7 @@ bool GetProcessAncestorChain(std::vector<std::string> &absAncestorExeNames, std:
 	ok = abs.size() > 0;
 	if (ok) {
 		absAncestorExeNames = abs;
-		ancestorExeNames = rel;
+		ancestorExeNames    = rel;
 	}
 
 	return ok;

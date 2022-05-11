@@ -1,4 +1,4 @@
-// Copyright 2005-2017 The Mumble Developers. All rights reserved.
+// Copyright 2016-2022 The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -6,8 +6,8 @@
 #ifndef MUMBLE_LICENSE_H_
 #define MUMBLE_LICENSE_H_
 
-#include <QString>
 #include <QList>
+#include <QString>
 
 /// LicenseInfo represents license information
 /// for a third-party library used by Mumble.
@@ -23,17 +23,17 @@ struct LicenseInfo {
 /// The License class contains static helpers for
 /// getting Mumble license/author information.
 class License {
-	public:
-		/// Get the Mumble license text (the LICENSE file)
-		static QString license();
-		/// Get the Mumble authors list (the AUTHORS file)
-		static QString authors();
-		/// Get a list of license information for Mumble's
-		/// third-party libraries.
-		static QList<LicenseInfo> thirdPartyLicenses();
-		/// Get a human-readable, ready-to-print combination
-		/// of all of Mumble's third-party license information.
-		static QString printableThirdPartyLicenseInfo();
+public:
+	/// Get the Mumble license text (the LICENSE file)
+	static QString license();
+	/// Get the Mumble authors list (the AUTHORS file)
+	static QString authors();
+	/// Get a list of license information for Mumble's
+	/// third-party libraries.
+	static QList< LicenseInfo > thirdPartyLicenses();
+	/// Get a human-readable, ready-to-print combination
+	/// of all of Mumble's third-party license information.
+	static QString printableThirdPartyLicenseInfo();
 };
 
 #endif

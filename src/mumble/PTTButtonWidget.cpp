@@ -1,27 +1,23 @@
-// Copyright 2005-2017 The Mumble Developers. All rights reserved.
+// Copyright 2011-2022 The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
 
-#include "mumble_pch.hpp"
-
 #include "PTTButtonWidget.h"
-
 #include "Global.h"
 
-PTTButtonWidget::PTTButtonWidget(QWidget *p) :
-		QWidget(p) {
+PTTButtonWidget::PTTButtonWidget(QWidget *p) : QWidget(p) {
 	setupUi(this);
 
 	setWindowFlags(Qt::Tool | Qt::WindowStaysOnTopHint);
 
-	if (!g.s.qbaPTTButtonWindowGeometry.isEmpty()) {
-		restoreGeometry(g.s.qbaPTTButtonWindowGeometry);
+	if (!Global::get().s.qbaPTTButtonWindowGeometry.isEmpty()) {
+		restoreGeometry(Global::get().s.qbaPTTButtonWindowGeometry);
 	}
 }
 
 void PTTButtonWidget::closeEvent(QCloseEvent *e) {
-	g.s.qbaPTTButtonWindowGeometry = saveGeometry();
+	Global::get().s.qbaPTTButtonWindowGeometry = saveGeometry();
 	QWidget::closeEvent(e);
 }
 

@@ -1,32 +1,38 @@
-// Copyright 2005-2017 The Mumble Developers. All rights reserved.
+// Copyright 2012-2022 The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
 
-#include "mumble_pch.hpp"
-
 #include "CELTCodec.h"
 
 #include "Audio.h"
-#include "Version.h"
 #include "MumbleApplication.h"
+#include "Version.h"
 
 #ifdef Q_CC_GNU
-#define RESOLVE(var) { var = reinterpret_cast<__typeof__(var)>(qlCELT.resolve(#var)); bValid = bValid && (var != NULL); }
+#	define RESOLVE(var)                                                        \
+		{                                                                       \
+			var    = reinterpret_cast< __typeof__(var) >(qlCELT.resolve(#var)); \
+			bValid = bValid && var;                                             \
+		}
 #else
-#define RESOLVE(var) { * reinterpret_cast<void **>(&var) = static_cast<void *>(qlCELT.resolve(#var)); bValid = bValid && (var != NULL); }
+#	define RESOLVE(var)                                                                      \
+		{                                                                                     \
+			*reinterpret_cast< void ** >(&var) = static_cast< void * >(qlCELT.resolve(#var)); \
+			bValid                             = bValid && var;                               \
+		}
 #endif
 
 #ifdef Q_OS_WIN
 extern "C" {
-	void __cpuid(int a[4], int b);
+void __cpuid(int a[4], int b);
 };
 #endif
 
 CELTCodec::CELTCodec(const QString &celt_version) {
-	bValid = false;
-	cmMode = NULL;
-	qsVersion = celt_version;
+	bValid            = false;
+	cmMode            = nullptr;
+	qsVersion         = celt_version;
 	iBitstreamVersion = INT_MIN;
 	qlCELT.setLoadHints(QLibrary::ResolveAllSymbolsHint);
 
@@ -55,7 +61,7 @@ CELTCodec::CELTCodec(const QString &celt_version) {
 
 	alternatives << QString::fromLatin1("celt0.%1.dll").arg(celt_version);
 #endif
-	foreach(const QString &lib, alternatives) {
+	foreach (const QString &lib, alternatives) {
 		qlCELT.setFileName(MumbleApplication::instance()->applicationVersionRootPath() + QLatin1String("/") + lib);
 		if (qlCELT.load()) {
 			bValid = true;
@@ -70,8 +76,8 @@ CELTCodec::CELTCodec(const QString &celt_version) {
 		}
 #endif
 
-#ifdef PLUGIN_PATH
-		qlCELT.setFileName(QLatin1String(MUMTEXT(PLUGIN_PATH) "/") + lib);
+#ifdef MUMBLE_LIBRARY_PATH
+		qlCELT.setFileName(QLatin1String(MUMTEXT(MUMBLE_LIBRARY_PATH) "/") + lib);
 		if (qlCELT.load()) {
 			bValid = true;
 			break;
@@ -97,7 +103,7 @@ CELTCodec::CELTCodec(const QString &celt_version) {
 
 CELTCodec::~CELTCodec() {
 	if (cmMode)
-		celt_mode_destroy(const_cast<CELTMode *>(cmMode));
+		celt_mode_destroy(const_cast< CELTMode * >(cmMode));
 }
 
 bool CELTCodec::isValid() const {
@@ -106,7 +112,7 @@ bool CELTCodec::isValid() const {
 
 int CELTCodec::bitstreamVersion() const {
 	if (cmMode && iBitstreamVersion == INT_MIN)
-		celt_mode_info(cmMode, CELT_GET_BITSTREAM_VERSION, reinterpret_cast<celt_int32 *>(&iBitstreamVersion));
+		celt_mode_info(cmMode, CELT_GET_BITSTREAM_VERSION, reinterpret_cast< celt_int32 * >(&iBitstreamVersion));
 
 	return iBitstreamVersion;
 }
@@ -130,53 +136,24 @@ CELTCodec070::CELTCodec070(const QString &celt_version) : CELTCodec(celt_version
 	RESOLVE(celt_strerror);
 
 	if (bValid) {
-		cmMode = celt_mode_create(SAMPLE_RATE, SAMPLE_RATE / 100, NULL);
+		cmMode = celt_mode_create(SAMPLE_RATE, SAMPLE_RATE / 100, nullptr);
 	}
 }
 
 CELTEncoder *CELTCodec070::encoderCreate() {
-	return celt_encoder_create(cmMode, 1, NULL);
+	return celt_encoder_create(cmMode, 1, nullptr);
 }
 
 CELTDecoder *CELTCodec070::decoderCreate() {
-	return celt_decoder_create(cmMode, 1, NULL);
+	return celt_decoder_create(cmMode, 1, nullptr);
 }
 
 int CELTCodec070::encode(CELTEncoder *st, const celt_int16 *pcm, unsigned char *compressed, int nbCompressedBytes) {
-	return celt_encode(st, pcm, NULL, compressed, nbCompressedBytes);
+	return celt_encode(st, pcm, nullptr, compressed, nbCompressedBytes);
 }
 
 int CELTCodec070::decode_float(CELTDecoder *st, const unsigned char *data, int len, float *pcm) {
 	return celt_decode_float(st, data, len, pcm);
 }
 
-CELTCodec011::CELTCodec011(const QString &celt_version) : CELTCodec(celt_version) {
-	RESOLVE(celt_mode_create);
-	RESOLVE(celt_encoder_create_custom);
-	RESOLVE(celt_decoder_create_custom);
-	RESOLVE(celt_encode_float);
-	RESOLVE(celt_encode);
-	RESOLVE(celt_decode_float);
-	RESOLVE(celt_decode);
-	RESOLVE(celt_strerror);
-
-	if (bValid) {
-		cmMode = celt_mode_create(SAMPLE_RATE, SAMPLE_RATE / 100, NULL);
-	}
-}
-
-CELTEncoder *CELTCodec011::encoderCreate() {
-	return celt_encoder_create_custom(cmMode, 1, NULL);
-}
-
-CELTDecoder *CELTCodec011::decoderCreate() {
-	return celt_decoder_create_custom(cmMode, 1, NULL);
-}
-
-int CELTCodec011::encode(CELTEncoder *st, const celt_int16 *pcm, unsigned char *compressed, int nbCompressedBytes) {
-	return celt_encode(st, pcm, SAMPLE_RATE / 100, compressed, nbCompressedBytes);
-}
-
-int CELTCodec011::decode_float(CELTDecoder *st, const unsigned char *data, int len, float *pcm) {
-	return celt_decode_float(st, data, len, pcm, SAMPLE_RATE / 100);
-}
+#undef RESOLVE

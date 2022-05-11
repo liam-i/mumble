@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>446</width>
-    <height>334</height>
+    <width>650</width>
+    <height>500</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -48,17 +48,27 @@
      </column>
      <column>
       <property name="text">
+       <string>Highlight</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
        <string>Text-To-Speech</string>
       </property>
      </column>
      <column>
       <property name="text">
-       <string>Soundfile</string>
+       <string>Limit</string>
       </property>
      </column>
      <column>
       <property name="text">
        <string>Path</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Soundfile</string>
       </property>
      </column>
     </widget>
@@ -69,17 +79,62 @@
       <string>Text To Speech</string>
      </property>
      <layout class="QGridLayout">
-      <item row="0" column="0">
-       <widget class="QLabel" name="qlVolume">
-        <property name="text">
-         <string>Volume</string>
+      <item row="2" column="3">
+       <widget class="QCheckBox" name="qcbReadBackOwn">
+        <property name="toolTip">
+         <string>If enabled text messages you send will be read back to you with TTS</string>
         </property>
-        <property name="buddy">
-         <cstring>qsVolume</cstring>
+        <property name="text">
+         <string>Read back own messages</string>
         </property>
        </widget>
       </item>
-      <item row="0" column="1" colspan="3">
+      <item row="2" column="0">
+       <widget class="QLabel" name="qlThreshold">
+        <property name="text">
+         <string>Length threshold</string>
+        </property>
+        <property name="buddy">
+         <cstring>qsbThreshold</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="0">
+       <widget class="QCheckBox" name="qcbEnableTTS">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="toolTip">
+         <string>Click to enable Text-to-Speech</string>
+        </property>
+        <property name="text">
+         <string>Enable Text-to-Speech</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QSpinBox" name="qsbThreshold">
+        <property name="toolTip">
+         <string>Message length threshold for Text-To-Speech Engine</string>
+        </property>
+        <property name="whatsThis">
+         <string>&lt;b&gt;This is the length threshold used for the Text-To-Speech Engine.&lt;/b&gt;&lt;br /&gt;Messages longer than this limit will not be read aloud in their full length.</string>
+        </property>
+        <property name="buttonSymbols">
+         <enum>QAbstractSpinBox::PlusMinus</enum>
+        </property>
+        <property name="suffix">
+         <string> Characters</string>
+        </property>
+        <property name="maximum">
+         <number>5000</number>
+        </property>
+        <property name="singleStep">
+         <number>10</number>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1" colspan="3">
        <widget class="QSlider" name="qsVolume">
         <property name="toolTip">
          <string>Volume of Text-To-Speech Engine</string>
@@ -108,44 +163,32 @@
        </widget>
       </item>
       <item row="1" column="0">
-       <widget class="QLabel" name="qlThreshold">
+       <widget class="QLabel" name="qlVolume">
         <property name="text">
-         <string>Length threshold</string>
+         <string>Volume</string>
         </property>
         <property name="buddy">
-         <cstring>qsbThreshold</cstring>
+         <cstring>qsVolume</cstring>
         </property>
        </widget>
       </item>
-      <item row="1" column="1">
-       <widget class="QSpinBox" name="qsbThreshold">
+      <item row="0" column="1">
+       <widget class="QCheckBox" name="qcbNoScope">
         <property name="toolTip">
-         <string>Message length threshold for Text-To-Speech Engine</string>
-        </property>
-        <property name="whatsThis">
-         <string>&lt;b&gt;This is the length threshold used for the Text-To-Speech Engine.&lt;/b&gt;&lt;br /&gt;Messages longer than this limit will not be read aloud in their full length.</string>
-        </property>
-        <property name="buttonSymbols">
-         <enum>QAbstractSpinBox::PlusMinus</enum>
-        </property>
-        <property name="suffix">
-         <string> Characters</string>
-        </property>
-        <property name="maximum">
-         <number>5000</number>
-        </property>
-        <property name="singleStep">
-         <number>10</number>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="3">
-       <widget class="QCheckBox" name="qcbReadBackOwn">
-        <property name="toolTip">
-         <string>If enabled text messages you send will be read back to you with TTS</string>
+         <string>If enabled, TTS will not dictate the message scope.</string>
         </property>
         <property name="text">
-         <string>Read back own messages</string>
+         <string>Omit Message Scope</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="3">
+       <widget class="QCheckBox" name="qcbNoAuthor">
+        <property name="toolTip">
+         <string>If enabled, TTS will not dictate the message author.</string>
+        </property>
+        <property name="text">
+         <string>Omit Message Author</string>
         </property>
        </widget>
       </item>
@@ -153,9 +196,9 @@
     </widget>
    </item>
    <item>
-    <widget class="QGroupBox" name="qgbWhisper">
+    <widget class="QGroupBox" name="qgbMisc">
      <property name="title">
-      <string>Whisper</string>
+      <string>Misc.</string>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout">
       <item>
@@ -168,6 +211,46 @@
         </property>
        </widget>
       </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout">
+        <item>
+         <widget class="QLabel" name="label_2">
+          <property name="text">
+           <string>Limit notifications when there are more than</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QSpinBox" name="qsbMessageLimitUsers">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+          <property name="toolTip">
+           <string>Number of users that will trigger message limiting functionality.</string>
+          </property>
+          <property name="frame">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="label">
+          <property name="text">
+           <string>users on the server.</string>
+          </property>
+          <property name="buddy">
+           <cstring>qsbMessageLimitUsers</cstring>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
      </layout>
     </widget>
    </item>
@@ -177,10 +260,15 @@
       <string>Chat Log</string>
      </property>
      <layout class="QGridLayout" name="_2">
-      <item row="0" column="0">
-       <widget class="QLabel" name="qlMaxBlocks">
+      <item row="1" column="0">
+       <widget class="QCheckBox" name="qcb24HourClock">
+        <property name="toolTip">
+         <string>If checked the time at the beginning of a message will be displayed in the 24-hour format.
+
+The setting only applies for new messages, the already shown ones will retain the previous time format.</string>
+        </property>
         <property name="text">
-         <string>Maximum chat length</string>
+         <string>Use 24-hour clock</string>
         </property>
        </widget>
       </item>
@@ -203,6 +291,13 @@
         </property>
        </widget>
       </item>
+      <item row="0" column="0">
+       <widget class="QLabel" name="qlMaxBlocks">
+        <property name="text">
+         <string>Maximum chat length</string>
+        </property>
+       </widget>
+      </item>
       <item row="0" column="2">
        <spacer name="horizontalSpacer">
         <property name="orientation">
@@ -215,6 +310,26 @@
          </size>
         </property>
        </spacer>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="qlChatMessageMargins">
+        <property name="toolTip">
+         <string>How far individual messages are spaced out from one another.</string>
+        </property>
+        <property name="text">
+         <string>Message margins</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QSpinBox" name="qsbChatMessageMargins">
+        <property name="toolTip">
+         <string>How far individual messages are spaced out from one another.</string>
+        </property>
+        <property name="frame">
+         <bool>true</bool>
+        </property>
+       </widget>
       </item>
      </layout>
     </widget>

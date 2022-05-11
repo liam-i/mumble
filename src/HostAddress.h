@@ -1,4 +1,4 @@
-// Copyright 2005-2017 The Mumble Developers. All rights reserved.
+// Copyright 2017-2022 The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -6,9 +6,9 @@
 #ifndef MUMBLE_HOSTADDRESS_H_
 #define MUMBLE_HOSTADDRESS_H_
 
-#include <QtCore/QtGlobal>
-#include <QtCore/QString>
 #include <QtCore/QByteArray>
+#include <QtCore/QString>
+#include <QtCore/QtGlobal>
 #include <QtNetwork/QHostAddress>
 #include <QtNetwork/Q_IPV6ADDR>
 
@@ -30,8 +30,8 @@ struct HostAddress {
 	bool isV6() const;
 	bool isValid() const;
 
-	bool operator < (const HostAddress &) const;
-	bool operator == (const HostAddress &) const;
+	bool operator<(const HostAddress &) const;
+	bool operator==(const HostAddress &) const;
 
 	bool match(const HostAddress &, int bits) const;
 

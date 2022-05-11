@@ -1,18 +1,18 @@
-// Copyright 2005-2017 The Mumble Developers. All rights reserved.
+// Copyright 2017-2022 The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
 
-#include "murmur_pch.h"
-
 #include "UnresolvedServerAddress.h"
 
-UnresolvedServerAddress::UnresolvedServerAddress()
-	: port(0) {}
+#include <QtCore/QHash>
+
+UnresolvedServerAddress::UnresolvedServerAddress() : port(0) {
+}
 
 UnresolvedServerAddress::UnresolvedServerAddress(QString hostname_, unsigned short port_)
-	: hostname(hostname_.toLower())
-	, port(port_) {}
+	: hostname(hostname_.toLower()), port(port_) {
+}
 
 bool UnresolvedServerAddress::isValid() const {
 	return !hostname.isEmpty() && port != 0;

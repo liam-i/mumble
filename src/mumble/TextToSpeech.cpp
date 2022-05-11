@@ -1,22 +1,20 @@
-// Copyright 2005-2017 The Mumble Developers. All rights reserved.
+// Copyright 2017-2022 The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
-
-#include "mumble_pch.hpp"
 
 #include "TextToSpeech.h"
 
 #include <QTextToSpeech>
 
 class TextToSpeechPrivate {
-	public:
-		QTextToSpeech *m_tts;
-		QVector<QVoice> m_voices;
-		TextToSpeechPrivate();
-		~TextToSpeechPrivate();
-		void say(const QString &text);
-		void setVolume(int v);
+public:
+	QTextToSpeech *m_tts;
+	QVector< QVoice > m_voices;
+	TextToSpeechPrivate();
+	~TextToSpeechPrivate();
+	void say(const QString &text);
+	void setVolume(int v);
 };
 
 TextToSpeechPrivate::TextToSpeechPrivate() {
@@ -37,7 +35,7 @@ void TextToSpeechPrivate::setVolume(int volume) {
 
 TextToSpeech::TextToSpeech(QObject *p) : QObject(p) {
 	enabled = true;
-	d = new TextToSpeechPrivate();
+	d       = new TextToSpeechPrivate();
 }
 
 TextToSpeech::~TextToSpeech() {
