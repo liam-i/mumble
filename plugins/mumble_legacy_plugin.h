@@ -1,4 +1,4 @@
-// Copyright 2021-2022 The Mumble Developers. All rights reserved.
+// Copyright 2021-2023 The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -22,8 +22,8 @@
 
 #include <stdint.h>
 
-typedef uint32_t procid_t;
-typedef uint64_t procptr_t;
+using procid_t  = uint64_t;
+using procptr_t = uint64_t;
 
 #define LENGTH_OF(array) (sizeof(array) / sizeof((array)[0]))
 

@@ -1,4 +1,4 @@
-// Copyright 2021 The Mumble Developers. All rights reserved.
+// Copyright 2022-2023 The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -40,7 +40,8 @@ const SettingsKey DEAF_KEY                                    = { "deaf" };
 const SettingsKey TRANSMIT_MODE_KEY                           = { "transmit_mode" };
 const SettingsKey DOUBLE_PUSH_DELAY_KEY                       = { "double_push_delay" };
 const SettingsKey PTT_HOLD_KEY                                = { "ptt_hold" };
-const SettingsKey PLAY_TRANSMIT_CUE_KEY                       = { "play_transmit_cue" };
+const SettingsKey TRANSMIT_CUE_WHEN_PTT_KEY                   = { "transmit_cue_when_ptt" };
+const SettingsKey TRANSMIT_CUE_WHEN_VAD_KEY                   = { "transmit_cue_when_vad" };
 const SettingsKey TRANSMIT_CUE_START_KEY                      = { "transmit_cue_start" };
 const SettingsKey TRANSMIT_CUE_STOP_KEY                       = { "transmit_cue_stop" };
 const SettingsKey PLAY_MUTE_CUE_KEY                           = { "play_mute_cue" };
@@ -68,6 +69,8 @@ const SettingsKey EXCLUSIVE_INPUT_KEY                         = { "exclusive_inp
 const SettingsKey EXCLUSIVE_OUTPUT_KEY                        = { "exclusive_output" };
 const SettingsKey INPUT_SYSTEM_KEY                            = { "input_system" };
 const SettingsKey OUTPUT_SYSTEM_KEY                           = { "output_system" };
+const SettingsKey NOTIFICATION_VOLUME_KEY                     = { "notification_volume" };
+const SettingsKey CUE_VOLUME_KEY                              = { "cue_volume" };
 const SettingsKey RESTRICT_WHISPERS_TO_FRIENDS_KEY            = { "restrict_whispers_to_friends" };
 const SettingsKey NOTIFICATION_USER_LIMIT_KEY                 = { "notification_user_limit" };
 
@@ -167,7 +170,7 @@ const SettingsKey CHANNEL_EXPANSION_MODE_KEY           = { "channel_expansion_mo
 const SettingsKey CHANNEL_DRAG_MODE_KEY                = { "channel_drag_mode" };
 const SettingsKey USER_DRAG_MODE_KEY                   = { "user_drag_mode" };
 const SettingsKey ALWAYS_ON_TOP_KEY                    = { "always_on_top" };
-const SettingsKey ASK_ON_QUIT_KEY                      = { "ask_on_quit" };
+const SettingsKey QUIT_BEHAVIOR_KEY                    = { "quit_behavior" };
 const SettingsKey SHOW_DEVELOPER_MENU_KEY              = { "show_developer_menu" };
 const SettingsKey LOCK_LAYOUT_KEY                      = { "lock_layout" };
 const SettingsKey MINIMAL_VIEW_KEY                     = { "minimal_view" };
@@ -249,7 +252,6 @@ const SettingsKey RECORDING_MODE_KEY   = { "recording_mode" };
 const SettingsKey RECORDING_FORMAT_KEY = { "recording_format" };
 
 // Hidden
-const SettingsKey DISABLE_CELT_KEY                   = { "disable_celt" };
 const SettingsKey DISABLE_CONNECT_DIALOG_EDITING_KEY = { "disable_connect_dialog_editing" };
 
 // Overlay (win)

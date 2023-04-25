@@ -1,4 +1,4 @@
-// Copyright 2010-2022 The Mumble Developers. All rights reserved.
+// Copyright 2010-2023 The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -292,7 +292,7 @@ bool VoiceRecorder::ensureFileIsOpenedFor(SF_INFO &soundFileInfo, boost::shared_
 void VoiceRecorder::run() {
 	Q_ASSERT(!m_recording);
 
-	if (Global::get().sh && Global::get().sh->uiVersion < 0x010203)
+	if (Global::get().sh && Global::get().sh->m_version < Version::fromComponents(1, 2, 3))
 		return;
 
 	SF_INFO soundFileInfo = createSoundFileInfo();
@@ -305,7 +305,8 @@ void VoiceRecorder::run() {
 		m_sleepLock.lock();
 		m_sleepCondition.wait(&m_sleepLock);
 
-		if (!m_recording || m_abort || (Global::get().sh && Global::get().sh->uiVersion < 0x010203)) {
+		if (!m_recording || m_abort
+			|| (Global::get().sh && Global::get().sh->m_version < Version::fromComponents(1, 2, 3))) {
 			m_sleepLock.unlock();
 			break;
 		}

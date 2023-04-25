@@ -1,4 +1,4 @@
-// Copyright 2007-2022 The Mumble Developers. All rights reserved.
+// Copyright 2007-2023 The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -23,7 +23,9 @@
 #include <QVariant>
 #include <Qt>
 
+#include "Channel.h"
 #include "EchoCancelOption.h"
+#include "QuitBehavior.h"
 #include "SSL.h"
 #include "SearchDialog.h"
 
@@ -51,6 +53,20 @@ struct Shortcut {
 	bool isServerSpecific() const;
 	bool operator==(const Shortcut &) const;
 };
+
+struct ChannelTarget {
+	int channelID = Channel::ROOT_ID;
+
+	ChannelTarget() = default;
+	ChannelTarget(int id) : channelID(id) {}
+
+	friend bool operator==(const ChannelTarget &lhs, const ChannelTarget &rhs);
+	friend bool operator<(const ChannelTarget &lhs, const ChannelTarget &rhs);
+};
+
+Q_DECLARE_METATYPE(ChannelTarget)
+
+quint32 qHash(const ChannelTarget &);
 
 struct ShortcutTarget {
 	bool bCurrentSelection           = false;
@@ -204,7 +220,8 @@ struct Settings {
 	quint64 uiDoublePush     = 0;
 	quint64 pttHold          = 0;
 
-	bool bTxAudioCue        = false;
+	bool audioCueEnabledPTT = true;
+	bool audioCueEnabledVAD = false;
 	QString qsTxAudioCueOn  = cqsDefaultPushClickOn;
 	QString qsTxAudioCueOff = cqsDefaultPushClickOn;
 
@@ -216,6 +233,8 @@ struct Settings {
 	bool bDeaf                     = false;
 	bool bTTS                      = false;
 	bool bUserTop                  = true;
+	float notificationVolume       = 1.0f;
+	float cueVolume                = 1.0f;
 	bool bWhisperFriends           = false;
 	int iMessageLimitUserThreshold = 20;
 	bool bTTSMessageReadBack       = false;
@@ -390,7 +409,7 @@ struct Settings {
 	bool bMinimalView                    = false;
 	bool bHideFrame                      = false;
 	AlwaysOnTopBehaviour aotbAlwaysOnTop = OnTopNever;
-	bool bAskOnQuit                      = true;
+	QuitBehavior quitBehavior            = QuitBehavior::ALWAYS_ASK;
 	bool bEnableDeveloperMenu            = false;
 	bool bLockLayout                     = false;
 	bool bHideInTray                     = false;
@@ -507,9 +526,6 @@ struct Settings {
 	int iRecordingFormat          = 0;
 
 	// Special configuration options not exposed to UI
-
-	/// Codec kill-switch
-	bool bDisableCELT = false;
 
 	/// Removes the add and edit options in the connect dialog if set.
 	bool disableConnectDialogEditing = false;

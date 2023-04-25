@@ -1,4 +1,4 @@
-# Copyright 2021-2022 The Mumble Developers. All rights reserved.
+# Copyright 2021-2023 The Mumble Developers. All rights reserved.
 # Use of this source code is governed by a BSD-style license
 # that can be found in the LICENSE file at the root of the
 # Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -125,5 +125,6 @@ Download -source "https://github.com/oleg-shilo/wixsharp/releases/download/v1.19
 Write-Host "Exracting WixSharp to C:/WixSharp..."
 Invoke-Command 7z x "WixSharp.7z" "-oC:/WixSharp"
 
+choco install vswhere
 
 Write-Host "Build environment successfully installed"

@@ -1,4 +1,4 @@
-// Copyright 2021 The Mumble Developers. All rights reserved.
+// Copyright 2022-2023 The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -16,6 +16,10 @@ public:
 
 	float factor;
 	int dbAdjustment;
+
+	static float toFactor(int dbAdjustment);
+	static float toDBAdjustment(float factor);
+	static int toIntegerDBAdjustment(float factor);
 
 	static VolumeAdjustment fromFactor(float factor);
 	static VolumeAdjustment fromDBAdjustment(int dbAdjustment);

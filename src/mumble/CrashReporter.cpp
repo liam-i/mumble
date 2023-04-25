@@ -1,4 +1,4 @@
-// Copyright 2009-2022 The Mumble Developers. All rights reserved.
+// Copyright 2009-2023 The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -210,8 +210,8 @@ void CrashReporter::run() {
 										 "name=\"os\"\r\nContent-Transfer-Encoding: 8bit\r\n\r\n%2 %3\r\n")
 						 .arg(boundary, OSInfo::getOS(), OSInfo::getOSVersion());
 		QString ver = QString::fromLatin1("--%1\r\nContent-Disposition: form-data; "
-										  "name=\"ver\"\r\nContent-Transfer-Encoding: 8bit\r\n\r\n%2 %3\r\n")
-						  .arg(boundary, QLatin1String(MUMTEXT(MUMBLE_VERSION)), QLatin1String(MUMBLE_RELEASE));
+										  "name=\"ver\"\r\nContent-Transfer-Encoding: 8bit\r\n\r\n%2\r\n")
+						  .arg(boundary, Version::getRelease());
 		QString email = QString::fromLatin1("--%1\r\nContent-Disposition: form-data; "
 											"name=\"email\"\r\nContent-Transfer-Encoding: 8bit\r\n\r\n%2\r\n")
 							.arg(boundary, qleEmail->text());

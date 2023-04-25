@@ -1,4 +1,4 @@
-// Copyright 2021-2022 The Mumble Developers. All rights reserved.
+// Copyright 2021-2023 The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -361,7 +361,7 @@ inline const char *mumble_errorMessage(int16_t errorCode) {
 		case MUMBLE_EC_DATA_ID_TOO_LONG:
 			return "The given data ID is too long (exceeds limit)";
 		case MUMBLE_EC_API_REQUEST_TIMEOUT:
-			return "A blocking API call took too long and was this aborted (probably preventing a deadlock)";
+			return "A blocking API call took too long and was thus aborted (probably preventing a deadlock)";
 		case MUMBLE_EC_OPERATION_UNSUPPORTED_BY_SERVER:
 			return "The requested API operation depends on server-side functionality, not supported by the server "
 				   "you're connected to";

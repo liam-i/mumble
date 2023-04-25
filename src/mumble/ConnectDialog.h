@@ -1,4 +1,4 @@
-// Copyright 2007-2022 The Mumble Developers. All rights reserved.
+// Copyright 2007-2023 The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -54,7 +54,7 @@ protected:
 	void init();
 
 public:
-	quint32 uiVersion;
+	Version::full_t m_version;
 	quint32 uiPing;
 	quint32 uiPingSort;
 	quint32 uiUsers;
@@ -293,8 +293,8 @@ protected:
 	bool bAllowFilters;
 
 
-	void sendPing(const QHostAddress &, unsigned short port, Version::mumble_raw_version_t protocolVersion);
-	bool writePing(const QHostAddress &host, unsigned short port, Version::mumble_raw_version_t protocolVersion,
+	void sendPing(const QHostAddress &, unsigned short port, Version::full_t protocolVersion);
+	bool writePing(const QHostAddress &host, unsigned short port, Version::full_t protocolVersion,
 				   const Mumble::Protocol::PingData &pingData);
 
 	void initList();

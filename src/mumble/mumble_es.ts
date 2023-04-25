@@ -649,6 +649,10 @@ Este valor permite fijar el número máximo de usuarios permitidos en el canal. 
         <source>&lt;h3&gt;Mumble (%1)&lt;/h3&gt;&lt;p&gt;%3&lt;/p&gt;&lt;p&gt;&lt;b&gt;An Open Source, low-latency, high quality voice-chat utility&lt;/b&gt;&lt;/p&gt;&lt;p&gt;&lt;tt&gt;&lt;a href=&quot;%2&quot;&gt;%2&lt;/a&gt;&lt;/tt&gt;&lt;/p&gt;</source>
         <translation>&lt;h3&gt;Mumble (%1)&lt;/h3&gt;&lt;p&gt;%3&lt;/p&gt;&lt;p&gt;&lt;b&gt;Una aplicación de chat de voz de código abierto, baja latencia y alta calidad&lt;/b&gt;&lt;/p&gt;&lt;p&gt;&lt;tt&gt;&lt;a href=&quot;%2&quot;&gt;%2&lt;/a&gt;&lt;/tt&gt;&lt;/p&gt;</translation>
     </message>
+    <message>
+        <source>For a list of authors, please see &lt;a href=&quot;https://github.com/mumble-voip/mumble/graphs/contributors&quot;&gt;https://github.com/mumble-voip/mumble/graphs/contributors&lt;/a&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>AudioInput</name>
@@ -905,18 +909,6 @@ Este valor permite fijar el número máximo de usuarios permitidos en el canal. 
         <translation>Varios</translation>
     </message>
     <message>
-        <source>Audible audio cue when starting or stopping to transmit</source>
-        <translation>Señal auditiva perceptible al comenzar o terminar de transmitir</translation>
-    </message>
-    <message>
-        <source>&lt;b&gt;This enables transmission audio cues.&lt;/b&gt;&lt;br /&gt;Setting this will give you a short audio beep when you start and stop transmitting.</source>
-        <translation>&lt;b&gt;Habilita las señales auditivas.&lt;/b&gt;&lt;br /&gt;Habilitar esto le proporcionará un breve pitido al comenzar o terminar de transmitir.</translation>
-    </message>
-    <message>
-        <source>Audio cue</source>
-        <translation>Señal auditiva</translation>
-    </message>
-    <message>
         <source>Gets played when starting to transmit</source>
         <translation>Es reproducido al comenzar a transmitir</translation>
     </message>
@@ -1035,6 +1027,34 @@ Este valor permite fijar el número máximo de usuarios permitidos en el canal. 
     <message>
         <source>Pre&amp;view</source>
         <translation>Pre&amp;visualizar</translation>
+    </message>
+    <message>
+        <source>Audio cue when using...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Audible audio cue when starting or stopping to transmit using Push To Talk</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;b&gt;This enables transmission audio cues when using Push To Talk.&lt;/b&gt;&lt;br /&gt;Setting this will give you a short audio beep when you start and stop transmitting.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Push To Talk</source>
+        <translation type="unfinished">Presionar Para Hablar</translation>
+    </message>
+    <message>
+        <source>Audible audio cue when starting or stopping to transmit using Voice Activity</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;b&gt;This enables transmission audio cues when using Voice Activity.&lt;/b&gt;&lt;br /&gt;Setting this will give you a short audio beep when you start and stop transmitting.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Voice Activity</source>
+        <translation type="unfinished">Actividad Vocal</translation>
     </message>
 </context>
 <context>
@@ -1435,6 +1455,10 @@ Este valor permite fijar el número máximo de usuarios permitidos en el canal. 
     <message>
         <source> m</source>
         <translation> m</translation>
+    </message>
+    <message>
+        <source>Positional audio cannot work with mono output devices!</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -3034,7 +3058,7 @@ Are you sure you wish to replace your certificate?
     </message>
     <message>
         <source>C&amp;onnect</source>
-        <translation type="unfinished">&amp;Conectar</translation>
+        <translation>C&amp;onectar</translation>
     </message>
     <message>
         <source>Adding host %1</source>
@@ -3051,10 +3075,6 @@ Are you sure you wish to replace your certificate?
     <message>
         <source>Port</source>
         <translation>Puerto</translation>
-    </message>
-    <message>
-        <source>Addresses</source>
-        <translation>Direcciones</translation>
     </message>
     <message>
         <source>Website</source>
@@ -3087,6 +3107,14 @@ Are you sure you wish to replace your certificate?
     <message>
         <source>Version</source>
         <translation>Versión</translation>
+    </message>
+    <message>
+        <source>IPv4 address</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>IPv6 address</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -3411,8 +3439,8 @@ Sin esta opción habilitada, los métodos abreviados globales de Mumble en aplic
         <translation>Habilitar los métodos abreviados en las aplicaciones con privilegios</translation>
     </message>
     <message>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Mumble&apos;s Global Shortcuts system does currently not work in combination with the Wayland protocol. For more information, visit &lt;a href=&quot;https://github.com/mumble-voip/mumble/issues/5257&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0057ae;&quot;&gt;https://github.com/mumble-voip/mumble/issues/5257&lt;/span&gt;&lt;/a&gt;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;El sistema de Atajos Globales de Mumble actualmente no funciona junto con el protocolo de Wayland. Para más información, visita &lt;a href=&quot;https://github.com/mumble-voip/mumble/issues/5257&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0057ae;&quot;&gt;https://github.com/mumble-voip/mumble/issues/5257&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Mumble&apos;s Global Shortcuts system does currently not work properly in combination with the Wayland protocol. For more information, visit &lt;a href=&quot;https://github.com/mumble-voip/mumble/issues/5257&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0057ae;&quot;&gt;https://github.com/mumble-voip/mumble/issues/5257&lt;/span&gt;&lt;/a&gt;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -3685,13 +3713,6 @@ Este campo describe el tamaño de un dispositivo LCD. El tamaño se da, o bien e
     </message>
 </context>
 <context>
-    <name>ListenerLocalVolumeDialog</name>
-    <message>
-        <source>Adjusting local volume for listening to %1</source>
-        <translation>Ajustando volumen local para escuchar a %1</translation>
-    </message>
-</context>
-<context>
     <name>Log</name>
     <message>
         <source>Debug</source>
@@ -3857,6 +3878,10 @@ Este campo describe el tamaño de un dispositivo LCD. El tamaño se da, o bien e
     </message>
     <message>
         <source>Plugin message</source>
+        <translation>Mensaje del plugin</translation>
+    </message>
+    <message>
+        <source>[embedded content]</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -3944,10 +3969,6 @@ Este campo describe el tamaño de un dispositivo LCD. El tamaño se da, o bien e
     <message>
         <source>Text To Speech</source>
         <translation>Texto A Voz (TTS)</translation>
-    </message>
-    <message>
-        <source>Volume</source>
-        <translation>Volumen</translation>
     </message>
     <message>
         <source>Volume of Text-To-Speech Engine</source>
@@ -4063,7 +4084,7 @@ La configuración solo se aplica a los mensajes nuevos, los que ya se muestran c
     </message>
     <message>
         <source>Misc.</source>
-        <translation type="unfinished"></translation>
+        <translation>Misc.</translation>
     </message>
     <message>
         <source>Number of users that will trigger message limiting functionality.</source>
@@ -4100,6 +4121,50 @@ La configuración solo se aplica a los mensajes nuevos, los que ya se muestran c
     <message>
         <source>Click here to toggle limiting for %1 events.&lt;br /&gt;If checked, notifications for this event type will not be played when the user count on the server exceeds the set threshold.</source>
         <translation>Haz clic aquí para alternar el límite para %1 eventos.&lt;br /&gt;Si se marca, las notificaciones para este tipo de eventos no se reproducirán cuando el número de usuarios en el servidor exceda el umbral configurado.</translation>
+    </message>
+    <message>
+        <source>Message Volume</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Volume adjustment for audio cues</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;b&gt;This is the volume adjustment for audio cues.&lt;/b&gt;&lt;br /&gt;A value of 0 dB means no change to the sound sample.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source> dB</source>
+        <translation type="unfinished"> dB</translation>
+    </message>
+    <message>
+        <source>Text-to-Speech volume</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Notification volume adjustment</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Volume adjustment for notification sounds</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;b&gt;This is the volume adjustment for notification sounds.&lt;/b&gt;&lt;br /&gt;A value of 0 dB means no change to the sound sample.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Audio cue volume adjustment</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source> %</source>
+        <translation type="unfinished"> %</translation>
+    </message>
+    <message>
+        <source>Notification sound volume adjustment</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -4156,10 +4221,6 @@ La configuración solo se aplica a los mensajes nuevos, los que ya se muestran c
     <message>
         <source>Users above Channels</source>
         <translation>Usuarios encima de los canales</translation>
-    </message>
-    <message>
-        <source>&lt;b&gt;If set, will verify you want to quit if connected.&lt;/b&gt;</source>
-        <translation>&lt;b&gt;Si se marca, le pedirá confirmar que desea salir si está conectado.&lt;b&gt;</translation>
     </message>
     <message>
         <source>Show number of users in each channel</source>
@@ -4225,14 +4286,6 @@ La configuración solo se aplica a los mensajes nuevos, los que ya se muestran c
     <message>
         <source>Channel Dragging</source>
         <translation>Arrastre de canales</translation>
-    </message>
-    <message>
-        <source>Ask whether to close or minimize when quitting Mumble.</source>
-        <translation>Preguntar si cerrar o minimizar al salir de Mumble.</translation>
-    </message>
-    <message>
-        <source>Ask on quit while connected</source>
-        <translation>Preguntar al salir mientras esté conectado</translation>
     </message>
     <message>
         <source>Always On Top</source>
@@ -4500,7 +4553,7 @@ La configuración solo se aplica a los mensajes nuevos, los que ya se muestran c
     </message>
     <message>
         <source>Whether to show all of the local user&apos;s listeners (ears) in the TalkingUI (and thereby also the channels they are in). </source>
-        <translation type="unfinished"></translation>
+        <translation>Si mostrar todos los oyentes (oídos) del usuario local en la TalkingUI (y por tanto también los canales en los que están). </translation>
     </message>
     <message>
         <source>Show local user&apos;s listeners (ears)</source>
@@ -4537,6 +4590,38 @@ La configuración solo se aplica a los mensajes nuevos, los que ya se muestran c
     <message>
         <source>Action (Channel):</source>
         <translation>Acción (Canal):</translation>
+    </message>
+    <message>
+        <source>Quit Behavior</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This setting controls the behavior of clicking on the X in the top right corner.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This setting controls the behavior when closing Mumble. You can choose between being asked for confirmation, minimize instead if closing or just closing without any additional prompt. Optionally, the first two options can only apply when you are currently connected to a server (in that case, Mumble will quit without asking, when not connected to any server).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Always Ask</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ask when connected</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Always Minimize</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Minimize when connected</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Always Quit</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -4630,10 +4715,6 @@ La configuración solo se aplica a los mensajes nuevos, los que ya se muestran c
         <translation>Cerrar</translation>
     </message>
     <message>
-        <source>Mumble is currently connected to a server. Do you want to Close or Minimize it?</source>
-        <translation>Mumble está conectado a un servidor actualmente. ¿Desea cerrarlo o minimizarlo?</translation>
-    </message>
-    <message>
         <source>Mute Self</source>
         <comment>Global Shortcut</comment>
         <translation>Enmudecerse</translation>
@@ -4692,10 +4773,6 @@ La configuración solo se aplica a los mensajes nuevos, los que ya se muestran c
     <message>
         <source>URL scheme is not &apos;mumble&apos;</source>
         <translation>El esquema del URL no es &apos;mumble&apos;</translation>
-    </message>
-    <message>
-        <source>This version of Mumble can&apos;t handle URLs for Mumble version %1.%2.%3</source>
-        <translation>Esta versión de Mumble no puede manejar URLs para la versión %1.%2.%3 de Mumble</translation>
     </message>
     <message>
         <source>Connecting to %1</source>
@@ -5675,10 +5752,6 @@ De lo contrario, aborte y compruebe su certificado y nombre de usuario.</transla
         <translation>Servidor</translation>
     </message>
     <message>
-        <source>Failed to load Opus, it will not be available for audio encoding/decoding.</source>
-        <translation>No se pudo cargar Opus, no estará disponible para la codificación/decodificación del audio.</translation>
-    </message>
-    <message>
         <source>The server requests minimum client version %1</source>
         <translation>El servidor solicita que el cliente tenga la versión %1 como mínimo</translation>
     </message>
@@ -5725,10 +5798,6 @@ De lo contrario, aborte y compruebe su certificado y nombre de usuario.</transla
     <message>
         <source>%1 unmuted by %2.</source>
         <translation>%2 dio voz a %1.</translation>
-    </message>
-    <message>
-        <source>Unable to find matching CELT codecs with other clients. You will not be able to talk to all users.</source>
-        <translation>No se pudieron encontrar codecs CELT adecuados para los otros clientes. No podrá hablar a todos los usuarios.</translation>
     </message>
     <message>
         <source>You were muted and deafened by %1.</source>
@@ -5924,10 +5993,6 @@ De lo contrario, aborte y compruebe su certificado y nombre de usuario.</transla
         <translation>Esto le permite editar la lista de bans por IP del servidor.</translation>
     </message>
     <message>
-        <source>&amp;Filter on/off</source>
-        <translation>&amp;Filtro on/off</translation>
-    </message>
-    <message>
         <source>Enable or disable the filtering of select channels.
 By default all empty channels will be filtered.
 You can mark additional channels for filtering from
@@ -5948,14 +6013,6 @@ en el menu contextual del canal.</translation>
     <message>
         <source>Reset the avatar of the selected user.</source>
         <translation>Reiniciar el avatar del usuario seleccionado</translation>
-    </message>
-    <message>
-        <source>Locally adjust the user&apos;s speech volume.</source>
-        <translation>Ajustar de modo local el volumen de voz del usuario.</translation>
-    </message>
-    <message>
-        <source>Opens a dialog with a volume slider. Use this on other users in the same room.</source>
-        <translation>Abre un diálogo con una barra de volumen. Usa esto para otros usuarios en la misma sala.</translation>
     </message>
     <message>
         <source>&amp;Developer</source>
@@ -6000,10 +6057,6 @@ en el menu contextual del canal.</translation>
     <message>
         <source>&amp;Ban...</source>
         <translation>&amp;Prohibir</translation>
-    </message>
-    <message>
-        <source>Local Volume Adjustment...</source>
-        <translation>Ajuste Local de Volumen</translation>
     </message>
     <message>
         <source>Send &amp;Message...</source>
@@ -6112,10 +6165,6 @@ en el menu contextual del canal.</translation>
     <message>
         <source>Listen to this channel without joining it</source>
         <translation>Escuchar al canal sin entrar a éste</translation>
-    </message>
-    <message>
-        <source>Locally adjust the volume for this virtual ear.</source>
-        <translation>Ajustar de modo local el volumen para esta oreja virtual.</translation>
     </message>
     <message>
         <source>&amp;Listener</source>
@@ -6230,11 +6279,11 @@ en el menu contextual del canal.</translation>
     </message>
     <message>
         <source>Set a local nickname</source>
-        <translation type="unfinished"></translation>
+        <translation>Establecer un nombre de usuario local</translation>
     </message>
     <message>
         <source>Sets a local nickname for another user.</source>
-        <translation type="unfinished"></translation>
+        <translation>Establece un apodo local para otro usuario.</translation>
     </message>
     <message>
         <source>Usage: mumble rpc &lt;action&gt; [options]
@@ -6277,7 +6326,7 @@ Valid actions are:
     <message>
         <source>Toggles the visibility of the TalkingUI.</source>
         <comment>Global Shortcut</comment>
-        <translation type="unfinished">Activa/desactiva la visibilidad de la interfaz de uso del habla</translation>
+        <translation>Activa/desactiva la visibilidad de la interfaz TalkingUI.</translation>
     </message>
     <message>
         <source>Toggle the channel filter (Alt+F)</source>
@@ -6333,6 +6382,48 @@ Valid actions are:
         <translation>Archivo de configuración inválido detectado.</translation>
     </message>
     <message>
+        <source>You are currently in minimal view but not connected to a server. Use the context menu to connect to a server or disable minimal view.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Local Volume Adjustment:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This version of Mumble can&apos;t handle URLs for Mumble version %1</source>
+        <translation type="unfinished">Esta versión de Mumble no puede manejar URLs para la versión %1 de Mumble</translation>
+    </message>
+    <message>
+        <source>Listen to Channel</source>
+        <comment>Global Shortcut</comment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Toggles listening to the given channel.</source>
+        <comment>Global Shortcut</comment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Server instructed us to use an audio codec different from Opus, which is no longer supported. Disconnecting...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Are you sure you want to close Mumble? Perhaps you prefer to minimize it instead?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Remember this setting</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Channel &amp;Filter</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Pin Channel when Filtering</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Usage: mumble [options] [&lt;url&gt; | &lt;plugin_list&gt;]
 
 &lt;url&gt; specifies a URL to connect to after startup instead of showing
@@ -6345,7 +6436,7 @@ correct client version. It currently defaults to 1.2.0.
 
 Valid options are:
   -h, --help    Show this help text and exit.
-  -V, --version Print version information and exit
+  --version     Print version information and exit
   -m, --multiple
                 Allow multiple instances of the client to be started.
   -c, --config
@@ -6378,9 +6469,9 @@ Valid options are:
                 Print on stdout the echo cancellation queue state
                 (useful for debugging purposes)
   --translation-dir &lt;dir&gt;
-                Specifies an additional translation fir &lt;dir&gt; in which
-                Mumble will search for translation files that overwrite
-                the bundled ones
+                Specifies an additional translation directory &lt;dir&gt;
+                in which Mumble will search for translation files that
+                overwrite the bundled ones
                 Directories added this way have higher priority than
                 the default locations used otherwise
   --print-translation-dirs
@@ -7272,7 +7363,7 @@ Para actualizar estos ficheros a la última versión, haga clic en el botón inf
     </message>
     <message>
         <source>Unload the currently selected plugin. This will remove it from the plugin list for the current session.</source>
-        <translation type="unfinished"></translation>
+        <translation>Descargue el plugin actualmente seleccionado. Esto lo eliminará de la lista de plugins para la sesión actual.</translation>
     </message>
     <message>
         <source>Unload</source>
@@ -7292,7 +7383,7 @@ Para actualizar estos ficheros a la última versión, haga clic en el botón inf
     </message>
     <message>
         <source>Whether the positional audio feature of this plugin should be enabled</source>
-        <translation type="unfinished"></translation>
+        <translation>Si la función de audio posicional de este plugin debe ser activada</translation>
     </message>
     <message>
         <source>This plugin does not provide support for positional audio</source>
@@ -7543,10 +7634,6 @@ Para actualizar estos ficheros a la última versión, haga clic en el botón inf
 <context>
     <name>QObject</name>
     <message>
-        <source>CodecInit: Failed to load Opus, it will not be available for encoding/decoding audio.</source>
-        <translation>CodecInit: No se pudo cargar Opus, no estará disponible para la codificación/decodificación del audio.</translation>
-    </message>
-    <message>
         <source>Talking UI</source>
         <translation>Interfaz de uso del habla</translation>
     </message>
@@ -7731,6 +7818,10 @@ Puedes registrarlos otra vez.</translation>
     <message>
         <source>Access to the microphone was denied due to system restrictions. You will not be able to use the microphone in this session.</source>
         <translation>El acceso al micrófono se denegó debido a restricciones del sistema. No podrás utilizar el micrófono en esta sesión.</translation>
+    </message>
+    <message>
+        <source>Unknown Version</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -8103,6 +8194,10 @@ Puedes registrarlos otra vez.</translation>
         <source>Press to show button combination</source>
         <translation>Presione para mostrar la combinación de botones</translation>
     </message>
+    <message>
+        <source>&lt; Unknown Channel &gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ShortcutTargetDialog</name>
@@ -8323,10 +8418,6 @@ Una credencial de acceso es una cadena de texto que puede ser usada como contras
         <translation>Dirección IP</translation>
     </message>
     <message>
-        <source>CELT Versions</source>
-        <translation>Versiones CELT</translation>
-    </message>
-    <message>
         <source>Details...</source>
         <translation>Detalles...</translation>
     </message>
@@ -8449,6 +8540,10 @@ Una credencial de acceso es una cadena de texto que puede ser usada como contras
         <source>Ping deviation</source>
         <translation>Desviación del ping</translation>
     </message>
+    <message>
+        <source>Warning: The server seems to report a truncated protocol version for this client. (See: &lt;a href=&quot;https://github.com/mumble-voip/mumble/issues/5827/&quot;&gt;Issue #5827&lt;/a&gt;)</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>UserListModel</name>
@@ -8494,33 +8589,6 @@ Una credencial de acceso es una cadena de texto que puede ser usada como contras
     <message>
         <source>Adjusting local nickname for %1</source>
         <translation>Ajustando el apodo local para %1</translation>
-    </message>
-</context>
-<context>
-    <name>UserLocalVolumeDialog</name>
-    <message>
-        <source>Local volume for other users</source>
-        <translation>Volumen local para otros usuarios</translation>
-    </message>
-    <message>
-        <source>&lt;b&gt;Adjust the volume of other users locally&lt;/b&gt;&lt;br /&gt;Mumble supports adjusting the volume of other users locally.</source>
-        <translation>&lt;b&gt;Ajusta el volumen de otros usuarios de forma local&lt;/b&gt;&lt;br /&gt;Mumble permite ajustar el volumen de otros usuarios de forma local.</translation>
-    </message>
-    <message>
-        <source>Adjusting local volume for %1</source>
-        <translation>Ajustando volumen local en %1</translation>
-    </message>
-    <message>
-        <source> dB</source>
-        <translation> dB</translation>
-    </message>
-    <message>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Use the slider or the text box to change the volume of the user.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;font-weight:600;&quot;&gt;Attention!&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Increasing the volume of a user too much can permanently damage your hearing. It may also increase the background noise of the user.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Usa el slider o el texto para cambiar el volumen del usuario&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;font-weight:600;&quot;&gt;Atención!&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Aumentar demasiado el volumen de un usuario puede dañar tu capacidad auditiva. También podría incrementar el ruido de fondo del usuario&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
-    </message>
-    <message>
-        <source>User volume</source>
-        <translation>Volumen del usuario</translation>
     </message>
 </context>
 <context>
@@ -8665,6 +8733,10 @@ Una credencial de acceso es una cadena de texto que puede ser usada como contras
     <message>
         <source>Channel has access restrictions but you can enter nonetheless</source>
         <translation>Este canal tiene restricciones, pero puedes entrar de todas maneras</translation>
+    </message>
+    <message>
+        <source>Channel will be pinned when filtering is enabled</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -8928,6 +9000,17 @@ Por favor, contacte con el administrador de su servidor para más información.<
     <message>
         <source>Unable to start recording - the audio output is miconfigured (0Hz sample rate)</source>
         <translation>Imposible empezar a grabar - la salida de audio está mal configurada (frecuencia de muestreo de 0Hz)</translation>
+    </message>
+</context>
+<context>
+    <name>VolumeSliderWidgetAction</name>
+    <message>
+        <source>Slider for volume adjustment</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Volume Adjustment</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>

@@ -1,4 +1,4 @@
-// Copyright 2009-2022 The Mumble Developers. All rights reserved.
+// Copyright 2009-2023 The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -18,6 +18,7 @@
 #include "ServerHandler.h"
 #include "Usage.h"
 #include "User.h"
+#include "VolumeAdjustment.h"
 #include "Global.h"
 
 #include <QtCore/QMimeData>
@@ -254,6 +255,7 @@ UserModel::UserModel(QObject *p) : QAbstractItemModel(p) {
 	qiComment         = QIcon(QLatin1String("skin:comment.svg"));
 	qiCommentSeen     = QIcon(QLatin1String("skin:comment_seen.svg"));
 	qiFilter          = QIcon(QLatin1String("skin:filter.svg"));
+	qiPin             = QIcon(QLatin1String("skin:pin.svg"));
 	qiLock_locked     = QIcon(QLatin1String("skin:lock_locked.svg"));
 	qiLock_unlocked   = QIcon(QLatin1String("skin:lock_unlocked.svg"));
 	qiEar             = QIcon(QLatin1String("skin:ear.svg"));
@@ -539,8 +541,17 @@ QVariant UserModel::data(const QModelIndex &idx, int role) const {
 				if (!c->qbaDescHash.isEmpty())
 					l << (item->bCommentSeen ? qiCommentSeen : qiComment);
 
-				if (c->bFiltered)
-					l << (qiFilter);
+				switch (c->m_filterMode) {
+					case ChannelFilterMode::HIDE:
+						l << (qiFilter);
+						break;
+					case ChannelFilterMode::PIN:
+						l << (qiPin);
+						break;
+					case ChannelFilterMode::NORMAL:
+						// NOOP
+						break;
+				}
 
 				// Show a lock icon for enter restricted channels
 				if (c->hasEnterRestrictions.load()) {
@@ -702,8 +713,6 @@ QVariant UserModel::otherRoles(const QModelIndex &idx, int role) const {
 												   "valign=\"middle\">%5</td></tr>"
 												   "<tr><td><img src=\"skin:talking_muted.svg\" height=64 /></td><td "
 												   "valign=\"middle\">%6</td></tr>"
-												   "<tr><td><img src=\"skin:talking_muted.svg\" height=64 /></td><td "
-												   "valign=\"middle\">%6</td></tr>"
 												   "<tr><td><img src=\"skin:ear.svg\" height=64 /></td><td "
 												   "valign=\"middle\">%7</td></tr>"
 												   "</table>")
@@ -776,15 +785,18 @@ QVariant UserModel::otherRoles(const QModelIndex &idx, int role) const {
 												   "valign=\"middle\">%11</td></tr>"
 												   "<tr><td><img src=\"skin:filter.svg\" height=64 /></td><td "
 												   "valign=\"middle\">%12</td></tr>"
-												   "<tr><td><img src=\"skin:lock_locked.svg\" height=64 /></td><td "
+												   "<tr><td><img src=\"skin:pin.svg\" height=64 /></td><td "
 												   "valign=\"middle\">%13</td></tr>"
-												   "<tr><td><img src=\"skin:lock_unlocked.svg\" height=64 /></td><td "
+												   "<tr><td><img src=\"skin:lock_locked.svg\" height=64 /></td><td "
 												   "valign=\"middle\">%14</td></tr>"
+												   "<tr><td><img src=\"skin:lock_unlocked.svg\" height=64 /></td><td "
+												   "valign=\"middle\">%15</td></tr>"
 												   "</table>")
 							.arg(tr("This shows the flags the channel has, if any:"),
 								 tr("Channel has a new comment set (click to show)"),
 								 tr("Channel has a comment set, which you've already seen. (click to show)"),
 								 tr("Channel will be hidden when filtering is enabled"),
+								 tr("Channel will be pinned when filtering is enabled"),
 								 tr("Channel has access restrictions so that you can't enter it"),
 								 tr("Channel has access restrictions but you can enter nonetheless"));
 			}
@@ -1703,13 +1715,9 @@ void UserModel::on_channelListenerLocalVolumeAdjustmentChanged(int channelID, fl
 	emit dataChanged(idx, idx);
 }
 
-void UserModel::toggleChannelFiltered(Channel *c) {
+void UserModel::forceVisualUpdate(Channel *c) {
 	QModelIndex idx;
 	if (c) {
-		c->bFiltered = !c->bFiltered;
-
-		ServerHandlerPtr sh = Global::get().sh;
-		Global::get().db->setChannelFiltered(sh->qbaDigest, c->iId, c->bFiltered);
 		idx = index(c);
 	}
 
@@ -1972,15 +1980,16 @@ QString UserModel::createDisplayString(const ClientUser &user, bool isChannelLis
 		if (parentChannel && user.uiSession == Global::get().uiSession) {
 			// Only the listener of the local user can have a volume adjustment
 			volumeAdjustment =
-				Global::get().channelListenerManager->getListenerLocalVolumeAdjustment(parentChannel->iId);
+				Global::get()
+					.channelListenerManager->getListenerVolumeAdjustment(user.uiSession, parentChannel->iId)
+					.factor;
 		}
 	} else {
 		volumeAdjustment = user.getLocalVolumeAdjustments();
 	}
 
 	// Transform the adjustment into dB
-	// *2 == 6 dB
-	int localVolumeDecibel = std::round(log2f(volumeAdjustment) * 6);
+	int localVolumeDecibel = VolumeAdjustment::toIntegerDBAdjustment(volumeAdjustment);
 
 	// Create a friend-tag
 	QString friendTag;

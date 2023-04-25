@@ -1,4 +1,4 @@
-# Copyright 2020-2022 The Mumble Developers. All rights reserved.
+# Copyright 2020-2023 The Mumble Developers. All rights reserved.
 # Use of this source code is governed by a BSD-style license
 # that can be found in the LICENSE file at the root of the
 # Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -67,17 +67,15 @@ elseif(UNIX OR MINGW)
 	)
 
 	# Avoid "File too big" error
-	check_cxx_compiler_flag("Wa,-mbig-obj" COMPILER_HAS_MBIG_OBJ)
+	check_cxx_compiler_flag("-Wa,-mbig-obj" COMPILER_HAS_MBIG_OBJ)
 	if (${COMPILER_HAS_MBIG_OBJ})
 		add_compile_options("-Wa,-mbig-obj")
 	endif()
 
-	if(options)
+	if(optimize)
 		add_compile_options(
 			"-O3"
 			"-march=native"
-			"-ffast-math"
-			"-ftree-vectorize"
 		)
 	endif()
 
@@ -128,7 +126,7 @@ elseif(UNIX OR MINGW)
 			add_compile_options("-g")
 		endif()
 	endif()
-endif() 
+endif()
 
 function(target_disable_warnings TARGET)
 	if(MSVC)

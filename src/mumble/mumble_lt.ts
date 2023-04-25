@@ -390,20 +390,21 @@ Contains the list of members inherited by the current channel. Uncheck &lt;i&gt;
     </message>
     <message>
         <source>Maximum Users</source>
-        <translation type="unfinished"></translation>
+        <translation>Didžiausias naudotojų skaičius</translation>
     </message>
     <message>
         <source>Maximum number of users allowed in the channel</source>
-        <translation type="unfinished"></translation>
+        <translation>Didžiausias leistinas kanalo naudotojų skaičius</translation>
     </message>
     <message>
         <source>&lt;b&gt;Maximum Users&lt;/b&gt;&lt;br /&gt;
 This value allows you to set the maximum number of users allowed in the channel. If the value is above zero, only that number of users will be allowed to enter the channel. If the value is zero, the maximum number of users in the channel is given by the server&apos;s default limit.</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;b&gt;Didžiausias naudotojų skaičius&lt;/b&gt;&lt;br /&gt;
+Ši reikšmė leidžia nustatyti didžiausią kanale leidžiamą naudotojų skaičių. Jei reikšmė yra didesnė už nulį, į kanalą bus leidžiama įeiti tik tokiam naudotojų skaičiui. Jei reikšmė lygi nuliui, maksimalų naudotojų skaičių kanale nurodo serverio numatytoji riba.</translation>
     </message>
     <message>
         <source>This is the sort order for the channel.</source>
-        <translation type="unfinished"></translation>
+        <translation>Tai yra kanalo rūšiavimo tvarka.</translation>
     </message>
     <message>
         <source>Properties</source>
@@ -415,7 +416,7 @@ This value allows you to set the maximum number of users allowed in the channel.
     </message>
     <message>
         <source>Maximum users</source>
-        <translation type="unfinished"></translation>
+        <translation>Didžiausias naudotojų skaičius</translation>
     </message>
     <message>
         <source>Channel name</source>
@@ -423,7 +424,7 @@ This value allows you to set the maximum number of users allowed in the channel.
     </message>
     <message>
         <source>Inherited group members</source>
-        <translation type="unfinished"></translation>
+        <translation>Paveldėti grupės nariai</translation>
     </message>
     <message>
         <source>Foreign group members</source>
@@ -524,15 +525,15 @@ This value allows you to set the maximum number of users allowed in the channel.
     </message>
     <message>
         <source>&amp;Query</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Užklausa</translation>
     </message>
     <message>
         <source>Configure selected device</source>
-        <translation type="unfinished"></translation>
+        <translation>Konfigūruoti pasirinktą įrenginį</translation>
     </message>
     <message>
         <source>This configures the selected device. Be aware that many ASIO drivers are buggy to the extreme, and querying them might cause a crash of either the application or the system.</source>
-        <translation type="unfinished"></translation>
+        <translation>Taip sukonfigūruojamas pasirinktas įrenginys. Atminkite, kad daugelis ASIO tvarkyklių yra labai klaidingos, o jų užklausa gali sukelti programos arba sistemos gedimą.</translation>
     </message>
     <message>
         <source>&amp;Configure</source>
@@ -540,7 +541,7 @@ This value allows you to set the maximum number of users allowed in the channel.
     </message>
     <message>
         <source>Capabilities</source>
-        <translation type="unfinished"></translation>
+        <translation>Galimybės</translation>
     </message>
     <message>
         <source>Driver name</source>
@@ -643,6 +644,10 @@ This value allows you to set the maximum number of users allowed in the channel.
     <message>
         <source>&lt;h3&gt;Mumble (%1)&lt;/h3&gt;&lt;p&gt;%3&lt;/p&gt;&lt;p&gt;&lt;b&gt;An Open Source, low-latency, high quality voice-chat utility&lt;/b&gt;&lt;/p&gt;&lt;p&gt;&lt;tt&gt;&lt;a href=&quot;%2&quot;&gt;%2&lt;/a&gt;&lt;/tt&gt;&lt;/p&gt;</source>
         <translation type="unfinished">&lt;h3&gt;Mumble (%1)&lt;/h3&gt;&lt;p&gt;%3&lt;/p&gt;&lt;p&gt;&lt;b&gt;Balso pokalbių paslaugų programa, skirta žaidėjams&lt;/b&gt;&lt;/p&gt;&lt;p&gt;&lt;tt&gt;&lt;a href=&quot;%2&quot;&gt;%2&lt;/a&gt;&lt;/tt&gt;&lt;/p&gt;</translation>
+    </message>
+    <message>
+        <source>For a list of authors, please see &lt;a href=&quot;https://github.com/mumble-voip/mumble/graphs/contributors&quot;&gt;https://github.com/mumble-voip/mumble/graphs/contributors&lt;/a&gt;</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -900,18 +905,6 @@ This value allows you to set the maximum number of users allowed in the channel.
         <translation>Įvairūs</translation>
     </message>
     <message>
-        <source>Audible audio cue when starting or stopping to transmit</source>
-        <translation>Girdimas garso orientyras, kai perdavimas pradedamas ar sustabdomas</translation>
-    </message>
-    <message>
-        <source>&lt;b&gt;This enables transmission audio cues.&lt;/b&gt;&lt;br /&gt;Setting this will give you a short audio beep when you start and stop transmitting.</source>
-        <translation>&lt;b&gt;Tai įjungia garsinius perdavimo orientyrus.&lt;/b&gt;&lt;br /&gt;Tai nustačius, pradedant ir sustabdant perdavimą, girdėsite trumpą garsinį pyptelėjimą.</translation>
-    </message>
-    <message>
-        <source>Audio cue</source>
-        <translation>Garsinis orientyras</translation>
-    </message>
-    <message>
         <source>Gets played when starting to transmit</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1031,6 +1024,34 @@ This value allows you to set the maximum number of users allowed in the channel.
         <source>Pre&amp;view</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Audio cue when using...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Audible audio cue when starting or stopping to transmit using Push To Talk</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;b&gt;This enables transmission audio cues when using Push To Talk.&lt;/b&gt;&lt;br /&gt;Setting this will give you a short audio beep when you start and stop transmitting.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Push To Talk</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Audible audio cue when starting or stopping to transmit using Voice Activity</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;b&gt;This enables transmission audio cues when using Voice Activity.&lt;/b&gt;&lt;br /&gt;Setting this will give you a short audio beep when you start and stop transmitting.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Voice Activity</source>
+        <translation type="unfinished">Esant balso aktyvumui</translation>
+    </message>
 </context>
 <context>
     <name>AudioInputDialog</name>
@@ -1080,7 +1101,7 @@ This value allows you to set the maximum number of users allowed in the channel.
     </message>
     <message>
         <source>Input device</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Įvesties įrenginys</translation>
     </message>
     <message>
         <source>Echo cancellation mode</source>
@@ -1128,7 +1149,7 @@ This value allows you to set the maximum number of users allowed in the channel.
     </message>
     <message>
         <source>Maximum amplification</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Didžiausias stiprinimas</translation>
     </message>
     <message>
         <source>Transmission started sound</source>
@@ -1223,11 +1244,11 @@ This value allows you to set the maximum number of users allowed in the channel.
     </message>
     <message>
         <source>Volume</source>
-        <translation>Garsis</translation>
+        <translation>Garsumas</translation>
     </message>
     <message>
         <source>Volume of incoming speech</source>
-        <translation>Gaunamos kalbos garsis</translation>
+        <translation>Gaunamos kalbos garsumas</translation>
     </message>
     <message>
         <source>&lt;b&gt;This adjusts the volume of incoming speech.&lt;/b&gt;&lt;br /&gt;Note that if you increase this beyond 100%, audio will be distorted.</source>
@@ -1280,11 +1301,11 @@ This value allows you to set the maximum number of users allowed in the channel.
     </message>
     <message>
         <source>Minimum Volume</source>
-        <translation>Mažiausias garsis</translation>
+        <translation>Mažiausias garsumas</translation>
     </message>
     <message>
         <source>What should the volume be at the maximum distance?</source>
-        <translation>Koks turėtų būti garsis didžiausiame atstume?</translation>
+        <translation>Koks turėtų būti garsumas didžiausiame atstume?</translation>
     </message>
     <message>
         <source>Loopback Test</source>
@@ -1337,7 +1358,7 @@ This value allows you to set the maximum number of users allowed in the channel.
     </message>
     <message>
         <source>If checked Mumble lowers the volume of other applications while other users talk</source>
-        <translation>Jei pažymėta, Mumble sumažina kitų programų garsį, kol kalba kiti naudotojai</translation>
+        <translation>Jei pažymėta, Mumble sumažina kitų programų garsumą, kol kalba kiti naudotojai</translation>
     </message>
     <message>
         <source>&lt;b&gt;Attenuate applications while other users talk&lt;/b&gt;&lt;br /&gt;Mumble supports decreasing the volume of other applications during incoming and/or outgoing speech. This makes mumble activate the feature while other users talk to you.</source>
@@ -1349,7 +1370,7 @@ This value allows you to set the maximum number of users allowed in the channel.
     </message>
     <message>
         <source>If checked Mumble lowers the volume of other applications while you talk</source>
-        <translation>Jei pažymėta, Mumble sumažina kitų programų garsį, kol kalbate jūs</translation>
+        <translation>Jei pažymėta, Mumble sumažina kitų programų garsumą, kol kalbate jūs</translation>
     </message>
     <message>
         <source>&lt;b&gt;Attenuate applications while you talk&lt;/b&gt;&lt;br /&gt;Mumble supports decreasing the volume of other applications during incoming and/or outgoing speech. This makes mumble activate the feature while you talk.</source>
@@ -1431,6 +1452,10 @@ This value allows you to set the maximum number of users allowed in the channel.
         <source> m</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Positional audio cannot work with mono output devices!</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>AudioOutputDialog</name>
@@ -1460,11 +1485,11 @@ This value allows you to set the maximum number of users allowed in the channel.
     </message>
     <message>
         <source>Output system</source>
-        <translation type="unfinished"></translation>
+        <translation>Išvesties sistema</translation>
     </message>
     <message>
         <source>Output device</source>
-        <translation type="unfinished"></translation>
+        <translation>Išvesties įrenginys</translation>
     </message>
     <message>
         <source>Default jitter buffer</source>
@@ -1472,11 +1497,11 @@ This value allows you to set the maximum number of users allowed in the channel.
     </message>
     <message>
         <source>Volume of incoming speech</source>
-        <translation type="unfinished">Gaunamos kalbos garsis</translation>
+        <translation>Gaunamos kalbos garsumas</translation>
     </message>
     <message>
         <source>Output delay</source>
-        <translation type="unfinished"></translation>
+        <translation>Išvesties delsa</translation>
     </message>
     <message>
         <source>Attenuation of other applications during speech</source>
@@ -1484,11 +1509,11 @@ This value allows you to set the maximum number of users allowed in the channel.
     </message>
     <message>
         <source>Minimum distance</source>
-        <translation type="unfinished"></translation>
+        <translation>Mažiausias atstumas</translation>
     </message>
     <message>
         <source>Maximum distance</source>
-        <translation type="unfinished"></translation>
+        <translation>Didžiausias atstumas</translation>
     </message>
     <message>
         <source>Minimum volume</source>
@@ -2049,27 +2074,27 @@ Speak loudly, as when you are annoyed or excited. Decrease the volume in the sou
     </message>
     <message>
         <source>Input system</source>
-        <translation type="unfinished"></translation>
+        <translation>Įvesties sistema</translation>
     </message>
     <message>
         <source>Input device</source>
-        <translation type="unfinished"></translation>
+        <translation>Įvesties įrenginys</translation>
     </message>
     <message>
         <source>Output system</source>
-        <translation type="unfinished"></translation>
+        <translation>Išvesties sistema</translation>
     </message>
     <message>
         <source>Output device</source>
-        <translation type="unfinished"></translation>
+        <translation>Išvesties įrenginys</translation>
     </message>
     <message>
         <source>Output delay</source>
-        <translation type="unfinished"></translation>
+        <translation>Išvesties delsa</translation>
     </message>
     <message>
         <source>Maximum amplification</source>
-        <translation type="unfinished"></translation>
+        <translation>Didžiausias stiprinimas</translation>
     </message>
     <message>
         <source>VAD level</source>
@@ -3024,7 +3049,7 @@ Ar tikrai norite pakeisti savo liudijimą?
     </message>
     <message>
         <source>C&amp;onnect</source>
-        <translation type="unfinished">Prisi&amp;jungti</translation>
+        <translation>P&amp;risijungti</translation>
     </message>
     <message>
         <source>Adding host %1</source>
@@ -3041,10 +3066,6 @@ Ar tikrai norite pakeisti savo liudijimą?
     <message>
         <source>Port</source>
         <translation>Prievadas</translation>
-    </message>
-    <message>
-        <source>Addresses</source>
-        <translation>Adresai</translation>
     </message>
     <message>
         <source>Website</source>
@@ -3077,6 +3098,14 @@ Ar tikrai norite pakeisti savo liudijimą?
     <message>
         <source>Version</source>
         <translation>Versija</translation>
+    </message>
+    <message>
+        <source>IPv4 address</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>IPv6 address</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -3389,7 +3418,7 @@ Without this option enabled, using Mumble&apos;s global shortcuts in privileged 
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Mumble&apos;s Global Shortcuts system does currently not work in combination with the Wayland protocol. For more information, visit &lt;a href=&quot;https://github.com/mumble-voip/mumble/issues/5257&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0057ae;&quot;&gt;https://github.com/mumble-voip/mumble/issues/5257&lt;/span&gt;&lt;/a&gt;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Mumble&apos;s Global Shortcuts system does currently not work properly in combination with the Wayland protocol. For more information, visit &lt;a href=&quot;https://github.com/mumble-voip/mumble/issues/5257&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0057ae;&quot;&gt;https://github.com/mumble-voip/mumble/issues/5257&lt;/span&gt;&lt;/a&gt;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -3409,7 +3438,7 @@ Without this option enabled, using Mumble&apos;s global shortcuts in privileged 
     </message>
     <message>
         <source>Add</source>
-        <translation type="unfinished">Pridėti</translation>
+        <translation>Pridėti</translation>
     </message>
     <message>
         <source>Remove the currently selected items</source>
@@ -3417,7 +3446,7 @@ Without this option enabled, using Mumble&apos;s global shortcuts in privileged 
     </message>
     <message>
         <source>Remove</source>
-        <translation type="unfinished">Šalinti</translation>
+        <translation>Šalinti</translation>
     </message>
 </context>
 <context>
@@ -3452,18 +3481,18 @@ Without this option enabled, using Mumble&apos;s global shortcuts in privileged 
     <name>GlobalShortcutEngine</name>
     <message>
         <source>Unknown</source>
-        <translation type="unfinished">Nežinomas</translation>
+        <translation>Nežinoma</translation>
     </message>
 </context>
 <context>
     <name>GlobalShortcutMac</name>
     <message>
         <source>Mouse</source>
-        <translation type="unfinished"></translation>
+        <translation>Pelė</translation>
     </message>
     <message>
         <source>Keyboard</source>
-        <translation type="unfinished"></translation>
+        <translation>Klaviatūra</translation>
     </message>
 </context>
 <context>
@@ -3549,22 +3578,22 @@ Without this option enabled, using Mumble&apos;s global shortcuts in privileged 
     <name>GlobalShortcutWin</name>
     <message>
         <source>Mouse</source>
-        <translation type="unfinished"></translation>
+        <translation>Pelė</translation>
     </message>
     <message>
         <source>Keyboard</source>
-        <translation type="unfinished"></translation>
+        <translation>Klaviatūra</translation>
     </message>
 </context>
 <context>
     <name>GlobalShortcutX</name>
     <message>
         <source>Keyboard</source>
-        <translation type="unfinished"></translation>
+        <translation>Klaviatūra</translation>
     </message>
     <message>
         <source>Mouse</source>
-        <translation type="unfinished"></translation>
+        <translation>Pelė</translation>
     </message>
 </context>
 <context>
@@ -3652,13 +3681,6 @@ This field describes the size of an LCD device. The size is given either in pixe
     </message>
     <message>
         <source>Splitter width</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>ListenerLocalVolumeDialog</name>
-    <message>
-        <source>Adjusting local volume for listening to %1</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -3830,6 +3852,10 @@ This field describes the size of an LCD device. The size is given either in pixe
         <source>Plugin message</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>[embedded content]</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>LogConfig</name>
@@ -3917,12 +3943,8 @@ This field describes the size of an LCD device. The size is given either in pixe
         <translation>Garsinis teksto atkūrimas</translation>
     </message>
     <message>
-        <source>Volume</source>
-        <translation>Garsis</translation>
-    </message>
-    <message>
         <source>Volume of Text-To-Speech Engine</source>
-        <translation>Garsinio teksto atkūrimo modulio garsis</translation>
+        <translation>Garsinio teksto atkūrimo modulio garsumas</translation>
     </message>
     <message>
         <source>&lt;b&gt;This is the volume used for the speech synthesis.&lt;/b&gt;</source>
@@ -4070,6 +4092,50 @@ The setting only applies for new messages, the already shown ones will retain th
         <source>Click here to toggle limiting for %1 events.&lt;br /&gt;If checked, notifications for this event type will not be played when the user count on the server exceeds the set threshold.</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Message Volume</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Volume adjustment for audio cues</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;b&gt;This is the volume adjustment for audio cues.&lt;/b&gt;&lt;br /&gt;A value of 0 dB means no change to the sound sample.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source> dB</source>
+        <translation> dB</translation>
+    </message>
+    <message>
+        <source>Text-to-Speech volume</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Notification volume adjustment</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Volume adjustment for notification sounds</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;b&gt;This is the volume adjustment for notification sounds.&lt;/b&gt;&lt;br /&gt;A value of 0 dB means no change to the sound sample.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Audio cue volume adjustment</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source> %</source>
+        <translation> %</translation>
+    </message>
+    <message>
+        <source>Notification sound volume adjustment</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>LookConfig</name>
@@ -4125,10 +4191,6 @@ The setting only applies for new messages, the already shown ones will retain th
     <message>
         <source>Users above Channels</source>
         <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&lt;b&gt;If set, will verify you want to quit if connected.&lt;/b&gt;</source>
-        <translation>&lt;b&gt;Jei nustatyta, jums išeinant ir vis dar tebesant prisijungus, bus klausiama patvirtinimo.&lt;/b&gt;</translation>
     </message>
     <message>
         <source>Show number of users in each channel</source>
@@ -4194,14 +4256,6 @@ The setting only applies for new messages, the already shown ones will retain th
     <message>
         <source>Channel Dragging</source>
         <translation>Kanalų tempimas</translation>
-    </message>
-    <message>
-        <source>Ask whether to close or minimize when quitting Mumble.</source>
-        <translation>Išeinant iš Mumble, klausti ar programą užverti ar suskleisti.</translation>
-    </message>
-    <message>
-        <source>Ask on quit while connected</source>
-        <translation>Klausti išeinant, kai tebeesama prisijungta</translation>
     </message>
     <message>
         <source>Always On Top</source>
@@ -4507,6 +4561,38 @@ The setting only applies for new messages, the already shown ones will retain th
         <source>Action (Channel):</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Quit Behavior</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This setting controls the behavior of clicking on the X in the top right corner.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This setting controls the behavior when closing Mumble. You can choose between being asked for confirmation, minimize instead if closing or just closing without any additional prompt. Optionally, the first two options can only apply when you are currently connected to a server (in that case, Mumble will quit without asking, when not connected to any server).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Always Ask</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ask when connected</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Always Minimize</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Minimize when connected</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Always Quit</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>MainWindow</name>
@@ -4599,10 +4685,6 @@ The setting only applies for new messages, the already shown ones will retain th
         <translation>Užverti</translation>
     </message>
     <message>
-        <source>Mumble is currently connected to a server. Do you want to Close or Minimize it?</source>
-        <translation>Programa Mumble šiuo metu yra prisijungusi prie serverio. Norite programą užverti ar suskleisti?</translation>
-    </message>
-    <message>
         <source>Mute Self</source>
         <comment>Global Shortcut</comment>
         <translation type="unfinished"></translation>
@@ -4661,10 +4743,6 @@ The setting only applies for new messages, the already shown ones will retain th
     <message>
         <source>URL scheme is not &apos;mumble&apos;</source>
         <translation>URL schema nėra &apos;mumble&apos;</translation>
-    </message>
-    <message>
-        <source>This version of Mumble can&apos;t handle URLs for Mumble version %1.%2.%3</source>
-        <translation>Ši Mumble versija negali apdoroti URL, skirtus Mumble versijai %1.%2.%3</translation>
     </message>
     <message>
         <source>Connecting to %1</source>
@@ -5642,10 +5720,6 @@ Otherwise abort and check your certificate and username.</source>
         <translation>Serveris</translation>
     </message>
     <message>
-        <source>Failed to load Opus, it will not be available for audio encoding/decoding.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>The server requests minimum client version %1</source>
         <translation type="unfinished"></translation>
     </message>
@@ -5691,10 +5765,6 @@ Otherwise abort and check your certificate and username.</source>
     </message>
     <message>
         <source>%1 unmuted by %2.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Unable to find matching CELT codecs with other clients. You will not be able to talk to all users.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -5891,10 +5961,6 @@ Otherwise abort and check your certificate and username.</source>
         <translation>Tai leidžia jums serveryje taisyti IP uždraudimų sąrašą.</translation>
     </message>
     <message>
-        <source>&amp;Filter on/off</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Enable or disable the filtering of select channels.
 By default all empty channels will be filtered.
 You can mark additional channels for filtering from
@@ -5912,14 +5978,6 @@ the channel&apos;s context menu.</source>
     <message>
         <source>Reset the avatar of the selected user.</source>
         <translation>Atstatyti pasirinkto naudotojo avatarą.</translation>
-    </message>
-    <message>
-        <source>Locally adjust the user&apos;s speech volume.</source>
-        <translation>Vietos mastu reguliuoti naudotojo kalbos garsį.</translation>
-    </message>
-    <message>
-        <source>Opens a dialog with a volume slider. Use this on other users in the same room.</source>
-        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>&amp;Developer</source>
@@ -5964,10 +6022,6 @@ the channel&apos;s context menu.</source>
     <message>
         <source>&amp;Ban...</source>
         <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Local Volume Adjustment...</source>
-        <translation>Vietinio garsio reguliavimas...</translation>
     </message>
     <message>
         <source>Send &amp;Message...</source>
@@ -6075,10 +6129,6 @@ the channel&apos;s context menu.</source>
     </message>
     <message>
         <source>Listen to this channel without joining it</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Locally adjust the volume for this virtual ear.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -6295,6 +6345,48 @@ Valid actions are:
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>You are currently in minimal view but not connected to a server. Use the context menu to connect to a server or disable minimal view.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Local Volume Adjustment:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This version of Mumble can&apos;t handle URLs for Mumble version %1</source>
+        <translation type="unfinished">Ši Mumble versija negali apdoroti URL, skirtus Mumble versijai %1</translation>
+    </message>
+    <message>
+        <source>Listen to Channel</source>
+        <comment>Global Shortcut</comment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Toggles listening to the given channel.</source>
+        <comment>Global Shortcut</comment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Server instructed us to use an audio codec different from Opus, which is no longer supported. Disconnecting...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Are you sure you want to close Mumble? Perhaps you prefer to minimize it instead?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Remember this setting</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Channel &amp;Filter</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Pin Channel when Filtering</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Usage: mumble [options] [&lt;url&gt; | &lt;plugin_list&gt;]
 
 &lt;url&gt; specifies a URL to connect to after startup instead of showing
@@ -6307,7 +6399,7 @@ correct client version. It currently defaults to 1.2.0.
 
 Valid options are:
   -h, --help    Show this help text and exit.
-  -V, --version Print version information and exit
+  --version     Print version information and exit
   -m, --multiple
                 Allow multiple instances of the client to be started.
   -c, --config
@@ -6340,9 +6432,9 @@ Valid options are:
                 Print on stdout the echo cancellation queue state
                 (useful for debugging purposes)
   --translation-dir &lt;dir&gt;
-                Specifies an additional translation fir &lt;dir&gt; in which
-                Mumble will search for translation files that overwrite
-                the bundled ones
+                Specifies an additional translation directory &lt;dir&gt;
+                in which Mumble will search for translation files that
+                overwrite the bundled ones
                 Directories added this way have higher priority than
                 the default locations used otherwise
   --print-translation-dirs
@@ -7296,11 +7388,11 @@ Norėdami naujinti šiuos failus į naujausią versiją, spustelėkite mygtuką 
     </message>
     <message>
         <source>&amp;No</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Ne</translation>
     </message>
     <message>
         <source>&amp;Yes</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Taip</translation>
     </message>
     <message>
         <source>The file &quot;%1&quot; is not a valid plugin file!</source>
@@ -7504,10 +7596,6 @@ Norėdami naujinti šiuos failus į naujausią versiją, spustelėkite mygtuką 
 <context>
     <name>QObject</name>
     <message>
-        <source>CodecInit: Failed to load Opus, it will not be available for encoding/decoding audio.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Talking UI</source>
         <translation type="unfinished"></translation>
     </message>
@@ -7614,7 +7702,7 @@ See &lt;a href=&quot;https://wiki.mumble.info/wiki/Installing_Mumble&quot;&gt;th
     </message>
     <message>
         <source>Disabled</source>
-        <translation type="unfinished">Išjungta</translation>
+        <translation>Išjungta</translation>
     </message>
     <message>
         <source>Echo cancellation is disabled.</source>
@@ -7688,6 +7776,10 @@ You can register them again.</source>
     </message>
     <message>
         <source>Access to the microphone was denied due to system restrictions. You will not be able to use the microphone in this session.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Unknown Version</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -7954,7 +8046,7 @@ You can register them again.</source>
     </message>
     <message>
         <source>Resync</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Iš naujo sinchronizuoti</translation>
     </message>
     <message>
         <source>Outgoing</source>
@@ -8006,11 +8098,11 @@ You can register them again.</source>
     </message>
     <message>
         <source>Yes</source>
-        <translation type="unfinished"></translation>
+        <translation>Taip</translation>
     </message>
     <message>
         <source>No</source>
-        <translation type="unfinished"></translation>
+        <translation>Ne</translation>
     </message>
 </context>
 <context>
@@ -8059,6 +8151,10 @@ You can register them again.</source>
     </message>
     <message>
         <source>Press to show button combination</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt; Unknown Channel &gt;</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -8220,19 +8316,19 @@ Prieigos raktas yra tekstinė eilutė, kuri gali būti naudojama kaip slaptažod
     </message>
     <message>
         <source>Days</source>
-        <translation type="unfinished"></translation>
+        <translation>Dienos</translation>
     </message>
     <message>
         <source>Weeks</source>
-        <translation type="unfinished"></translation>
+        <translation>Savaitės</translation>
     </message>
     <message>
         <source>Months</source>
-        <translation type="unfinished"></translation>
+        <translation>Mėnesiai</translation>
     </message>
     <message>
         <source>Years</source>
-        <translation type="unfinished"></translation>
+        <translation>Metai</translation>
     </message>
     <message>
         <source>Inactive for</source>
@@ -8248,7 +8344,7 @@ Prieigos raktas yra tekstinė eilutė, kuri gali būti naudojama kaip slaptažod
     </message>
     <message>
         <source>Search</source>
-        <translation type="unfinished">Ieškoti</translation>
+        <translation>Ieškoti</translation>
     </message>
     <message>
         <source>User list</source>
@@ -8280,10 +8376,6 @@ Prieigos raktas yra tekstinė eilutė, kuri gali būti naudojama kaip slaptažod
     <message>
         <source>IP Address</source>
         <translation>IP adresas</translation>
-    </message>
-    <message>
-        <source>CELT Versions</source>
-        <translation>CELT versijos</translation>
     </message>
     <message>
         <source>Details...</source>
@@ -8327,7 +8419,7 @@ Prieigos raktas yra tekstinė eilutė, kuri gali būti naudojama kaip slaptažod
     </message>
     <message>
         <source>Resync</source>
-        <translation type="unfinished"></translation>
+        <translation>Iš naujo sinchronizuoti</translation>
     </message>
     <message>
         <source>From Client</source>
@@ -8408,6 +8500,10 @@ Prieigos raktas yra tekstinė eilutė, kuri gali būti naudojama kaip slaptažod
         <source>Ping deviation</source>
         <translation>Ping nuokrypis</translation>
     </message>
+    <message>
+        <source>Warning: The server seems to report a truncated protocol version for this client. (See: &lt;a href=&quot;https://github.com/mumble-voip/mumble/issues/5827/&quot;&gt;Issue #5827&lt;/a&gt;)</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>UserListModel</name>
@@ -8452,33 +8548,6 @@ Prieigos raktas yra tekstinė eilutė, kuri gali būti naudojama kaip slaptažod
     </message>
     <message>
         <source>Adjusting local nickname for %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>UserLocalVolumeDialog</name>
-    <message>
-        <source>Local volume for other users</source>
-        <translation>Kitų naudotojų vietinis garsis</translation>
-    </message>
-    <message>
-        <source>&lt;b&gt;Adjust the volume of other users locally&lt;/b&gt;&lt;br /&gt;Mumble supports adjusting the volume of other users locally.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Adjusting local volume for %1</source>
-        <translation>Vietinio garsio reguliavimas naudotojui %1</translation>
-    </message>
-    <message>
-        <source> dB</source>
-        <translation> dB</translation>
-    </message>
-    <message>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Use the slider or the text box to change the volume of the user.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;font-weight:600;&quot;&gt;Attention!&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Increasing the volume of a user too much can permanently damage your hearing. It may also increase the background noise of the user.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Naudokite slinktuką arba tekstinį langelį, kad pakeistumėte naudotojo garsį.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;font-weight:600;&quot;&gt;Dėmesio!&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Per didelis naudotojo garsio padidinimas gali visiems laikams pažeisti jūsų klausą. Be to, jis taip pat gali padidinti naudotojo foninį triukšmą.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
-    </message>
-    <message>
-        <source>User volume</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -8624,6 +8693,10 @@ Prieigos raktas yra tekstinė eilutė, kuri gali būti naudojama kaip slaptažod
     <message>
         <source>Channel has access restrictions but you can enter nonetheless</source>
         <translation>Kanalas turi prieigos apribojimus, tačiau jūs vis tiek galite įeiti</translation>
+    </message>
+    <message>
+        <source>Channel will be pinned when filtering is enabled</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -8885,6 +8958,17 @@ Please contact your server administrator for further information.</source>
     </message>
     <message>
         <source>Unable to start recording - the audio output is miconfigured (0Hz sample rate)</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>VolumeSliderWidgetAction</name>
+    <message>
+        <source>Slider for volume adjustment</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Volume Adjustment</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

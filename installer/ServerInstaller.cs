@@ -1,4 +1,4 @@
-// Copyright 2020-2022 The Mumble Developers. All rights reserved.
+// Copyright 2020-2023 The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -18,7 +18,7 @@ public class ServerInstaller : MumbleInstall {
 		string upgradeGuid = "03E9476F-0F75-4661-BFC9-A9DAEB23D3A0";
 		string[] binaries = {
 			"mumble-server.exe",
-			"Murmur.ice"
+			"MumbleServer.ice"
 		};
 
 		string[] licenses = {

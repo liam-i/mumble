@@ -1,4 +1,4 @@
-// Copyright 2007-2022 The Mumble Developers. All rights reserved.
+// Copyright 2007-2023 The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -31,8 +31,6 @@ class Overlay;
 class LCD;
 class Zeroconf;
 class OverlayClient;
-class CELTCodec;
-class OpusCodec;
 class LogEmitter;
 class DeveloperConsole;
 class TalkingUI;
@@ -97,11 +95,6 @@ public:
 	int iMaxBandwidth;
 	int iAudioBandwidth;
 	QDir qdBasePath;
-	QMap< int, CELTCodec * > qmCodecs;
-	OpusCodec *oCodec;
-	int iCodecAlpha, iCodecBeta;
-	bool bPreferAlpha;
-	bool bOpus;
 	bool bAttenuateOthers;
 	/// If set the AudioOutput::mix will forcefully adjust the volume of all
 	/// non-priority speakers.

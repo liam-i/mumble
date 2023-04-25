@@ -1,4 +1,4 @@
-// Copyright 2007-2022 The Mumble Developers. All rights reserved.
+// Copyright 2007-2023 The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -148,7 +148,7 @@ QFlags< ChanACL::Perm > ChanACL::effectivePermissions(ServerUser *p, Channel *ch
 
 		foreach (acl, ch->qlACL) {
 			bool matchUser  = (acl->iUserId != -1) && (acl->iUserId == p->iId);
-			bool matchGroup = Group::isMember(chan, ch, acl->qsGroup, p);
+			bool matchGroup = Group::appliesToUser(*chan, *ch, acl->qsGroup, *p);
 			if (matchUser || matchGroup) {
 				if (acl->pAllow & Traverse)
 					traverse = true;

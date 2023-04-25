@@ -1,4 +1,4 @@
-// Copyright 2010-2022 The Mumble Developers. All rights reserved.
+// Copyright 2010-2023 The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -203,17 +203,6 @@ void OverlayClient::updateMouse() {
 	}
 
 	QPixmap pm = qmCursors.value(csShape);
-	if (pm.isNull()) {
-		NSImage *img = [cursor image];
-		CGImageRef cgimg = nullptr;
-		NSArray *reps = [img representations];
-		for (NSUInteger i = 0; i < [reps count]; i++) {
-			NSImageRep *rep = [reps objectAtIndex:i];
-			if ([rep class] == [NSBitmapImageRep class]) {
-				cgimg = [(NSBitmapImageRep *)rep CGImage];
-			}
-		}
-	}
 
 	NSPoint p = [cursor hotSpot];
 	iOffsetX = (int) p.x;

@@ -1,4 +1,4 @@
-// Copyright 2007-2022 The Mumble Developers. All rights reserved.
+// Copyright 2007-2023 The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -25,6 +25,7 @@
 #endif
 #include "ChannelListenerManager.h"
 #include "PluginManager.h"
+#include "ProtoUtils.h"
 #include "ServerHandler.h"
 #include "TalkingUI.h"
 #include "User.h"
@@ -159,10 +160,6 @@ void MainWindow::msgServerSync(const MumbleProto::ServerSync &msg) {
 
 	QList< Shortcut > sc = Global::get().db->getShortcuts(Global::get().sh->qbaDigest);
 	if (!sc.isEmpty()) {
-		for (int i = 0; i < sc.count(); ++i) {
-			Shortcut &s = sc[i];
-			s.iIndex    = Global::get().mw->gsWhisper->idx;
-		}
 		Global::get().s.qlShortcuts << sc;
 		GlobalShortcutEngine::engine->bNeedRemap = true;
 	}
@@ -501,6 +498,18 @@ void MainWindow::msgUserState(const MumbleProto::UserState &msg) {
 
 		if (!logMsg.isEmpty()) {
 			Global::get().l->log(Log::ChannelListeningRemove, logMsg);
+		}
+	}
+	for (int i = 0; i < msg.listening_volume_adjustment_size(); i++) {
+		int channelID    = msg.listening_volume_adjustment(i).listening_channel();
+		float adjustment = msg.listening_volume_adjustment(i).volume_adjustment();
+
+		const Channel *channel = Channel::get(channelID);
+		if (channel && pSelf && pSelf->uiSession == pDst->uiSession) {
+			Global::get().channelListenerManager->setListenerVolumeAdjustment(pDst->uiSession, channel->iId,
+																			  VolumeAdjustment::fromFactor(adjustment));
+		} else if (!channel) {
+			qWarning("msgUserState(): Invalid channel ID encountered in volume adjustment");
 		}
 	}
 
@@ -877,8 +886,9 @@ void MainWindow::msgChannelState(const MumbleProto::ChannelState &msg) {
 			p             = nullptr; // No need to move it later
 
 			ServerHandlerPtr sh = Global::get().sh;
-			if (sh)
-				c->bFiltered = Global::get().db->isChannelFiltered(sh->qbaDigest, c->iId);
+			if (sh) {
+				c->m_filterMode = Global::get().db->getChannelFilterMode(sh->qbaDigest, c->iId);
+			}
 
 		} else {
 			qWarning("Server attempted state change on nonexistent channel");
@@ -961,21 +971,14 @@ void MainWindow::msgChannelState(const MumbleProto::ChannelState &msg) {
 	}
 
 	if (updateUI) {
-		// Passing nullptr to this function will make it do not much except fire a dataChanged event
-		// which leads to the UI being updated (reflecting the changes that just took effect).
-		this->pmModel->toggleChannelFiltered(nullptr);
+		this->pmModel->forceVisualUpdate();
 	}
 }
 
 void MainWindow::msgChannelRemove(const MumbleProto::ChannelRemove &msg) {
 	Channel *c = Channel::get(msg.channel_id());
 	if (c && (c->iId != 0)) {
-		if (c->bFiltered) {
-			ServerHandlerPtr sh = Global::get().sh;
-			if (sh)
-				Global::get().db->setChannelFiltered(sh->qbaDigest, c->iId, false);
-			c->bFiltered = false;
-		}
+		c->clearFilterMode();
 
 		if (Global::get().mw->m_searchDialog) {
 			QMetaObject::invokeMethod(Global::get().mw->m_searchDialog, "on_channelRemoved", Qt::QueuedConnection,
@@ -1156,9 +1159,8 @@ void MainWindow::removeContextAction(const MumbleProto::ContextActionModify &msg
 ///
 /// @param msg The message object with the respective information
 void MainWindow::msgVersion(const MumbleProto::Version &msg) {
-	if (msg.has_version()) {
-		Global::get().sh->setProtocolVersion(msg.version());
-	}
+	Global::get().sh->setProtocolVersion(MumbleProto::getVersion(msg));
+
 	if (msg.has_release())
 		Global::get().sh->qsRelease = u8(msg.release());
 	if (msg.has_os()) {
@@ -1215,57 +1217,15 @@ void MainWindow::msgPermissionQuery(const MumbleProto::PermissionQuery &msg) {
 	}
 }
 
-/// This message is being received in order for the server to instruct this client which version of the CELT
-/// codec it should use.
+/// This message is being received in order for the server to instruct this client which codec it should use.
 ///
 /// @param msg The message object
 void MainWindow::msgCodecVersion(const MumbleProto::CodecVersion &msg) {
-	int alpha = msg.has_alpha() ? msg.alpha() : -1;
-	int beta  = msg.has_beta() ? msg.beta() : -1;
-	bool pref = msg.prefer_alpha();
+	if (!msg.opus()) {
+		Global::get().l->log(Log::CriticalError, tr("Server instructed us to use an audio codec different from Opus, "
+													"which is no longer supported. Disconnecting..."));
 
-	static bool warnedOpus = false;
-	Global::get().bOpus    = msg.opus();
-
-	if (!Global::get().oCodec && !warnedOpus) {
-		Global::get().l->log(Log::CriticalError,
-							 tr("Failed to load Opus, it will not be available for audio encoding/decoding."));
-		warnedOpus = true;
-	}
-
-	// Workaround for broken 1.2.2 servers
-	if (Global::get().sh && Global::get().sh->uiVersion == 0x010202 && alpha != -1 && alpha == beta) {
-		if (pref)
-			beta = Global::get().iCodecBeta;
-		else
-			alpha = Global::get().iCodecAlpha;
-	}
-
-	if ((alpha != -1) && (alpha != Global::get().iCodecAlpha)) {
-		Global::get().iCodecAlpha = alpha;
-		if (pref && !Global::get().qmCodecs.contains(alpha))
-			pref = !pref;
-	}
-	if ((beta != -1) && (beta != Global::get().iCodecBeta)) {
-		Global::get().iCodecBeta = beta;
-		if (!pref && !Global::get().qmCodecs.contains(beta))
-			pref = !pref;
-	}
-	Global::get().bPreferAlpha = pref;
-
-	int willuse = pref ? Global::get().iCodecAlpha : Global::get().iCodecBeta;
-
-	static bool warnedCELT = false;
-
-	if (!Global::get().qmCodecs.contains(willuse)) {
-		if (!warnedCELT) {
-			Global::get().l->log(Log::CriticalError,
-								 tr("Unable to find matching CELT codecs with other clients. You will not be "
-									"able to talk to all users."));
-			warnedCELT = true;
-		}
-	} else {
-		warnedCELT = false;
+		Global::get().sh->disconnect();
 	}
 }
 
@@ -1301,9 +1261,13 @@ void MainWindow::msgRequestBlob(const MumbleProto::RequestBlob &) {
 ///
 /// @param msg The message object containing the suggestions
 void MainWindow::msgSuggestConfig(const MumbleProto::SuggestConfig &msg) {
-	if (msg.has_version() && (msg.version() > Version::getRaw())) {
-		Global::get().l->log(Log::Warning,
-							 tr("The server requests minimum client version %1").arg(Version::toString(msg.version())));
+	Version::full_t requestedVersion = MumbleProto::getSuggestedVersion(msg);
+	if (requestedVersion <= Version::get()) {
+		requestedVersion = Version::UNKNOWN;
+	}
+	if (requestedVersion != Version::UNKNOWN) {
+		Global::get().l->log(
+			Log::Warning, tr("The server requests minimum client version %1").arg(Version::toString(requestedVersion)));
 	}
 	if (msg.has_positional() && (msg.positional() != Global::get().s.doPositionalAudio())) {
 		if (msg.positional())

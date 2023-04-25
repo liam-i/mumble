@@ -1,4 +1,4 @@
-// Copyright 2010-2022 The Mumble Developers. All rights reserved.
+// Copyright 2010-2023 The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -6,8 +6,8 @@
 #include "UserInformation.h"
 
 #include "Audio.h"
-#include "CELTCodec.h"
 #include "HostAddress.h"
+#include "ProtoUtils.h"
 #include "QtUtils.h"
 #include "ServerHandler.h"
 #include "ViewCert.h"
@@ -128,21 +128,16 @@ void UserInformation::update(const MumbleProto::UserStats &msg) {
 		showcon = true;
 
 		const MumbleProto::Version &mpv = msg.version();
-
-		qlVersion->setText(tr("%1 (%2)").arg(Version::toString(mpv.version())).arg(u8(mpv.release())));
+		Version::full_t version         = MumbleProto::getVersion(mpv);
+		qlVersion->setText(tr("%1 (%2)").arg(Version::toString(version)).arg(u8(mpv.release())));
 		qlOS->setText(tr("%1 (%2)").arg(u8(mpv.os())).arg(u8(mpv.os_version())));
-	}
-	if (msg.celt_versions_size() > 0) {
-		QStringList qsl;
-		for (int i = 0; i < msg.celt_versions_size(); ++i) {
-			int v         = msg.celt_versions(i);
-			CELTCodec *cc = Global::get().qmCodecs.value(v);
-			if (cc)
-				qsl << cc->version();
-			else
-				qsl << QString::number(v, 16);
+
+		if (Version::getPatch(version) == 255) {
+			// The patch level 255 might indicate that the server is incapable of parsing
+			// the new version format (or the patch level is actually exactly 255).
+			// Show a warning to the user just in case.
+			qlVersionNote->show();
 		}
-		qlCELT->setText(qsl.join(tr(", ")));
 	}
 	if (msg.has_opus()) {
 		qlOpus->setText(msg.opus() ? tr("Supported") : tr("Not Supported"));

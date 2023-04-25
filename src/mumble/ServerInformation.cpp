@@ -1,10 +1,9 @@
-// Copyright 2021-2022 The Mumble Developers. All rights reserved.
+// Copyright 2021-2023 The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
 
 #include "ServerInformation.h"
-#include "CELTCodec.h"
 #include "Connection.h"
 #include "MainWindow.h"
 #include "NetworkConfig.h"
@@ -71,21 +70,14 @@ void ServerInformation::updateServerInformation() {
 	serverInfo_host->setText(host);
 	serverInfo_port->setText(QString::number(port));
 	serverInfo_users->setText(QString::fromLatin1("%1 / %2").arg(userCount).arg(maxUserCount));
-	serverInfo_protocol->setText(Version::toString(Global::get().sh->uiVersion));
+	serverInfo_protocol->setText(Version::toString(Global::get().sh->m_version));
 	serverInfo_release->setText(release);
 	serverInfo_os->setText(os);
 }
 
 static const QString currentCodec() {
-	if (Global::get().bOpus)
-		return QLatin1String("Opus");
-
-	int v         = Global::get().bPreferAlpha ? Global::get().iCodecAlpha : Global::get().iCodecBeta;
-	CELTCodec *cc = Global::get().qmCodecs.value(v);
-	if (cc)
-		return QString::fromLatin1("CELT %1").arg(cc->version());
-	else
-		return QString::fromLatin1("CELT %1").arg(QString::number(v, 16));
+	// We now always use Opus
+	return "Opus";
 }
 
 void ServerInformation::updateAudioBandwidth() {

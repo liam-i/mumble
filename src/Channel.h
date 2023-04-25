@@ -1,4 +1,4 @@
-// Copyright 2007-2022 The Mumble Developers. All rights reserved.
+// Copyright 2007-2023 The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -15,6 +15,7 @@
 
 #ifdef MUMBLE
 #	include <atomic>
+#	include "ChannelFilterMode.h"
 #endif
 
 class User;
@@ -71,7 +72,12 @@ public:
 
 #ifdef MUMBLE
 	unsigned int uiPermissions;
-	bool bFiltered;
+
+	ChannelFilterMode m_filterMode;
+
+	void setFilterMode(ChannelFilterMode filterMode);
+	void clearFilterMode();
+	bool isFiltered() const;
 
 	static QHash< int, Channel * > c_qhChannels;
 	static QReadWriteLock c_qrwlChannels;

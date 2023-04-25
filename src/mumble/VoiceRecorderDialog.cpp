@@ -1,4 +1,4 @@
-// Copyright 2010-2022 The Mumble Developers. All rights reserved.
+// Copyright 2010-2023 The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -113,7 +113,7 @@ void VoiceRecorderDialog::on_qpbStart_clicked() {
 		return;
 	}
 
-	if (Global::get().sh->uiVersion < 0x010203) {
+	if (Global::get().sh->m_version < Version::fromComponents(1, 2, 3)) {
 		QMessageBox::critical(this, tr("Recorder"),
 							  tr("The server you are currently connected to is version 1.2.2 or older. "
 								 "For privacy reasons, recording on servers of versions older than 1.2.3 "

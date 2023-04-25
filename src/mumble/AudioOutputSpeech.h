@@ -1,4 +1,4 @@
-// Copyright 2011-2022 The Mumble Developers. All rights reserved.
+// Copyright 2011-2023 The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -6,26 +6,22 @@
 #ifndef MUMBLE_MUMBLE_AUDIOOUTPUTSPEECH_H_
 #define MUMBLE_MUMBLE_AUDIOOUTPUTSPEECH_H_
 
-#include <celt.h>
-#include <speex/speex.h>
 #include <speex/speex_jitter.h>
 #include <speex/speex_resampler.h>
 
 #include <QtCore/QMutex>
 
+#include "AudioOutputBuffer.h"
 #include "AudioOutputCache.h"
-#include "AudioOutputUser.h"
 #include "MumbleProtocol.h"
 
 #include <mutex>
 #include <vector>
 
-class CELTCodec;
-class OpusCodec;
 class ClientUser;
 struct OpusDecoder;
 
-class AudioOutputSpeech : public AudioOutputUser {
+class AudioOutputSpeech : public AudioOutputBuffer {
 private:
 	Q_OBJECT
 	Q_DISABLE_COPY(AudioOutputSpeech)
@@ -58,14 +54,7 @@ protected:
 	JitterBuffer *jbJitter;
 	int iMissCount;
 
-	CELTCodec *cCodec;
-	CELTDecoder *cdDecoder;
-
-	OpusCodec *oCodec;
 	OpusDecoder *opusState;
-
-	SpeexBits sbBits;
-	void *dsSpeex;
 
 	QList< QByteArray > qlFrames;
 

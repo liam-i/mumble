@@ -1,4 +1,4 @@
-// Copyright 2021 The Mumble Developers. All rights reserved.
+// Copyright 2022-2023 The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -8,7 +8,7 @@
 #include <algorithm>
 #include <cassert>
 
-#include <Tracy.hpp>
+#include <tracy/Tracy.hpp>
 
 AudioReceiver::AudioReceiver(ServerUser &receiver, Mumble::Protocol::audio_context_t context,
 							 const VolumeAdjustment &volumeAdjustment)
@@ -135,9 +135,9 @@ void AudioReceiverBuffer::preprocessBuffer(std::vector< AudioReceiver > &receive
 	// Note: The list doesn't contains any duplicate receivers
 	std::sort(receiverList.begin(), receiverList.end(), [](const AudioReceiver &lhs, const AudioReceiver &rhs) {
 		// 1. Sort into block of compatible protocol versions
-		if (!Mumble::Protocol::protocolVersionsAreCompatible(lhs.getReceiver().uiVersion,
-															 rhs.getReceiver().uiVersion)) {
-			return lhs.getReceiver().uiVersion < rhs.getReceiver().uiVersion;
+		if (!Mumble::Protocol::protocolVersionsAreCompatible(lhs.getReceiver().m_version,
+															 rhs.getReceiver().m_version)) {
+			return lhs.getReceiver().m_version < rhs.getReceiver().m_version;
 		}
 
 		// 2. Within each block, sort based on the audio context

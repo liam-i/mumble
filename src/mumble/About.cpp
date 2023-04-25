@@ -1,4 +1,4 @@
-// Copyright 2007-2022 The Mumble Developers. All rights reserved.
+// Copyright 2007-2023 The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -28,10 +28,13 @@ AboutDialog::AboutDialog(QWidget *p) : QDialog(p) {
 	qteLicense->setPlainText(License::license());
 	qteLicense->setAccessibleName(tr("License agreement"));
 
-	QTextEdit *qteAuthors = new QTextEdit(qtwTab);
-	qteAuthors->setReadOnly(true);
-	qteAuthors->setPlainText(License::authors());
-	qteAuthors->setAccessibleName(tr("Authors"));
+	QTextBrowser *authors = new QTextBrowser(qtwTab);
+	authors->setReadOnly(true);
+	authors->setOpenExternalLinks(true);
+	authors->setText(tr("For a list of authors, please see <a "
+						"href=\"https://github.com/mumble-voip/mumble/graphs/contributors\">https://github.com/"
+						"mumble-voip/mumble/graphs/contributors</a>"));
+	authors->setAccessibleName(tr("Authors"));
 
 	QTextBrowser *qtb3rdPartyLicense = new QTextBrowser(qtwTab);
 	qtb3rdPartyLicense->setReadOnly(true);
@@ -68,7 +71,7 @@ AboutDialog::AboutDialog(QWidget *p) : QDialog(p) {
 					 "<p>%3</p>"
 					 "<p><b>An Open Source, low-latency, high quality voice-chat utility</b></p>"
 					 "<p><tt><a href=\"%2\">%2</a></tt></p>")
-					  .arg(QLatin1String(MUMBLE_RELEASE))
+					  .arg(Version::getRelease())
 					  .arg(QLatin1String("https://www.mumble.info/"))
 					  .arg(copyrightText));
 	QHBoxLayout *qhbl = new QHBoxLayout(about);
@@ -77,7 +80,7 @@ AboutDialog::AboutDialog(QWidget *p) : QDialog(p) {
 
 	qtwTab->addTab(about, tr("&About Mumble"));
 	qtwTab->addTab(qteLicense, tr("&License"));
-	qtwTab->addTab(qteAuthors, tr("A&uthors"));
+	qtwTab->addTab(authors, tr("A&uthors"));
 	qtwTab->addTab(qtb3rdPartyLicense, tr("&Third-Party Licenses"));
 
 	QPushButton *okButton = new QPushButton(tr("OK"), this);

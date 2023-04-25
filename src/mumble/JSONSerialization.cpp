@@ -1,4 +1,4 @@
-// Copyright 2021 The Mumble Developers. All rights reserved.
+// Copyright 2022-2023 The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -149,11 +149,25 @@ void to_json(nlohmann::json &j, const Settings &settings) {
 	j[SettingsKeys::MUMBLE_QUIT_NORMALLY_KEY] = settings.mumbleQuitNormally;
 }
 
-void migrateSettings(nlohmann::json json, int settingsVersion) {
+void migrateSettings(nlohmann::json &json, int settingsVersion) {
 	// Perform conversions required to transform the given JSON into the format applicable to be read out by the most
 	// recent standards
 
-	(void) json;
+	// Check if the old ask_on_quit key exists and the new one does not exist within the json file
+	if (json.contains("ask_on_quit")
+		&& (!json.contains(static_cast< const char * >(SettingsKeys::QUIT_BEHAVIOR_KEY)))) {
+		if (!json.at("ask_on_quit").get< bool >()) {
+			json[SettingsKeys::QUIT_BEHAVIOR_KEY] = QuitBehavior::ALWAYS_QUIT;
+		} else {
+			json[SettingsKeys::QUIT_BEHAVIOR_KEY] = QuitBehavior::ALWAYS_ASK;
+		}
+	}
+
+	if (json.contains("play_transmit_cue")
+		&& (!json.contains(static_cast< const char * >(SettingsKeys::TRANSMIT_CUE_WHEN_PTT_KEY)))) {
+		json[SettingsKeys::TRANSMIT_CUE_WHEN_PTT_KEY] = json.at("play_transmit_cue").get< bool >();
+	}
+
 	(void) settingsVersion;
 }
 
@@ -204,9 +218,9 @@ void from_json(const nlohmann::json &j, Settings &settings) {
 	}
 
 #ifndef USE_RNNOISE
-	if (settings.noiseCancelMode == NoiseCancelRNN || settings.noiseCancelMode == NoiseCancelBoth) {
+	if (settings.noiseCancelMode == Settings::NoiseCancelRNN || settings.noiseCancelMode == Settings::NoiseCancelBoth) {
 		// Use Speex instead as this Mumble build was built without support for RNNoise
-		settings.noiseCancelMode = NoiseCancelSpeex;
+		settings.noiseCancelMode = Settings::NoiseCancelSpeex;
 	}
 #endif
 }

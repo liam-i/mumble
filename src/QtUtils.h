@@ -1,4 +1,4 @@
-// Copyright 2021-2022 The Mumble Developers. All rights reserved.
+// Copyright 2021-2023 The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -8,6 +8,8 @@
 
 #include <QCryptographicHash>
 #include <QString>
+
+#include <memory>
 
 class QObject;
 class QStringList;
@@ -34,6 +36,15 @@ namespace QtUtils {
 
 }; // namespace QtUtils
 }; // namespace Mumble
+
+template< typename T > using qt_unique_ptr = std::unique_ptr< T, decltype(&Mumble::QtUtils::deleteQObject) >;
+
+/// Creates a new unique_ptr with custom deleter for any given QObject*
+template< typename T, typename... Args > qt_unique_ptr< T > make_qt_unique(Args &&... args) {
+	static_assert(std::is_base_of< QObject, T >::value, "");
+
+	return qt_unique_ptr< T >{ new T(std::forward< Args >(args)...), Mumble::QtUtils::deleteQObject };
+}
 
 // For backwards compatibility we have to keep these functions in the global namespace
 inline QString u8(const ::std::string &str) {

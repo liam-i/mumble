@@ -1,4 +1,4 @@
-# Copyright 2020-2022 The Mumble Developers. All rights reserved.
+# Copyright 2020-2023 The Mumble Developers. All rights reserved.
 # Use of this source code is governed by a BSD-style license
 # that can be found in the LICENSE file at the root of the
 # Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -22,34 +22,18 @@ jobs:
     pool:
       vmImage: 'windows-2022'
     variables:
-      MUMBLE_ENVIRONMENT_VERSION: 'windows-static-1.5.x~2021-07-27~64f88807.x64'
+      MUMBLE_ENVIRONMENT_VERSION: 'windows-static-1.5.x~2022-05-17~cd7e2c9.x64'
       MUMBLE_ENVIRONMENT_TRIPLET: 'x64-windows-static-md'
-      VCVARS_PATH: 'C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvars64.bat'
     steps:
     - template: steps_windows.yml
       parameters:
         arch: 'x64'
 
-  - job: Windows_x86
-    workspace:
-      clean: all
-    timeoutInMinutes: 120
-    pool:
-      vmImage: 'windows-2022'
-    variables:
-      MUMBLE_ENVIRONMENT_VERSION: 'windows-static-1.5.x~2021-07-27~64f88807.x86'
-      MUMBLE_ENVIRONMENT_TRIPLET: 'x86-windows-static-md'
-      VCVARS_PATH: 'C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvarsamd64_x86.bat'
-    steps:
-    - template: steps_windows.yml
-      parameters:
-        arch: 'x86'
-
   - job: Linux
     workspace:
       clean: all
     pool:
-      vmImage: 'ubuntu-18.04'
+      vmImage: 'ubuntu-20.04'
     steps:
     - template: steps_linux.yml
 
@@ -57,11 +41,10 @@ jobs:
     workspace:
       clean: all
     pool:
-      name: "Default"
-      demands:
-      - agent.os -equals Darwin
+      vmImage: 'macOS-11'
     variables:
-      MUMBLE_ENVIRONMENT_STORE: '~/MumbleBuild'
-      MUMBLE_ENVIRONMENT_VERSION: 'latest-1.5.x'
+      MUMBLE_ENVIRONMENT_VERSION: 'macos-static-1.5.x~2022-05-17~cd7e2c9.x64'
     steps:
     - template: steps_macos.yml
+      parameters:
+        installEnvironment: true

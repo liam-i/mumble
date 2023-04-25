@@ -1,4 +1,4 @@
-// Copyright 2014-2022 The Mumble Developers. All rights reserved.
+// Copyright 2014-2023 The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -38,7 +38,7 @@ void MumbleApplication::onCommitDataRequest(QSessionManager &) {
 	if (Global::get().mw) {
 		Global::get().s.mumbleQuitNormally = true;
 		Global::get().s.save();
-		Global::get().mw->bSuppressAskOnQuit = true;
+		Global::get().mw->forceQuit = true;
 		qWarning() << "Session likely ending. Suppressing ask on quit";
 	}
 }

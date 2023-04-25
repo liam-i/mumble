@@ -1,4 +1,4 @@
-# Copyright 2020-2022 The Mumble Developers. All rights reserved.
+# Copyright 2020-2023 The Mumble Developers. All rights reserved.
 # Use of this source code is governed by a BSD-style license
 # that can be found in the LICENSE file at the root of the
 # Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -14,6 +14,7 @@ if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.20.0")
 endif()
 
 set(BUILD_NUMBER CACHE STRING "The build number of the current build. Will be used in Mumble's version to make sure newer builds upgrade older installations properly.")
+set(BUILD_RELEASE_DATE CACHE STRING "The release date to be used in the generated appstream metadata.")
 
 if ("${BUILD_NUMBER}" STREQUAL "")
 	if(packaging)
@@ -27,7 +28,7 @@ endif()
 string(TIMESTAMP MUMBLE_BUILD_YEAR "%Y")
 
 project(Mumble
-	VERSION "1.5.${BUILD_NUMBER}"
+	VERSION "1.6.${BUILD_NUMBER}"
 	DESCRIPTION "Open source, low-latency, high quality voice chat."
 	HOMEPAGE_URL "https://www.mumble.info"
 	LANGUAGES "C" "CXX"
@@ -50,6 +51,21 @@ include(pkg-utils)
 include(project-utils)
 include(TargetArch)
 include(CheckIPOSupported)
+include(FindPythonInterpreter)
+
+# Locate a usable Python3 interpreter
+set(PYTHON_HINTS
+	"C:/Python39-x64" # Path on the AppVeyor CI server
+)
+
+find_python_interpreter(
+	VERSION 3
+	INTERPRETER_OUT_VAR PYTHON_INTERPRETER
+	HINTS ${PYTHON_HINTS}
+	REQUIRED
+)
+
+
 
 check_ipo_supported(RESULT LTO_DEFAULT)
 
@@ -60,8 +76,10 @@ option(static "Build static binaries." OFF)
 option(symbols "Build binaries in a way that allows easier debugging." OFF)
 option(warnings-as-errors "All warnings are treated as errors." ON)
 
+option(client "Build the client (Mumble)" ON)
+option(server "Build the server (Murmur)" ON)
 if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "OpenBSD")
-	option(overlay "Build overlay." ON)
+	option(overlay "Build overlay." ${client})
 endif()
 option(packaging "Build package." OFF)
 option(tests "Build tests." ${packaging})
@@ -76,12 +94,9 @@ elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
         "-DDEBUG"
         "-DSNAPSHOT_BUILD"
     )
-
-	# Disable LTO in Debug builds in order to reduce time required for linking
-	set(LTO_DEFAULT OFF)
 endif()
 
-option(lto "Enables link-time optimizations" ${LTO_DEFAULT})
+option(lto "Enables link-time optimizations for release builds" ${LTO_DEFAULT})
 
 include(compiler)
 include(os)
@@ -90,14 +105,14 @@ target_architecture(MUMBLE_TARGET_ARCH)
 string(TOLOWER "${MUMBLE_TARGET_ARCH}" MUMBLE_TARGET_ARCH)
 
 message(STATUS "##################################################")
-message(STATUS "Mumble version:          ${PROJECT_VERSION}")
-message(STATUS "Architecture:            ${MUMBLE_TARGET_ARCH}")
+message(STATUS "Mumble version:              ${PROJECT_VERSION}")
+message(STATUS "Architecture:                ${MUMBLE_TARGET_ARCH}")
 if(NOT IS_MULTI_CONFIG)
-    message(STATUS "Build type:              ${CMAKE_BUILD_TYPE}")
+    message(STATUS "Build type:                  ${CMAKE_BUILD_TYPE}")
 else()
     message(STATUS "Using multi-config generator that will determine build type on-the-fly")
 endif()
-message(STATUS "Using LTO:               ${lto}")
+message(STATUS "Using LTO in release builds: ${lto}")
 message(STATUS "##################################################")
 
 include(install-paths)
@@ -144,21 +159,24 @@ add_compile_definitions(MUMBLE_TARGET_OS="${MUMBLE_TARGET_OS}")
 
 
 set(CMAKE_UNITY_BUILD_BATCH_SIZE 40)
+set(CMAKE_INTERPROCEDURAL_OPTIMIZATION_RELEASE ${lto})
 
-add_subdirectory(src)
-
-if(g15 AND WIN32)
-	add_subdirectory(g15helper)
+if(client OR server)
+	add_subdirectory(src)
 endif()
 
-if(APPLE AND CMAKE_SYSTEM_PROCESSOR MATCHES "arm64")
+if(g15 AND WIN32)
+	add_subdirectory("helpers/g15helper")
+endif()
+
+if(APPLE AND MUMBLE_TARGET_ARCH MATCHES "arm.*")
 	# mach_override doesn't support ARM
 	# https://github.com/rentzsch/mach_override/issues/6
 	set(overlay OFF CACHE BOOL "" FORCE)
 	message(STATUS "Disabling the overlay on ARM macOS")
 endif()
 
-if(overlay AND client)
+if(overlay)
 	if(WIN32)
 		add_subdirectory(overlay)
 	else()
@@ -173,6 +191,8 @@ endif()
 if(plugins AND client)
 	add_subdirectory(plugins)
 endif()
+
+add_subdirectory(auxiliary_files)
 
 if(packaging)
 	file(COPY 

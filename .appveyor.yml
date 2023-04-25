@@ -1,9 +1,9 @@
-# Copyright 2021-2022 The Mumble Developers. All rights reserved.
+# Copyright 2021-2023 The Mumble Developers. All rights reserved.
 # Use of this source code is governed by a BSD-style license
 # that can be found in the LICENSE file at the root of the
 # Mumble source tree or at <https://www.mumble.info/LICENSE>.
 
-image: Visual Studio 2019
+image: Visual Studio 2022
 
 clone_depth: 1
 skip_branch_with_pr: true
@@ -23,11 +23,7 @@ environment:
 
   matrix:
     - MUMBLE_ENVIRONMENT_TRIPLET: 'x64-windows-static-md'
-      MUMBLE_ENVIRONMENT_VERSION: 'windows-static-1.5.x~2021-07-27~64f88807.x64'
-      VCVARS_PATH: 'C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/VC/Auxiliary/Build/vcvars64.bat'
-    - MUMBLE_ENVIRONMENT_TRIPLET: 'x86-windows-static-md'
-      MUMBLE_ENVIRONMENT_VERSION: 'windows-static-1.5.x~2021-07-27~64f88807.x86'
-      VCVARS_PATH: 'C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/VC/Auxiliary/Build/vcvarsamd64_x86.bat'
+      MUMBLE_ENVIRONMENT_VERSION: 'windows-static-1.5.x~2022-05-17~cd7e2c9.x64'
 
 install:
   - ps: .ci/install-environment_windows.ps1
@@ -47,6 +43,6 @@ artifacts:
 
 deploy:
   - provider: Webhook
-    url: https://app.signpath.io/API/v1/79916aba-7a9f-448d-91c6-fb83593b59d3/Integrations/AppVeyor?ProjectSlug=mumble&SigningPolicySlug=test-signing
+    url: https://app.signpath.io/API/v1/79916aba-7a9f-448d-91c6-fb83593b59d3/Integrations/AppVeyor?ProjectSlug=mumble&SigningPolicySlug=release-signing
     authorization:
       secure: WKbGSfFSHTtODf6eHRSHPAobctJli48O/VoMpCYTuIlITl2piOpCH6igCRDX4EuJTzgDX45H34tVfPuNzSMdLA==

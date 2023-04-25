@@ -649,6 +649,10 @@ This value allows you to set the maximum number of users allowed in the channel.
         <source>&lt;h3&gt;Mumble (%1)&lt;/h3&gt;&lt;p&gt;%3&lt;/p&gt;&lt;p&gt;&lt;b&gt;An Open Source, low-latency, high quality voice-chat utility&lt;/b&gt;&lt;/p&gt;&lt;p&gt;&lt;tt&gt;&lt;a href=&quot;%2&quot;&gt;%2&lt;/a&gt;&lt;/tt&gt;&lt;/p&gt;</source>
         <translation>&lt;h3&gt;Mumble (%1)&lt;/h3&gt;&lt;p&gt;%3&lt;/p&gt;&lt;p&gt;&lt;b&gt;Голосового чат с открытым исходным кодом, низкой задержкой и высоким качеством&lt;/b&gt;&lt;/p&gt;&lt;p&gt;&lt;tt&gt;&lt;a href=&quot;%2&quot;&gt;%2&lt;/a&gt;&lt;/tt&gt;&lt;/p&gt;</translation>
     </message>
+    <message>
+        <source>For a list of authors, please see &lt;a href=&quot;https://github.com/mumble-voip/mumble/graphs/contributors&quot;&gt;https://github.com/mumble-voip/mumble/graphs/contributors&lt;/a&gt;</source>
+        <translation>Список авторов смотрите на сайте &lt;a href=&quot;https://github.com/mumble-voip/mumble/graphs/contributors&quot;&gt;https://github.com/mumble-voip/mumble/graphs/contributors&lt;/a&gt;</translation>
+    </message>
 </context>
 <context>
     <name>AudioInput</name>
@@ -905,18 +909,6 @@ This value allows you to set the maximum number of users allowed in the channel.
         <translation>Разное</translation>
     </message>
     <message>
-        <source>Audible audio cue when starting or stopping to transmit</source>
-        <translation>Звуковой сигнал при передаче речи</translation>
-    </message>
-    <message>
-        <source>&lt;b&gt;This enables transmission audio cues.&lt;/b&gt;&lt;br /&gt;Setting this will give you a short audio beep when you start and stop transmitting.</source>
-        <translation>&lt;b&gt;Включить звуковое сопровождение кнопки передачи речи.&lt;/b&gt;&lt;br /&gt;Эта опция включит проигрывание короткого звука, когда Вы нажимаете и отпускаете кнопку для передачи речи.</translation>
-    </message>
-    <message>
-        <source>Audio cue</source>
-        <translation>Звук PTT</translation>
-    </message>
-    <message>
         <source>Gets played when starting to transmit</source>
         <translation>Звучит перед началом передачи речи</translation>
     </message>
@@ -1035,6 +1027,34 @@ This value allows you to set the maximum number of users allowed in the channel.
     <message>
         <source>Pre&amp;view</source>
         <translation>&amp;Предпросмотр</translation>
+    </message>
+    <message>
+        <source>Audio cue when using...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Audible audio cue when starting or stopping to transmit using Push To Talk</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;b&gt;This enables transmission audio cues when using Push To Talk.&lt;/b&gt;&lt;br /&gt;Setting this will give you a short audio beep when you start and stop transmitting.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Push To Talk</source>
+        <translation type="unfinished">Активация по кнопке</translation>
+    </message>
+    <message>
+        <source>Audible audio cue when starting or stopping to transmit using Voice Activity</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;b&gt;This enables transmission audio cues when using Voice Activity.&lt;/b&gt;&lt;br /&gt;Setting this will give you a short audio beep when you start and stop transmitting.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Voice Activity</source>
+        <translation type="unfinished">Активация по голосу</translation>
     </message>
 </context>
 <context>
@@ -1435,6 +1455,10 @@ This value allows you to set the maximum number of users allowed in the channel.
     <message>
         <source> m</source>
         <translation> m</translation>
+    </message>
+    <message>
+        <source>Positional audio cannot work with mono output devices!</source>
+        <translation>Позиционирование звука не может работать с устройствами с монофоническим выходом!</translation>
     </message>
 </context>
 <context>
@@ -3054,10 +3078,6 @@ Are you sure you wish to replace your certificate?
         <translation>Порт</translation>
     </message>
     <message>
-        <source>Addresses</source>
-        <translation>IP-адрес</translation>
-    </message>
-    <message>
         <source>Website</source>
         <translation>Веб-сайт</translation>
     </message>
@@ -3088,6 +3108,14 @@ Are you sure you wish to replace your certificate?
     <message>
         <source>Version</source>
         <translation>Версия</translation>
+    </message>
+    <message>
+        <source>IPv4 address</source>
+        <translation>IPv4-адрес</translation>
+    </message>
+    <message>
+        <source>IPv6 address</source>
+        <translation>IPv6-адрес</translation>
     </message>
 </context>
 <context>
@@ -3411,8 +3439,8 @@ Without this option enabled, using Mumble&apos;s global shortcuts in privileged 
         <translation>Включить горячие клавиши в привилегированных приложениях</translation>
     </message>
     <message>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Mumble&apos;s Global Shortcuts system does currently not work in combination with the Wayland protocol. For more information, visit &lt;a href=&quot;https://github.com/mumble-voip/mumble/issues/5257&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0057ae;&quot;&gt;https://github.com/mumble-voip/mumble/issues/5257&lt;/span&gt;&lt;/a&gt;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Система глобальных ярлыков Mumble в настоящее время не работает в сочетании с протоколом Wayland. Для получения дополнительной информации посетите &lt;a href=&quot;https://github.com/mumble-voip/mumble/issues/5257&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0057ae;&quot;&gt;https://github.com/mumble-voip/mumble/issues/5257&lt;/span&gt;&lt;/a&gt;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Mumble&apos;s Global Shortcuts system does currently not work properly in combination with the Wayland protocol. For more information, visit &lt;a href=&quot;https://github.com/mumble-voip/mumble/issues/5257&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0057ae;&quot;&gt;https://github.com/mumble-voip/mumble/issues/5257&lt;/span&gt;&lt;/a&gt;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Система глобальных горячих клавиш Mumble в настоящее время не работает должным образом в сочетании с протоколом Wayland. Для получения дополнительной информации посетите &lt;a href=&quot;https://github.com/mumble-voip/mumble/issues/5257&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0057ae;&quot;&gt;https://github.com/mumble-voip/mumble/issues/5257&lt;/span&gt;&lt;/a&gt;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
 </context>
 <context>
@@ -3685,13 +3713,6 @@ This field describes the size of an LCD device. The size is given either in pixe
     </message>
 </context>
 <context>
-    <name>ListenerLocalVolumeDialog</name>
-    <message>
-        <source>Adjusting local volume for listening to %1</source>
-        <translation>Локальная громкость прослушивания установлена на %1</translation>
-    </message>
-</context>
-<context>
     <name>Log</name>
     <message>
         <source>Debug</source>
@@ -3859,6 +3880,10 @@ This field describes the size of an LCD device. The size is given either in pixe
         <source>Plugin message</source>
         <translation>Сообщение плагина</translation>
     </message>
+    <message>
+        <source>[embedded content]</source>
+        <translation>[встроенный контент]</translation>
+    </message>
 </context>
 <context>
     <name>LogConfig</name>
@@ -3944,10 +3969,6 @@ This field describes the size of an LCD device. The size is given either in pixe
     <message>
         <source>Text To Speech</source>
         <translation>Текст в речь</translation>
-    </message>
-    <message>
-        <source>Volume</source>
-        <translation>Громкость</translation>
     </message>
     <message>
         <source>Volume of Text-To-Speech Engine</source>
@@ -4063,7 +4084,7 @@ The setting only applies for new messages, the already shown ones will retain th
     </message>
     <message>
         <source>Misc.</source>
-        <translation>Разное.</translation>
+        <translation>Прочее</translation>
     </message>
     <message>
         <source>Number of users that will trigger message limiting functionality.</source>
@@ -4100,6 +4121,50 @@ The setting only applies for new messages, the already shown ones will retain th
     <message>
         <source>Click here to toggle limiting for %1 events.&lt;br /&gt;If checked, notifications for this event type will not be played when the user count on the server exceeds the set threshold.</source>
         <translation>Нажмите здесь, чтобы включить ограничение для событий %1.&lt;br /&gt;Если отмечено, уведомления для этого типа событий не будут звучать когда количество пользователей на сервере превышает установленный порог.</translation>
+    </message>
+    <message>
+        <source>Message Volume</source>
+        <translation>Громкость уведомлений</translation>
+    </message>
+    <message>
+        <source>Volume adjustment for audio cues</source>
+        <translation>Регулировка громкости для звуковых сигналов</translation>
+    </message>
+    <message>
+        <source>&lt;b&gt;This is the volume adjustment for audio cues.&lt;/b&gt;&lt;br /&gt;A value of 0 dB means no change to the sound sample.</source>
+        <translation>&lt;b&gt;Это регулировка громкости для звуковых сигналов.&lt;/b&gt;&lt;br /&gt;Значение 0 дБ означает отсутствие изменений в звуке.</translation>
+    </message>
+    <message>
+        <source> dB</source>
+        <translation> дБ</translation>
+    </message>
+    <message>
+        <source>Text-to-Speech volume</source>
+        <translation>Громкость преобразования текста в речь</translation>
+    </message>
+    <message>
+        <source>Notification volume adjustment</source>
+        <translation>Регулировка громкости уведомлений</translation>
+    </message>
+    <message>
+        <source>Volume adjustment for notification sounds</source>
+        <translation>Регулировка громкости звуков уведомлений</translation>
+    </message>
+    <message>
+        <source>&lt;b&gt;This is the volume adjustment for notification sounds.&lt;/b&gt;&lt;br /&gt;A value of 0 dB means no change to the sound sample.</source>
+        <translation>&lt;b&gt;Это регулировка громкости для звуков уведомлений.&lt;/b&gt;&lt;br /&gt;Значение 0 дБ означает отсутствие изменений в звуке.</translation>
+    </message>
+    <message>
+        <source>Audio cue volume adjustment</source>
+        <translation>Регулировка громкости звукового сигнала</translation>
+    </message>
+    <message>
+        <source> %</source>
+        <translation> %</translation>
+    </message>
+    <message>
+        <source>Notification sound volume adjustment</source>
+        <translation>Регулировка громкости звука уведомления</translation>
     </message>
 </context>
 <context>
@@ -4156,10 +4221,6 @@ The setting only applies for new messages, the already shown ones will retain th
     <message>
         <source>Users above Channels</source>
         <translation>Пользователи над каналами</translation>
-    </message>
-    <message>
-        <source>&lt;b&gt;If set, will verify you want to quit if connected.&lt;/b&gt;</source>
-        <translation>&lt;b&gt;Если отмечено, нужно будет подтвердить попытку закрыть Mumble, если Вы подключены к серверу.&lt;/b&gt;</translation>
     </message>
     <message>
         <source>Show number of users in each channel</source>
@@ -4225,14 +4286,6 @@ The setting only applies for new messages, the already shown ones will retain th
     <message>
         <source>Channel Dragging</source>
         <translation>Перетаскивание канала</translation>
-    </message>
-    <message>
-        <source>Ask whether to close or minimize when quitting Mumble.</source>
-        <translation>Спрашивать Закрыть или Свернуть Mumble при закрытии.</translation>
-    </message>
-    <message>
-        <source>Ask on quit while connected</source>
-        <translation>Спрашивать о выходе, когда подключен к серверу</translation>
     </message>
     <message>
         <source>Always On Top</source>
@@ -4538,6 +4591,38 @@ The setting only applies for new messages, the already shown ones will retain th
         <source>Action (Channel):</source>
         <translation>Действие (Канал):</translation>
     </message>
+    <message>
+        <source>Quit Behavior</source>
+        <translation>Поведение при выходе</translation>
+    </message>
+    <message>
+        <source>This setting controls the behavior of clicking on the X in the top right corner.</source>
+        <translation>Этот параметр управляет поведением при нажатии на X в правом верхнем углу.</translation>
+    </message>
+    <message>
+        <source>This setting controls the behavior when closing Mumble. You can choose between being asked for confirmation, minimize instead if closing or just closing without any additional prompt. Optionally, the first two options can only apply when you are currently connected to a server (in that case, Mumble will quit without asking, when not connected to any server).</source>
+        <translation>Этот параметр управляет поведением при закрытии Mumble. Вы можете выбрать между запросом на подтверждение, сворачиванием вместо закрытия или просто закрытием без какого-либо дополнительного запроса. По желанию, первые две опции могут применяться только тогда, когда вы в данный момент подключены к серверу (в этом случае Mumble будет выходить без запроса, когда не подключен ни к какому серверу).</translation>
+    </message>
+    <message>
+        <source>Always Ask</source>
+        <translation>Всегда спрашивать</translation>
+    </message>
+    <message>
+        <source>Ask when connected</source>
+        <translation>Спрашивать если подключен к серверу</translation>
+    </message>
+    <message>
+        <source>Always Minimize</source>
+        <translation>Всегда сворачивать</translation>
+    </message>
+    <message>
+        <source>Minimize when connected</source>
+        <translation>Сворачивать если подключен к серверу</translation>
+    </message>
+    <message>
+        <source>Always Quit</source>
+        <translation>Всегда выходить</translation>
+    </message>
 </context>
 <context>
     <name>MainWindow</name>
@@ -4630,10 +4715,6 @@ The setting only applies for new messages, the already shown ones will retain th
         <translation>Закрыть</translation>
     </message>
     <message>
-        <source>Mumble is currently connected to a server. Do you want to Close or Minimize it?</source>
-        <translation>В настоящий момент Mumble подключен к серверу.&lt;br /&gt;Вы хотите Закрыть его или Свернуть в трей?</translation>
-    </message>
-    <message>
         <source>Mute Self</source>
         <comment>Global Shortcut</comment>
         <translation>Выключить микрофон</translation>
@@ -4692,10 +4773,6 @@ The setting only applies for new messages, the already shown ones will retain th
     <message>
         <source>URL scheme is not &apos;mumble&apos;</source>
         <translation>Схема ссылки не &apos;mumble&apos;</translation>
-    </message>
-    <message>
-        <source>This version of Mumble can&apos;t handle URLs for Mumble version %1.%2.%3</source>
-        <translation>Эта версия Mumble не может использовать ссылки из Mumble версий %1.%2.%3</translation>
     </message>
     <message>
         <source>Connecting to %1</source>
@@ -5675,10 +5752,6 @@ Otherwise abort and check your certificate and username.</source>
         <translation>Сервер</translation>
     </message>
     <message>
-        <source>Failed to load Opus, it will not be available for audio encoding/decoding.</source>
-        <translation>Не удалось загрузить Opus, он не будет доступен для кодирования/декодирования звука.</translation>
-    </message>
-    <message>
         <source>The server requests minimum client version %1</source>
         <translation>Сервер запрашивает минимальную версию клиента %1</translation>
     </message>
@@ -5725,10 +5798,6 @@ Otherwise abort and check your certificate and username.</source>
     <message>
         <source>%1 unmuted by %2.</source>
         <translation>%2 включил микрофон у %1.</translation>
-    </message>
-    <message>
-        <source>Unable to find matching CELT codecs with other clients. You will not be able to talk to all users.</source>
-        <translation>Не найдены соответствующие CELT-кодеки у других пользователей. Вы не сможете говорить со всеми пользователями.</translation>
     </message>
     <message>
         <source>You were muted and deafened by %1.</source>
@@ -5924,10 +5993,6 @@ Otherwise abort and check your certificate and username.</source>
         <translation>Позволяет изменить список банов по IP на сервере.</translation>
     </message>
     <message>
-        <source>&amp;Filter on/off</source>
-        <translation>&amp;Фильтр вкл/выкл</translation>
-    </message>
-    <message>
         <source>Enable or disable the filtering of select channels.
 By default all empty channels will be filtered.
 You can mark additional channels for filtering from
@@ -5948,14 +6013,6 @@ the channel&apos;s context menu.</source>
     <message>
         <source>Reset the avatar of the selected user.</source>
         <translation>Удалить аватар выбранного пользователя.</translation>
-    </message>
-    <message>
-        <source>Locally adjust the user&apos;s speech volume.</source>
-        <translation>Локально настроить громкость речи пользователя.</translation>
-    </message>
-    <message>
-        <source>Opens a dialog with a volume slider. Use this on other users in the same room.</source>
-        <translation>Открывает диалог с ползунком громкости. Используйте его на других пользователей в той же комнате.</translation>
     </message>
     <message>
         <source>&amp;Developer</source>
@@ -6000,10 +6057,6 @@ the channel&apos;s context menu.</source>
     <message>
         <source>&amp;Ban...</source>
         <translation>За&amp;банить...</translation>
-    </message>
-    <message>
-        <source>Local Volume Adjustment...</source>
-        <translation>Локальная регулировка громкости ...</translation>
     </message>
     <message>
         <source>Send &amp;Message...</source>
@@ -6112,10 +6165,6 @@ the channel&apos;s context menu.</source>
     <message>
         <source>Listen to this channel without joining it</source>
         <translation>Слушать этот канал, не присоединяясь к нему</translation>
-    </message>
-    <message>
-        <source>Locally adjust the volume for this virtual ear.</source>
-        <translation>Локально настроить громкость этого виртуального уха.</translation>
     </message>
     <message>
         <source>&amp;Listener</source>
@@ -6356,6 +6405,48 @@ Valid actions are:
         <translation>Обнаружен недопустимый файл настроек.</translation>
     </message>
     <message>
+        <source>You are currently in minimal view but not connected to a server. Use the context menu to connect to a server or disable minimal view.</source>
+        <translation>В настоящее время вы находитесь в режиме минималистичного вида, но не подключены к серверу. Используйте контекстное меню, чтобы подключиться к серверу или отключить минималистичный вид.</translation>
+    </message>
+    <message>
+        <source>Local Volume Adjustment:</source>
+        <translation>Локальная регулировка громкости:</translation>
+    </message>
+    <message>
+        <source>This version of Mumble can&apos;t handle URLs for Mumble version %1</source>
+        <translation>Эта версия Mumble не может использовать ссылки из Mumble версий %1</translation>
+    </message>
+    <message>
+        <source>Listen to Channel</source>
+        <comment>Global Shortcut</comment>
+        <translation>Слушать канал</translation>
+    </message>
+    <message>
+        <source>Toggles listening to the given channel.</source>
+        <comment>Global Shortcut</comment>
+        <translation>Переключает прослушивание заданного канала.</translation>
+    </message>
+    <message>
+        <source>Server instructed us to use an audio codec different from Opus, which is no longer supported. Disconnecting...</source>
+        <translation>Сервер сообщил нам использовать аудиокодек, отличный от Opus, который больше не поддерживается. Отключение…</translation>
+    </message>
+    <message>
+        <source>Are you sure you want to close Mumble? Perhaps you prefer to minimize it instead?</source>
+        <translation>Вы уверены, что хотите закрыть Mumble? Возможно, вы хотите свернуть его?</translation>
+    </message>
+    <message>
+        <source>Remember this setting</source>
+        <translation>Запомнить эту настройку</translation>
+    </message>
+    <message>
+        <source>Channel &amp;Filter</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Pin Channel when Filtering</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Usage: mumble [options] [&lt;url&gt; | &lt;plugin_list&gt;]
 
 &lt;url&gt; specifies a URL to connect to after startup instead of showing
@@ -6368,7 +6459,7 @@ correct client version. It currently defaults to 1.2.0.
 
 Valid options are:
   -h, --help    Show this help text and exit.
-  -V, --version Print version information and exit
+  --version     Print version information and exit
   -m, --multiple
                 Allow multiple instances of the client to be started.
   -c, --config
@@ -6401,9 +6492,9 @@ Valid options are:
                 Print on stdout the echo cancellation queue state
                 (useful for debugging purposes)
   --translation-dir &lt;dir&gt;
-                Specifies an additional translation fir &lt;dir&gt; in which
-                Mumble will search for translation files that overwrite
-                the bundled ones
+                Specifies an additional translation directory &lt;dir&gt;
+                in which Mumble will search for translation files that
+                overwrite the bundled ones
                 Directories added this way have higher priority than
                 the default locations used otherwise
   --print-translation-dirs
@@ -7566,10 +7657,6 @@ To upgrade these files to their latest versions, click the button below.</source
 <context>
     <name>QObject</name>
     <message>
-        <source>CodecInit: Failed to load Opus, it will not be available for encoding/decoding audio.</source>
-        <translation>CodecInit: не удалось загрузить Opus, он не будет доступен для кодирования/декодирования звука.</translation>
-    </message>
-    <message>
         <source>Talking UI</source>
         <translation>Интерфейс диалога</translation>
     </message>
@@ -7755,6 +7842,10 @@ You can register them again.</source>
         <source>Access to the microphone was denied due to system restrictions. You will not be able to use the microphone in this session.</source>
         <translation>В доступе к микрофону отказано из-за системных ограничений. Вы не сможете использовать микрофон в этом сеансе.</translation>
     </message>
+    <message>
+        <source>Unknown Version</source>
+        <translation>Неизвестная версия</translation>
+    </message>
 </context>
 <context>
     <name>RichTextEditor</name>
@@ -7889,7 +7980,7 @@ You can register them again.</source>
     </message>
     <message>
         <source>&amp;RegEx</source>
-        <translation>&amp;RegEx</translation>
+        <translation>&amp;Регулярные выражения</translation>
     </message>
     <message>
         <source>&amp;Channels</source>
@@ -8126,6 +8217,10 @@ You can register them again.</source>
         <source>Press to show button combination</source>
         <translation>Нажмите, чтобы показать комбинацию кнопок</translation>
     </message>
+    <message>
+        <source>&lt; Unknown Channel &gt;</source>
+        <translation>&lt; Неизвестный канал &gt;</translation>
+    </message>
 </context>
 <context>
     <name>ShortcutTargetDialog</name>
@@ -8297,7 +8392,7 @@ An access token is a text string, which can be used as a password for very simpl
     </message>
     <message>
         <source>Years</source>
-        <translation>Лет:</translation>
+        <translation>Лет</translation>
     </message>
     <message>
         <source>Inactive for</source>
@@ -8345,10 +8440,6 @@ An access token is a text string, which can be used as a password for very simpl
     <message>
         <source>IP Address</source>
         <translation>IP адрес</translation>
-    </message>
-    <message>
-        <source>CELT Versions</source>
-        <translation>Версия CELT</translation>
     </message>
     <message>
         <source>Details...</source>
@@ -8473,6 +8564,10 @@ An access token is a text string, which can be used as a password for very simpl
         <source>Ping deviation</source>
         <translation>Отклонение</translation>
     </message>
+    <message>
+        <source>Warning: The server seems to report a truncated protocol version for this client. (See: &lt;a href=&quot;https://github.com/mumble-voip/mumble/issues/5827/&quot;&gt;Issue #5827&lt;/a&gt;)</source>
+        <translation>Предупреждение: Похоже что сервер сообщает урезанную версию протокола для этого клиента. (См: &lt;a href=&quot;https://github.com/mumble-voip/mumble/issues/5827/&quot;&gt;Issue #5827&lt;/a&gt;)</translation>
+    </message>
 </context>
 <context>
     <name>UserListModel</name>
@@ -8518,33 +8613,6 @@ An access token is a text string, which can be used as a password for very simpl
     <message>
         <source>Adjusting local nickname for %1</source>
         <translation>Локальный ник установлен для %1</translation>
-    </message>
-</context>
-<context>
-    <name>UserLocalVolumeDialog</name>
-    <message>
-        <source>Local volume for other users</source>
-        <translation>Местная громкость для других пользователей</translation>
-    </message>
-    <message>
-        <source>&lt;b&gt;Adjust the volume of other users locally&lt;/b&gt;&lt;br /&gt;Mumble supports adjusting the volume of other users locally.</source>
-        <translation>&lt;b&gt;Локально отрегулируйте громкость пользователей.&lt;/b&gt;&lt;br /&gt;Mumble поддерживает локальную регулировку громкости пользователей.</translation>
-    </message>
-    <message>
-        <source>Adjusting local volume for %1</source>
-        <translation>Местная громкость установлена на %1</translation>
-    </message>
-    <message>
-        <source> dB</source>
-        <translation> дБ</translation>
-    </message>
-    <message>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Use the slider or the text box to change the volume of the user.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;font-weight:600;&quot;&gt;Attention!&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Increasing the volume of a user too much can permanently damage your hearing. It may also increase the background noise of the user.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Используйте ползунок или текстовое поле, чтобы изменить громкость пользователя.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;font-weight:600;&quot;&gt;Внимание!&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Чрезмерное увеличение громкости может привести к необратимому повреждению слуха. Также это может увеличить фоновый шум пользователя.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
-    </message>
-    <message>
-        <source>User volume</source>
-        <translation>Громкость пользователя</translation>
     </message>
 </context>
 <context>
@@ -8689,6 +8757,10 @@ An access token is a text string, which can be used as a password for very simpl
     <message>
         <source>Channel has access restrictions but you can enter nonetheless</source>
         <translation>Канал имеет ограничения доступа, но вы все равно можете войти</translation>
+    </message>
+    <message>
+        <source>Channel will be pinned when filtering is enabled</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -8952,6 +9024,17 @@ Please contact your server administrator for further information.</source>
     <message>
         <source>Unable to start recording - the audio output is miconfigured (0Hz sample rate)</source>
         <translation>Невозможно начать запись - аудиовыход настроен на микрофон (частота дискретизации 0 Гц)</translation>
+    </message>
+</context>
+<context>
+    <name>VolumeSliderWidgetAction</name>
+    <message>
+        <source>Slider for volume adjustment</source>
+        <translation>Ползунок для регулировки громкости</translation>
+    </message>
+    <message>
+        <source>Volume Adjustment</source>
+        <translation>Регулировка громкости</translation>
     </message>
 </context>
 <context>

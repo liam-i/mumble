@@ -1,4 +1,4 @@
-// Copyright 2007-2022 The Mumble Developers. All rights reserved.
+// Copyright 2007-2023 The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -12,7 +12,6 @@
 #include "AudioStats.h"
 #include "AudioWizard.h"
 #include "BanEditor.h"
-#include "CELTCodec.h"
 #include "Cert.h"
 #include "Channel.h"
 #include "ConnectDialog.h"
@@ -22,15 +21,16 @@
 #include "Log.h"
 #include "Net.h"
 #include "NetworkConfig.h"
-#include "OpusCodec.h"
 #include "GlobalShortcut.h"
+#include "GlobalShortcutTypes.h"
 #ifdef USE_OVERLAY
 #	include "OverlayClient.h"
 #endif
 #include "../SignalCurry.h"
 #include "ChannelListenerManager.h"
-#include "ListenerLocalVolumeDialog.h"
+#include "ListenerVolumeSlider.h"
 #include "Markdown.h"
+#include "MenuLabel.h"
 #include "PTTButtonWidget.h"
 #include "PluginManager.h"
 #include "PositionalAudioViewer.h"
@@ -50,7 +50,7 @@
 #include "UserEdit.h"
 #include "UserInformation.h"
 #include "UserLocalNicknameDialog.h"
-#include "UserLocalVolumeDialog.h"
+#include "UserLocalVolumeSlider.h"
 #include "UserModel.h"
 #include "Utils.h"
 #include "VersionCheck.h"
@@ -94,7 +94,10 @@ OpenURLEvent::OpenURLEvent(QUrl u) : QEvent(static_cast< QEvent::Type >(OU_QEVEN
 	url = u;
 }
 
-MainWindow::MainWindow(QWidget *p) : QMainWindow(p) {
+MainWindow::MainWindow(QWidget *p)
+	: QMainWindow(p), m_localVolumeLabel(make_qt_unique< MenuLabel >(tr("Local Volume Adjustment:"), this)),
+	  m_userLocalVolumeSlider(make_qt_unique< UserLocalVolumeSlider >(this)),
+	  m_listenerVolumeSlider(make_qt_unique< ListenerVolumeSlider >(this)) {
 	SvgIcon::addSvgPixmapsToIcon(qiIconMuteSelf, QLatin1String("skin:muted_self.svg"));
 	SvgIcon::addSvgPixmapsToIcon(qiIconMuteServer, QLatin1String("skin:muted_server.svg"));
 	SvgIcon::addSvgPixmapsToIcon(qiIconMuteSuppressed, QLatin1String("skin:muted_suppressed.svg"));
@@ -128,9 +131,9 @@ MainWindow::MainWindow(QWidget *p) : QMainWindow(p) {
 #ifdef Q_OS_WIN
 	uiNewHardware = 1;
 #endif
-	bSuppressAskOnQuit = false;
-	restartOnQuit      = false;
-	bAutoUnmute        = false;
+	forceQuit     = false;
+	restartOnQuit = false;
+	bAutoUnmute   = false;
 
 	Channel::add(Channel::ROOT_ID, tr("Root"));
 
@@ -167,6 +170,7 @@ MainWindow::MainWindow(QWidget *p) : QMainWindow(p) {
 	connect(qmChannel, SIGNAL(aboutToShow()), this, SLOT(qmChannel_aboutToShow()));
 	connect(qmListener, SIGNAL(aboutToShow()), this, SLOT(qmListener_aboutToShow()));
 	connect(qteChat, SIGNAL(entered(QString)), this, SLOT(sendChatbarText(QString)));
+	connect(qteChat, &ChatbarTextEdit::ctrlEnterPressed, [this](const QString &msg) { sendChatbarText(msg, true); });
 	connect(qteChat, SIGNAL(pastedImage(QString)), this, SLOT(sendChatbarMessage(QString)));
 
 	// Tray
@@ -197,8 +201,7 @@ MainWindow::MainWindow(QWidget *p) : QMainWindow(p) {
 }
 
 void MainWindow::createActions() {
-	int idx    = 1;
-	gsPushTalk = new GlobalShortcut(this, idx++, tr("Push-to-Talk", "Global Shortcut"));
+	gsPushTalk = new GlobalShortcut(this, GlobalShortcutType::PushToTalk, tr("Push-to-Talk", "Global Shortcut"));
 	gsPushTalk->setObjectName(QLatin1String("PushToTalk"));
 	gsPushTalk->qsToolTip   = tr("Push and hold this button to send voice.", "Global Shortcut");
 	gsPushTalk->qsWhatsThis = tr(
@@ -206,35 +209,43 @@ void MainWindow::createActions() {
 		"Global Shortcut");
 
 
-	gsResetAudio = new GlobalShortcut(this, idx++, tr("Reset Audio Processor", "Global Shortcut"));
+	gsResetAudio =
+		new GlobalShortcut(this, GlobalShortcutType::ResetAudio, tr("Reset Audio Processor", "Global Shortcut"));
 	gsResetAudio->setObjectName(QLatin1String("ResetAudio"));
 
-	gsMuteSelf = new GlobalShortcut(this, idx++, tr("Mute Self", "Global Shortcut"), 0);
+	gsMuteSelf = new GlobalShortcut(this, GlobalShortcutType::MuteSelf, tr("Mute Self", "Global Shortcut"), 0);
 	gsMuteSelf->setObjectName(QLatin1String("gsMuteSelf"));
 	gsMuteSelf->qsToolTip = tr("Set self-mute status.", "Global Shortcut");
 	gsMuteSelf->qsWhatsThis =
 		tr("This will set or toggle your muted status. If you turn this off, you will also disable self-deafen.",
 		   "Global Shortcut");
 
-	gsDeafSelf = new GlobalShortcut(this, idx++, tr("Deafen Self", "Global Shortcut"), 0);
+	gsDeafSelf = new GlobalShortcut(this, GlobalShortcutType::DeafenSelf, tr("Deafen Self", "Global Shortcut"), 0);
 	gsDeafSelf->setObjectName(QLatin1String("gsDeafSelf"));
 	gsDeafSelf->qsToolTip = tr("Set self-deafen status.", "Global Shortcut");
 	gsDeafSelf->qsWhatsThis =
 		tr("This will set or toggle your deafened status. If you turn this on, you will also enable self-mute.",
 		   "Global Shortcut");
 
-	gsUnlink = new GlobalShortcut(this, idx++, tr("Unlink Plugin", "Global Shortcut"));
+	gsUnlink = new GlobalShortcut(this, GlobalShortcutType::UnlinkPlugin, tr("Unlink Plugin", "Global Shortcut"));
 	gsUnlink->setObjectName(QLatin1String("UnlinkPlugin"));
 
-	gsPushMute = new GlobalShortcut(this, idx++, tr("Push-to-Mute", "Global Shortcut"));
+	gsPushMute = new GlobalShortcut(this, GlobalShortcutType::PushToMute, tr("Push-to-Mute", "Global Shortcut"));
 	gsPushMute->setObjectName(QLatin1String("PushToMute"));
 
-	gsJoinChannel = new GlobalShortcut(this, idx++, tr("Join Channel", "Global Shortcut"));
+	gsJoinChannel = new GlobalShortcut(this, GlobalShortcutType::JoinChannel, tr("Join Channel", "Global Shortcut"));
 	gsJoinChannel->setObjectName(QLatin1String("MetaChannel"));
 	gsJoinChannel->qsToolTip = tr("Use in conjunction with Whisper to.", "Global Shortcut");
 
+	gsListenChannel =
+		new GlobalShortcut(this, GlobalShortcutType::ListenToChannel, tr("Listen to Channel", "Global Shortcut"),
+						   QVariant::fromValue(ChannelTarget()));
+	gsListenChannel->setObjectName(QLatin1String("gsListenChannel"));
+	gsListenChannel->qsToolTip = tr("Toggles listening to the given channel.", "Global Shortcut");
+
 #ifdef USE_OVERLAY
-	gsToggleOverlay = new GlobalShortcut(this, idx++, tr("Toggle Overlay", "Global Shortcut"));
+	gsToggleOverlay =
+		new GlobalShortcut(this, GlobalShortcutType::ToggleOverlay, tr("Toggle Overlay", "Global Shortcut"));
 	gsToggleOverlay->setObjectName(QLatin1String("ToggleOverlay"));
 	gsToggleOverlay->qsToolTip   = tr("Toggle state of in-game overlay.", "Global Shortcut");
 	gsToggleOverlay->qsWhatsThis = tr("This will switch the states of the in-game overlay.", "Global Shortcut");
@@ -242,57 +253,66 @@ void MainWindow::createActions() {
 	connect(gsToggleOverlay, SIGNAL(down(QVariant)), Global::get().o, SLOT(toggleShow()));
 #endif
 
-	gsMinimal = new GlobalShortcut(this, idx++, tr("Toggle Minimal", "Global Shortcut"));
+	gsMinimal =
+		new GlobalShortcut(this, GlobalShortcutType::ToggleMinimalView, tr("Toggle Minimal", "Global Shortcut"));
 	gsMinimal->setObjectName(QLatin1String("ToggleMinimal"));
 
-	gsVolumeUp = new GlobalShortcut(this, idx++, tr("Volume Up (+10%)", "Global Shortcut"));
+	gsVolumeUp = new GlobalShortcut(this, GlobalShortcutType::VolumeUp, tr("Volume Up (+10%)", "Global Shortcut"));
 	gsVolumeUp->setObjectName(QLatin1String("VolumeUp"));
 
-	gsVolumeDown = new GlobalShortcut(this, idx++, tr("Volume Down (-10%)", "Global Shortcut"));
+	gsVolumeDown =
+		new GlobalShortcut(this, GlobalShortcutType::VolumeDown, tr("Volume Down (-10%)", "Global Shortcut"));
 	gsVolumeDown->setObjectName(QLatin1String("VolumeDown"));
 
 	qstiIcon = new QSystemTrayIcon(qiIcon, this);
-	qstiIcon->setToolTip(tr("Mumble -- %1").arg(QLatin1String(MUMBLE_RELEASE)));
+	qstiIcon->setToolTip(tr("Mumble -- %1").arg(Version::getRelease()));
 	qstiIcon->setObjectName(QLatin1String("Icon"));
 
-	gsWhisper = new GlobalShortcut(this, idx++, tr("Whisper/Shout"), QVariant::fromValue(ShortcutTarget()));
+	gsWhisper = new GlobalShortcut(this, GlobalShortcutType::Whisper_Shout, tr("Whisper/Shout"),
+								   QVariant::fromValue(ShortcutTarget()));
 	gsWhisper->setObjectName(QLatin1String("gsWhisper"));
 
-	gsLinkChannel = new GlobalShortcut(this, idx++, tr("Link Channel", "Global Shortcut"));
+	gsLinkChannel = new GlobalShortcut(this, GlobalShortcutType::LinkChannel, tr("Link Channel", "Global Shortcut"));
 	gsLinkChannel->setObjectName(QLatin1String("MetaLink"));
 	gsLinkChannel->qsToolTip = tr("Use in conjunction with Whisper to.", "Global Shortcut");
 
-	gsCycleTransmitMode = new GlobalShortcut(this, idx++, tr("Cycle Transmit Mode", "Global Shortcut"));
+	gsCycleTransmitMode =
+		new GlobalShortcut(this, GlobalShortcutType::CycleTransmitMode, tr("Cycle Transmit Mode", "Global Shortcut"));
 	gsCycleTransmitMode->setObjectName(QLatin1String("gsCycleTransmitMode"));
 
-	gsToggleMainWindowVisibility = new GlobalShortcut(this, idx++, tr("Hide/show main window", "Global Shortcut"));
+	gsToggleMainWindowVisibility = new GlobalShortcut(this, GlobalShortcutType::ToggleMainWindowVisibility,
+													  tr("Hide/show main window", "Global Shortcut"));
 	gsToggleMainWindowVisibility->setObjectName(QLatin1String("gsToggleMainWindowVisibility"));
 
-	gsTransmitModePushToTalk =
-		new GlobalShortcut(this, idx++, tr("Set Transmit Mode to Push-To-Talk", "Global Shortcut"));
+	gsTransmitModePushToTalk = new GlobalShortcut(this, GlobalShortcutType::UsePushToTalk,
+												  tr("Set Transmit Mode to Push-To-Talk", "Global Shortcut"));
 	gsTransmitModePushToTalk->setObjectName(QLatin1String("gsTransmitModePushToTalk"));
 
-	gsTransmitModeContinuous =
-		new GlobalShortcut(this, idx++, tr("Set Transmit Mode to Continuous", "Global Shortcut"));
+	gsTransmitModeContinuous = new GlobalShortcut(this, GlobalShortcutType::UseContinous,
+												  tr("Set Transmit Mode to Continuous", "Global Shortcut"));
 	gsTransmitModeContinuous->setObjectName(QLatin1String("gsTransmitModeContinuous"));
 
-	gsTransmitModeVAD = new GlobalShortcut(this, idx++, tr("Set Transmit Mode to VAD", "Global Shortcut"));
+	gsTransmitModeVAD =
+		new GlobalShortcut(this, GlobalShortcutType::UseVAD, tr("Set Transmit Mode to VAD", "Global Shortcut"));
 	gsTransmitModeVAD->setObjectName(QLatin1String("gsTransmitModeVAD"));
 
-	gsSendTextMessage =
-		new GlobalShortcut(this, idx++, tr("Send Text Message", "Global Shortcut"), QVariant(QString()));
+	gsSendTextMessage = new GlobalShortcut(this, GlobalShortcutType::SendTextMessage,
+										   tr("Send Text Message", "Global Shortcut"), QVariant(QString()));
 	gsSendTextMessage->setObjectName(QLatin1String("gsSendTextMessage"));
 
-	gsSendClipboardTextMessage = new GlobalShortcut(this, idx++, tr("Send Clipboard Text Message", "Global Shortcut"));
+	gsSendClipboardTextMessage = new GlobalShortcut(this, GlobalShortcutType::SendTextMessageClipboard,
+													tr("Send Clipboard Text Message", "Global Shortcut"));
 	gsSendClipboardTextMessage->setObjectName(QLatin1String("gsSendClipboardTextMessage"));
 	gsSendClipboardTextMessage->qsWhatsThis =
 		tr("This will send your Clipboard content to the channel you are currently in.", "Global Shortcut");
 
-	gsToggleTalkingUI = new GlobalShortcut(this, idx++, tr("Toggle TalkingUI", "Global shortcut"));
+	gsToggleTalkingUI =
+		new GlobalShortcut(this, GlobalShortcutType::ToggleTalkingUI, tr("Toggle TalkingUI", "Global shortcut"));
 	gsToggleTalkingUI->setObjectName(QLatin1String("gsToggleTalkingUI"));
 	gsToggleTalkingUI->qsWhatsThis = tr("Toggles the visibility of the TalkingUI.", "Global Shortcut");
 
-	gsToggleSearch = new GlobalShortcut(this, idx++, tr("Toggle search dialog", "Global Shortcut"));
+	gsToggleSearch =
+		new GlobalShortcut(this, GlobalShortcutType::ToggleSearch, tr("Toggle search dialog", "Global Shortcut"));
 	gsToggleSearch->setObjectName(QLatin1String("gsToggleSearch"));
 	gsToggleSearch->qsWhatsThis =
 		tr("This will open or close the search dialog depending on whether it is currently opened already");
@@ -380,6 +400,9 @@ void MainWindow::setupGui() {
 	qdwChat->installEventFilter(dtbChatDockTitle);
 	qteChat->setDefaultText(tr("<center>Not connected</center>"), true);
 	qteChat->setEnabled(false);
+
+	QWidget *dummyTitlebar = new QWidget(qdwMinimalViewNote);
+	qdwMinimalViewNote->setTitleBarWidget(dummyTitlebar);
 
 	setShowDockTitleBars((Global::get().s.wlWindowLayout == Settings::LayoutCustom) && !Global::get().s.bLockLayout);
 
@@ -500,29 +523,56 @@ bool MainWindow::nativeEvent(const QByteArray &, void *message, long *) {
 #endif
 
 void MainWindow::closeEvent(QCloseEvent *e) {
+	ServerHandlerPtr sh               = Global::get().sh;
+	QuitBehavior quitBehavior         = Global::get().s.quitBehavior;
+	const bool alwaysAsk              = quitBehavior == QuitBehavior::ALWAYS_ASK;
+	const bool askDueToConnected      = sh && sh->isRunning() && quitBehavior == QuitBehavior::ASK_WHEN_CONNECTED;
+	const bool alwaysMinimize         = quitBehavior == QuitBehavior::ALWAYS_MINIMIZE;
+	const bool minimizeDueToConnected = sh && sh->isRunning() && quitBehavior == QuitBehavior::MINIMIZE_WHEN_CONNECTED;
+
+	if (!forceQuit && (alwaysAsk || askDueToConnected)) {
 #ifndef Q_OS_MAC
-	ServerHandlerPtr sh = Global::get().sh;
-	if (sh && sh->isRunning() && Global::get().s.bAskOnQuit && !bSuppressAskOnQuit) {
 		QMessageBox mb(QMessageBox::Warning, QLatin1String("Mumble"),
-					   tr("Mumble is currently connected to a server. Do you want to Close or Minimize it?"),
+					   tr("Are you sure you want to close Mumble? Perhaps you prefer to minimize it instead?"),
 					   QMessageBox::NoButton, this);
+		QCheckBox *qcbRemember   = new QCheckBox(tr("Remember this setting"));
 		QPushButton *qpbClose    = mb.addButton(tr("Close"), QMessageBox::YesRole);
 		QPushButton *qpbMinimize = mb.addButton(tr("Minimize"), QMessageBox::NoRole);
 		QPushButton *qpbCancel   = mb.addButton(tr("Cancel"), QMessageBox::RejectRole);
 		mb.setDefaultButton(qpbClose);
 		mb.setEscapeButton(qpbCancel);
+		mb.setCheckBox(qcbRemember);
 		mb.exec();
 		if (mb.clickedButton() == qpbMinimize) {
 			showMinimized();
 			e->ignore();
+
+			// If checkbox is checked and not connected, always minimize
+			// If checkbox is checked and connected, always minimize when connected
+			if (qcbRemember->isChecked() && !(sh && sh->isRunning())) {
+				Global::get().s.quitBehavior = QuitBehavior::ALWAYS_MINIMIZE;
+			} else if (qcbRemember->isChecked()) {
+				Global::get().s.quitBehavior = QuitBehavior::MINIMIZE_WHEN_CONNECTED;
+			}
+
 			return;
 		} else if (mb.clickedButton() == qpbCancel) {
 			e->ignore();
 			return;
 		}
-	}
-	sh.reset();
+
+		// If checkbox is checked, quit always
+		if (qcbRemember->isChecked()) {
+			Global::get().s.quitBehavior = QuitBehavior::ALWAYS_QUIT;
+		}
 #endif
+	} else if (!forceQuit && (alwaysMinimize || minimizeDueToConnected)) {
+		showMinimized();
+		e->ignore();
+		return;
+	}
+
+	sh.reset();
 
 	if (Global::get().s.bMinimalView) {
 		Global::get().s.qbaMinimalViewGeometry = saveGeometry();
@@ -597,7 +647,7 @@ void MainWindow::changeEvent(QEvent *e) {
 
 #else
 	if (isMinimized() && qstiIcon->isSystemTrayAvailable() && Global::get().s.bHideInTray) {
-		// Workaround http://qt-project.org/forums/viewthread/4423/P15/#50676
+		// Workaround https://forum.qt.io/topic/4327/minimizing-application-to-tray/24
 		QTimer::singleShot(0, this, SLOT(hide()));
 	}
 #endif
@@ -701,7 +751,7 @@ void MainWindow::updateTrayIcon() {
 
 void MainWindow::updateUserModel() {
 	UserModel *um = static_cast< UserModel * >(qtvUsers->model());
-	um->toggleChannelFiltered(nullptr); // Force a UI refresh
+	um->forceVisualUpdate();
 }
 
 void MainWindow::updateTransmitModeComboBox(Settings::AudioTransmit newMode) {
@@ -720,7 +770,15 @@ void MainWindow::updateTransmitModeComboBox(Settings::AudioTransmit newMode) {
 
 QMenu *MainWindow::createPopupMenu() {
 	if ((Global::get().s.wlWindowLayout == Settings::LayoutCustom) && !Global::get().s.bLockLayout) {
-		return QMainWindow::createPopupMenu();
+		// We have to explicitly create a menu here instead of simply referring to QMainWindow::createPopupMenu as we
+		// don't want a toggle for showing/hiding the minimal view note (which is also present as a QDockWidget). Thus,
+		// we have to explicitly add only those widgets that we really want to be toggleable.
+		QMenu *menu = new QMenu(this);
+		menu->addAction(qdwChat->toggleViewAction());
+		menu->addAction(qdwLog->toggleViewAction());
+		menu->addAction(qtIconToolbar->toggleViewAction());
+
+		return menu;
 	}
 
 	return nullptr;
@@ -740,7 +798,40 @@ ClientUser *MainWindow::getContextMenuUser() {
 	return nullptr;
 }
 
+ContextMenuTarget MainWindow::getContextMenuTargets() {
+	ContextMenuTarget target;
+
+	if (Global::get().uiSession != 0) {
+		QModelIndex idx;
+
+		if (!qpContextPosition.isNull())
+			idx = qtvUsers->indexAt(qpContextPosition);
+
+		if (!idx.isValid())
+			idx = qtvUsers->currentIndex();
+
+		target.user    = pmModel->getUser(idx);
+		target.channel = pmModel->getChannel(idx);
+
+		if (!target.user)
+			target.user = getContextMenuUser();
+
+		if (!target.channel)
+			target.channel = getContextMenuChannel();
+	}
+
+	cuContextUser     = target.user;
+	cContextChannel   = target.channel;
+	qpContextPosition = QPoint();
+
+	return target;
+}
+
 bool MainWindow::handleSpecialContextMenu(const QUrl &url, const QPoint &pos_, bool focus) {
+	// This method abuses QUrls for internal data serialization
+	// The protocol, host and path parts of the URL may contain
+	// special values which are only parsable by this method.
+
 	if (url.scheme() == QString::fromLatin1("clientid")) {
 		bool ok = false;
 		QString maybeUserHash(url.host());
@@ -751,8 +842,13 @@ bool MainWindow::handleSpecialContextMenu(const QUrl &url, const QPoint &pos_, b
 				ok            = true;
 			}
 		} else {
+			// We expect the host part of the URL to contain the user id in the format
+			// id.<id>
+			// where <id> is the user id as integer. This is necessary, because QUrl parses
+			// plain integers in the host field as IP addresses
 			QByteArray qbaServerDigest = QByteArray::fromBase64(url.path().remove(0, 1).toLatin1());
-			cuContextUser              = ClientUser::get(url.host().toInt(&ok, 10));
+			QString id                 = url.host().split(".").value(1, "-1");
+			cuContextUser              = ClientUser::get(id.toInt(&ok, 10));
 			ServerHandlerPtr sh        = Global::get().sh;
 			ok                         = ok && sh && (qbaServerDigest == sh->qbaDigest);
 		}
@@ -767,9 +863,14 @@ bool MainWindow::handleSpecialContextMenu(const QUrl &url, const QPoint &pos_, b
 		}
 		cuContextUser.clear();
 	} else if (url.scheme() == QString::fromLatin1("channelid")) {
+		// We expect the host part of the URL to contain the channel id in the format
+		// id.<id>
+		// where <id> is the channel id as integer. This is necessary, because QUrl parses
+		// plain integers in the host field as IP addresses
 		bool ok;
 		QByteArray qbaServerDigest = QByteArray::fromBase64(url.path().remove(0, 1).toLatin1());
-		cContextChannel            = Channel::get(url.host().toInt(&ok, 10));
+		QString id                 = url.host().split(".").value(1, "-1");
+		cContextChannel            = Channel::get(id.toInt(&ok, 10));
 		ServerHandlerPtr sh        = Global::get().sh;
 		ok                         = ok && sh && (qbaServerDigest == sh->qbaDigest);
 		if (ok) {
@@ -1043,19 +1144,14 @@ void MainWindow::openUrl(const QUrl &url) {
 		return;
 	}
 
-	int major, minor, patch;
-	int thismajor, thisminor, thispatch;
-	Version::get(&thismajor, &thisminor, &thispatch);
-
-	// With no version parameter given assume the link refers to our version
-	major = thismajor;
-	minor = thisminor;
-	patch = thispatch;
+	Version::full_t thisVersion   = Version::get();
+	Version::full_t targetVersion = Version::UNKNOWN;
 
 	QUrlQuery query(url);
 	QString version = query.queryItemValue(QLatin1String("version"));
 	if (version.size() > 0) {
-		if (!Version::get(&major, &minor, &patch, version)) {
+		targetVersion = Version::fromString(version);
+		if (targetVersion == Version::UNKNOWN) {
 			// The version format is invalid
 			Global::get().l->log(Log::Warning,
 								 QObject::tr("The provided URL uses an invalid version format: \"%1\"").arg(version));
@@ -1063,21 +1159,20 @@ void MainWindow::openUrl(const QUrl &url) {
 		}
 	}
 
+	// With no version parameter given assume the link refers to our version
+	if (targetVersion == Version::UNKNOWN) {
+		targetVersion = thisVersion;
+	}
+
 	// We can't handle URLs for versions < 1.2.0
-	const int minMajor   = 1;
-	const int minMinor   = 2;
-	const int minPatch   = 0;
-	const bool isPre_120 = major < minMajor || (major == minMajor && minor < minMinor)
-						   || (major == minMajor && minor == minMinor && patch < minPatch);
+	const bool isPre_120 = targetVersion < Version::fromComponents(1, 2, 0);
 	// We also can't handle URLs for versions newer than the running Mumble instance
-	const bool isFuture = major > thismajor || (major == thismajor && minor > thisminor)
-						  || (major == thismajor && minor == thisminor && patch > thispatch);
+	const bool isFuture = thisVersion < targetVersion;
 
 	if (isPre_120 || isFuture) {
-		Global::get().l->log(Log::Warning, tr("This version of Mumble can't handle URLs for Mumble version %1.%2.%3")
-											   .arg(major)
-											   .arg(minor)
-											   .arg(patch));
+		Global::get().l->log(
+			Log::Warning,
+			tr("This version of Mumble can't handle URLs for Mumble version %1").arg(Version::toString(targetVersion)));
 		return;
 	}
 
@@ -1277,13 +1372,6 @@ void MainWindow::setupView(bool toggle_minimize) {
 		menuBar()->removeAction(qmDeveloper->menuAction());
 	}
 
-	if (!showit) {
-		qdwLog->setVisible(showit);
-		qdwChat->setVisible(showit);
-		qtIconToolbar->setVisible(showit);
-	}
-	menuBar()->setVisible(showit);
-
 	if (toggle_minimize) {
 		if (!showit) {
 			if (!Global::get().s.qbaMinimalViewGeometry.isNull())
@@ -1301,6 +1389,23 @@ void MainWindow::setupView(bool toggle_minimize) {
 		resize(geometry().width() - newgeom.width() + geom.width(),
 			   geometry().height() - newgeom.height() + geom.height());
 		move(geom.x(), geom.y());
+	}
+
+
+	// Explicitly hide UI elements, if we're entering minimal view
+	// Note that showing them again is handled above via restoreState/restoreGeometry calls
+	if (!showit) {
+		qdwLog->setVisible(false);
+		qdwChat->setVisible(false);
+		qtIconToolbar->setVisible(false);
+	}
+	menuBar()->setVisible(showit);
+
+	if (showit) {
+		qdwMinimalViewNote->hide();
+	} else if (!Global::get().sh) {
+		// Show the note, if we're not connected to a server
+		qdwMinimalViewNote->show();
 	}
 
 	// Display the Transmit Mode Dropdown, if configured to do so, otherwise
@@ -1373,7 +1478,7 @@ void MainWindow::on_qmSelf_aboutToShow() {
 
 	qaSelfRegister->setEnabled(user && (user->iId < 0) && !user->qsHash.isEmpty()
 							   && (Global::get().pPermissions & (ChanACL::SelfRegister | ChanACL::Write)));
-	if (Global::get().sh && Global::get().sh->uiVersion >= 0x010203) {
+	if (Global::get().sh && Global::get().sh->m_version >= Version::fromComponents(1, 2, 3)) {
 		qaSelfPrioritySpeaker->setEnabled(user && Global::get().pPermissions & (ChanACL::Write | ChanACL::MuteDeafen));
 		qaSelfPrioritySpeaker->setChecked(user && user->bPrioritySpeaker);
 	} else {
@@ -1549,23 +1654,7 @@ void MainWindow::voiceRecorderDialog_finished(int) {
 }
 
 void MainWindow::qmUser_aboutToShow() {
-	ClientUser *p = nullptr;
-	if (Global::get().uiSession != 0) {
-		QModelIndex idx;
-		if (!qpContextPosition.isNull())
-			idx = qtvUsers->indexAt(qpContextPosition);
-
-		if (!idx.isValid())
-			idx = qtvUsers->currentIndex();
-
-		p = pmModel->getUser(idx);
-
-		if (cuContextUser)
-			p = cuContextUser.data();
-	}
-
-	cuContextUser     = p;
-	qpContextPosition = QPoint();
+	ClientUser *p = getContextMenuTargets().user;
 
 	const ClientUser *self = ClientUser::get(Global::get().uiSession);
 	bool isSelf            = p == self;
@@ -1585,13 +1674,21 @@ void MainWindow::qmUser_aboutToShow() {
 		qmUser->addAction(qaUserBan);
 	qmUser->addAction(qaUserMute);
 	qmUser->addAction(qaUserDeaf);
-	if (Global::get().sh && Global::get().sh->uiVersion >= 0x010203)
+	if (Global::get().sh && Global::get().sh->m_version >= Version::fromComponents(1, 2, 3))
 		qmUser->addAction(qaUserPrioritySpeaker);
 	qmUser->addAction(qaUserLocalMute);
 	qmUser->addAction(qaUserLocalIgnore);
 	if (Global::get().s.bTTS)
 		qmUser->addAction(qaUserLocalIgnoreTTS);
-	qmUser->addAction(qaUserLocalVolume);
+
+	if (p && !isSelf) {
+		qmUser->addSeparator();
+		qmUser->addAction(m_localVolumeLabel.get());
+		m_userLocalVolumeSlider->setUser(p->uiSession);
+		qmUser->addAction(m_userLocalVolumeSlider.get());
+		qmUser->addSeparator();
+	}
+
 	qmUser->addAction(qaUserLocalNickname);
 
 	if (isSelf)
@@ -1603,7 +1700,7 @@ void MainWindow::qmUser_aboutToShow() {
 	}
 
 	qmUser->addAction(qaUserTextMessage);
-	if (Global::get().sh && Global::get().sh->uiVersion >= 0x010202)
+	if (Global::get().sh && Global::get().sh->m_version >= Version::fromComponents(1, 2, 2))
 		qmUser->addAction(qaUserInformation);
 
 	if (p && (p->iId < 0) && !p->qsHash.isEmpty()
@@ -1651,7 +1748,6 @@ void MainWindow::qmUser_aboutToShow() {
 		qaUserTextMessage->setEnabled(false);
 		qaUserLocalNickname->setEnabled(false);
 		qaUserLocalMute->setEnabled(false);
-		qaUserLocalVolume->setEnabled(false);
 		qaUserLocalIgnore->setEnabled(false);
 		qaUserLocalIgnoreTTS->setEnabled(false);
 		qaUserCommentReset->setEnabled(false);
@@ -1663,12 +1759,11 @@ void MainWindow::qmUser_aboutToShow() {
 		qaUserTextMessage->setEnabled(true);
 		qaUserLocalNickname->setEnabled(!isSelf);
 		qaUserLocalMute->setEnabled(!isSelf);
-		qaUserLocalVolume->setEnabled(!isSelf);
 		qaUserLocalIgnore->setEnabled(!isSelf);
 		qaUserLocalIgnoreTTS->setEnabled(!isSelf);
 		// If the server's version is less than 1.4.0 it won't support the new permission to reset a comment/avatar, so
 		// fall back to the old method
-		if (Global::get().sh->uiVersion < 0x010400) {
+		if (Global::get().sh->m_version < Version::fromComponents(1, 4, 0)) {
 			qaUserCommentReset->setEnabled(!p->qbaCommentHash.isEmpty()
 										   && (Global::get().pPermissions & (ChanACL::Move | ChanACL::Write)));
 			qaUserTextureReset->setEnabled(!p->qbaTextureHash.isEmpty()
@@ -1694,30 +1789,21 @@ void MainWindow::qmUser_aboutToShow() {
 }
 
 void MainWindow::qmListener_aboutToShow() {
-	ClientUser *p = nullptr;
-	if (Global::get().uiSession != 0) {
-		QModelIndex idx;
-		if (!qpContextPosition.isNull())
-			idx = qtvUsers->indexAt(qpContextPosition);
-
-		if (!idx.isValid())
-			idx = qtvUsers->currentIndex();
-
-		p = pmModel->getUser(idx);
-
-		if (cuContextUser)
-			p = cuContextUser.data();
-	}
-
-	cuContextUser     = p;
-	qpContextPosition = QPoint();
+	ClientUser *p = getContextMenuTargets().user;
 
 	bool self = p && (p->uiSession == Global::get().uiSession);
 
 	qmListener->clear();
 
 	if (self) {
-		qmListener->addAction(qaListenerLocalVolume);
+		qmListener->addAction(m_localVolumeLabel.get());
+		Channel *channel = getContextMenuChannel();
+		if (channel) {
+			m_listenerVolumeSlider->setListenedChannel(*channel);
+			qmListener->addAction(m_listenerVolumeSlider.get());
+			qmListener->addSeparator();
+		}
+
 		if (cContextChannel) {
 			qmListener->addAction(qaChannelListen);
 			qaChannelListen->setChecked(
@@ -1792,19 +1878,6 @@ void MainWindow::on_qaUserLocalIgnoreTTS_triggered() {
 	} else {
 		logChangeNotPermanent(QObject::tr("Disable Text-To-Speech"), p);
 	}
-}
-
-void MainWindow::on_qaUserLocalVolume_triggered() {
-	ClientUser *p = getContextMenuUser();
-	if (!p) {
-		return;
-	}
-	openUserLocalVolumeDialog(p);
-}
-
-void MainWindow::openUserLocalVolumeDialog(ClientUser *p) {
-	unsigned int session = p->uiSession;
-	UserLocalVolumeDialog::present(session, &qmUserVolTracker);
 }
 
 void MainWindow::on_qaUserDeaf_triggered() {
@@ -2058,16 +2131,27 @@ void MainWindow::on_qaHide_triggered() {
 }
 
 void MainWindow::on_qaQuit_triggered() {
-	bSuppressAskOnQuit = true;
+	forceQuit = true;
 	this->close();
 }
 
-void MainWindow::sendChatbarText(QString qsText) {
-	// Markdown::markdownToHTML also takes care of replacing line breaks (\n) with the respective
-	// HTML code <br/>. Therefore if Markdown support is ever going to be removed from this
-	// function, this job has to be done explicitly as otherwise line breaks won't be shown on
-	// the receiving end of this text message.
-	qsText = Markdown::markdownToHTML(qsText);
+void MainWindow::sendChatbarText(QString qsText, bool plainText) {
+	if (plainText) {
+		// Escape HTML, unify line endings, then convert spaces to non-breaking ones to prevent multiple
+		// simultaneous ones from being collapsed into one (as a normal HTML renderer does).
+		qsText = qsText.toHtmlEscaped()
+					 .replace("\r\n", "\n")
+					 .replace("\r", "\n")
+					 .replace("\n", "<br>")
+					 .replace(" ", "&nbsp;");
+	} else {
+		// Markdown::markdownToHTML also takes care of replacing line breaks (\n) with the respective
+		// HTML code <br/>. Therefore if Markdown support is ever going to be removed from this
+		// function, this job has to be done explicitly as otherwise line breaks won't be shown on
+		// the receiving end of this text message.
+		qsText = Markdown::markdownToHTML(qsText);
+	}
+
 	sendChatbarMessage(qsText);
 
 	qteChat->clear();
@@ -2134,6 +2218,7 @@ void MainWindow::on_qmConfig_aboutToShow() {
 	qmConfig->addAction(qaAudioTTS);
 	qmConfig->addSeparator();
 	qmConfig->addAction(qaConfigMinimal);
+	qmConfig->addAction(qaFilterToggle);
 
 	qaTalkingUIToggle->setChecked(Global::get().talkingUI && Global::get().talkingUI->isVisible());
 
@@ -2143,25 +2228,9 @@ void MainWindow::on_qmConfig_aboutToShow() {
 }
 
 void MainWindow::qmChannel_aboutToShow() {
+	Channel *c = getContextMenuTargets().channel;
+
 	qmChannel->clear();
-
-	Channel *c = nullptr;
-	if (Global::get().uiSession != 0) {
-		QModelIndex idx;
-		if (!qpContextPosition.isNull())
-			idx = qtvUsers->indexAt(qpContextPosition);
-
-		if (!idx.isValid())
-			idx = qtvUsers->currentIndex();
-
-		c = pmModel->getChannel(idx);
-
-		if (cContextChannel)
-			c = cContextChannel.data();
-	}
-
-	cContextChannel   = c;
-	qpContextPosition = QPoint();
 
 	if (c && c->iId != ClientUser::get(Global::get().uiSession)->cChannel->iId) {
 		qmChannel->addAction(qaChannelJoin);
@@ -2169,7 +2238,7 @@ void MainWindow::qmChannel_aboutToShow() {
 		qmChannel->addSeparator();
 	}
 
-	if (c && Global::get().sh && Global::get().sh->uiVersion >= 0x010400) {
+	if (c && Global::get().sh && Global::get().sh->m_version >= Version::fromComponents(1, 4, 0)) {
 		// If the server's version is less than 1.4, the listening feature is not supported yet
 		// and thus it doesn't make sense to show the action for it
 		qmChannel->addAction(qaChannelListen);
@@ -2192,7 +2261,8 @@ void MainWindow::qmChannel_aboutToShow() {
 	// hiding the root is nonsense
 	if (c && c->cParent) {
 		qmChannel->addSeparator();
-		qmChannel->addAction(qaChannelFilter);
+		qmChannel->addAction(qaChannelHide);
+		qmChannel->addAction(qaChannelPin);
 	}
 
 #ifndef Q_OS_MAC
@@ -2235,8 +2305,10 @@ void MainWindow::qmChannel_aboutToShow() {
 		}
 	}
 
-	if (c)
-		qaChannelFilter->setChecked(c->bFiltered);
+	if (c) {
+		qaChannelHide->setChecked(c->m_filterMode == ChannelFilterMode::HIDE);
+		qaChannelPin->setChecked(c->m_filterMode == ChannelFilterMode::PIN);
+	}
 
 	qaChannelAdd->setEnabled(add);
 	qaChannelRemove->setEnabled(remove);
@@ -2280,12 +2352,31 @@ void MainWindow::on_qaChannelListen_triggered() {
 	}
 }
 
-void MainWindow::on_qaChannelFilter_triggered() {
+void MainWindow::on_qaChannelHide_triggered() {
 	Channel *c = getContextMenuChannel();
 
 	if (c) {
 		UserModel *um = static_cast< UserModel * >(qtvUsers->model());
-		um->toggleChannelFiltered(c);
+		if (qaChannelHide->isChecked()) {
+			c->setFilterMode(ChannelFilterMode::HIDE);
+		} else {
+			c->setFilterMode(ChannelFilterMode::NORMAL);
+		}
+		um->forceVisualUpdate(c);
+	}
+}
+
+void MainWindow::on_qaChannelPin_triggered() {
+	Channel *c = getContextMenuChannel();
+
+	if (c) {
+		UserModel *um = static_cast< UserModel * >(qtvUsers->model());
+		if (qaChannelPin->isChecked()) {
+			c->setFilterMode(ChannelFilterMode::PIN);
+		} else {
+			c->setFilterMode(ChannelFilterMode::NORMAL);
+		}
+		um->forceVisualUpdate(c);
 	}
 }
 
@@ -2426,18 +2517,6 @@ void MainWindow::on_qaChannelCopyURL_triggered() {
 										   QClipboard::Clipboard);
 }
 
-void MainWindow::on_qaListenerLocalVolume_triggered() {
-	Channel *channel = getContextMenuChannel();
-	ClientUser *user = getContextMenuUser();
-
-	if (!channel || !user) {
-		return;
-	}
-
-	ListenerLocalVolumeDialog dialog(user, channel);
-	dialog.exec();
-}
-
 /**
  * This function updates the UI according to the permission of the user in the current channel.
  * If possible the permissions are fetched from a cache. Otherwise they are requested by the server
@@ -2445,32 +2524,22 @@ void MainWindow::on_qaListenerLocalVolume_triggered() {
  * @see MainWindow::msgPermissionQuery(const MumbleProto::PermissionQuery &msg)
  */
 void MainWindow::updateMenuPermissions() {
-	ClientUser *cu = nullptr;
-	Channel *c     = nullptr;
+	ContextMenuTarget target = getContextMenuTargets();
 
-	if (Global::get().uiSession) {
-		cu = getContextMenuUser();
-		if (!cu)
-			cu = pmModel->getUser(qtvUsers->currentIndex());
+	ChanACL::Permissions p =
+		target.channel ? static_cast< ChanACL::Permissions >(target.channel->uiPermissions) : ChanACL::None;
 
-		c = cu ? cu->cChannel : getContextMenuChannel();
-		if (!c)
-			c = pmModel->getChannel(qtvUsers->currentIndex());
-	}
-
-	ChanACL::Permissions p = c ? static_cast< ChanACL::Permissions >(c->uiPermissions) : ChanACL::None;
-
-	if (c && !p) {
-		Global::get().sh->requestChannelPermissions(c->iId);
-		if (c->iId == 0)
+	if (target.channel && !p) {
+		Global::get().sh->requestChannelPermissions(target.channel->iId);
+		if (target.channel->iId == 0)
 			p = Global::get().pPermissions;
 		else
 			p = ChanACL::All;
 
-		c->uiPermissions = p;
+		target.channel->uiPermissions = p;
 	}
 
-	Channel *cparent = c ? c->cParent : nullptr;
+	Channel *cparent = target.channel ? target.channel->cParent : nullptr;
 	ChanACL::Permissions pparent =
 		cparent ? static_cast< ChanACL::Permissions >(cparent->uiPermissions) : ChanACL::None;
 
@@ -2498,14 +2567,15 @@ void MainWindow::updateMenuPermissions() {
 		homec->uiPermissions = homep;
 	}
 
-	if (cu) {
+	if (target.user) {
 		qaUserMute->setEnabled(p & (ChanACL::Write | ChanACL::MuteDeafen)
-							   && ((cu != user) || cu->bMute || cu->bSuppress));
-		qaUserDeaf->setEnabled(p & (ChanACL::Write | ChanACL::MuteDeafen) && ((cu != user) || cu->bDeaf));
+							   && ((target.user != user) || target.user->bMute || target.user->bSuppress));
+		qaUserDeaf->setEnabled(p & (ChanACL::Write | ChanACL::MuteDeafen)
+							   && ((target.user != user) || target.user->bDeaf));
 		qaUserPrioritySpeaker->setEnabled(p & (ChanACL::Write | ChanACL::MuteDeafen));
 		qaUserTextMessage->setEnabled(p & (ChanACL::Write | ChanACL::TextMessage));
 		qaUserInformation->setEnabled((Global::get().pPermissions & (ChanACL::Write | ChanACL::Register))
-									  || (p & (ChanACL::Write | ChanACL::Enter)) || (cu == user));
+									  || (p & (ChanACL::Write | ChanACL::Enter)) || (target.user == user));
 	} else {
 		qaUserMute->setEnabled(false);
 		qaUserDeaf->setEnabled(false);
@@ -2525,11 +2595,20 @@ void MainWindow::updateMenuPermissions() {
 	qaChannelUnlink->setEnabled((p & (ChanACL::Write | ChanACL::LinkChannel))
 								|| (homep & (ChanACL::Write | ChanACL::LinkChannel)));
 	qaChannelUnlinkAll->setEnabled(p & (ChanACL::Write | ChanACL::LinkChannel));
-
-	qaChannelCopyURL->setEnabled(c);
+	qaChannelCopyURL->setEnabled(target.channel);
 	qaChannelSendMessage->setEnabled(p & (ChanACL::Write | ChanACL::TextMessage));
-	qaChannelFilter->setEnabled(true);
-	qteChat->setEnabled(p & (ChanACL::Write | ChanACL::TextMessage));
+	qaChannelHide->setEnabled(target.channel);
+	qaChannelPin->setEnabled(target.channel);
+
+	bool chatBarEnabled = false;
+	if (Global::get().uiSession) {
+		if (Global::get().s.bChatBarUseSelection && (target.channel || target.user)) {
+			chatBarEnabled = p & (ChanACL::Write | ChanACL::TextMessage);
+		} else if (homec) {
+			chatBarEnabled = homep & (ChanACL::Write | ChanACL::TextMessage);
+		}
+	}
+	qteChat->setEnabled(chatBarEnabled);
 }
 
 void MainWindow::userStateChanged() {
@@ -2700,8 +2779,8 @@ void MainWindow::on_qaConfigDialog_triggered() {
 					   tr("Some settings will only apply after a restart of Mumble. Restart Mumble now?"),
 					   QMessageBox::Yes | QMessageBox::No)
 					   == QMessageBox::Yes) {
-				bSuppressAskOnQuit = true;
-				restartOnQuit      = true;
+				forceQuit     = true;
+				restartOnQuit = true;
 
 				close();
 			}
@@ -3090,6 +3169,19 @@ void MainWindow::on_gsToggleMainWindowVisibility_triggered(bool down, QVariant) 
 	}
 }
 
+void MainWindow::on_gsListenChannel_triggered(bool down, QVariant scdata) {
+	ChannelTarget target = scdata.value< ChannelTarget >();
+	const Channel *c     = Channel::get(target.channelID);
+
+	if (down && c) {
+		if (!Global::get().channelListenerManager->isListening(Global::get().uiSession, c->iId)) {
+			Global::get().sh->startListeningToChannel(c->iId);
+		} else {
+			Global::get().sh->stopListeningToChannel(c->iId);
+		}
+	}
+}
+
 void MainWindow::on_gsTransmitModePushToTalk_triggered(bool down, QVariant) {
 	if (down) {
 		setTransmissionMode(Settings::PushToTalk);
@@ -3179,10 +3271,6 @@ void MainWindow::viewCertificate(bool) {
 void MainWindow::serverConnected() {
 	Global::get().uiSession    = 0;
 	Global::get().pPermissions = ChanACL::None;
-	Global::get().iCodecAlpha  = 0x8000000b;
-	Global::get().bPreferAlpha = true;
-	Global::get().bOpus        = true;
-	Global::get().iCodecBeta   = 0;
 
 #ifdef Q_OS_MAC
 	// Suppress AppNap while we're connected to a server.
@@ -3228,6 +3316,8 @@ void MainWindow::serverConnected() {
 #ifdef Q_OS_WIN
 	TaskList::addToRecentList(Global::get().s.qsLastServer, uname, host, port);
 #endif
+
+	qdwMinimalViewNote->hide();
 }
 
 void MainWindow::serverDisconnected(QAbstractSocket::SocketError err, QString reason) {
@@ -3445,8 +3535,12 @@ void MainWindow::serverDisconnected(QAbstractSocket::SocketError err, QString re
 			}
 		}
 	}
-	qstiIcon->setToolTip(tr("Mumble -- %1").arg(QLatin1String(MUMBLE_RELEASE)));
+	qstiIcon->setToolTip(tr("Mumble -- %1").arg(Version::getRelease()));
 	AudioInput::setMaxBandwidth(-1);
+
+	if (Global::get().s.bMinimalView) {
+		qdwMinimalViewNote->show();
+	}
 }
 
 void MainWindow::resolverError(QAbstractSocket::SocketError, QString reason) {

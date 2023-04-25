@@ -1,4 +1,4 @@
-// Copyright 2007-2022 The Mumble Developers. All rights reserved.
+// Copyright 2007-2023 The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -23,6 +23,7 @@
 #include "NetworkConfig.h"
 #include "OSInfo.h"
 #include "PacketDataStream.h"
+#include "ProtoUtils.h"
 #include "RichTextEditor.h"
 #include "SSL.h"
 #include "ServerResolver.h"
@@ -114,7 +115,7 @@ ServerHandler::ServerHandler() : database(new Database(QLatin1String("ServerHand
 	usPort                  = 0;
 	bUdp                    = true;
 	tConnectionTimeoutTimer = nullptr;
-	uiVersion               = Version::UNKNOWN;
+	m_version               = Version::UNKNOWN;
 	iInFlightTCPPings       = 0;
 
 	// assign connection ID
@@ -196,8 +197,8 @@ int ServerHandler::getConnectionID() const {
 	return connectionID;
 }
 
-void ServerHandler::setProtocolVersion(Version::mumble_raw_version_t version) {
-	uiVersion = version;
+void ServerHandler::setProtocolVersion(Version::full_t version) {
+	m_version = version;
 
 	m_udpPingEncoder.setProtocolVersion(version);
 	m_udpDecoder.setProtocolVersion(version);
@@ -273,6 +274,11 @@ void ServerHandler::udpReady() {
 }
 
 void ServerHandler::handleVoicePacket(const Mumble::Protocol::AudioData &audioData) {
+	if (audioData.usedCodec != Mumble::Protocol::AudioCodec::Opus) {
+		qWarning("Dropping audio packet using invalid codec (not Opus): %d", static_cast< int >(audioData.usedCodec));
+		return;
+	}
+
 	ClientUser *sender = ClientUser::get(audioData.senderSession);
 
 	AudioOutputPtr ao = Global::get().ao;
@@ -359,10 +365,16 @@ void ServerHandler::hostnameResolved() {
 	// Create the list of target host:port pairs
 	// that the ServerHandler should try to connect to.
 	QList< ServerAddress > ql;
+	QHash< ServerAddress, QString > qh;
 	foreach (ServerResolverRecord record, records) {
-		foreach (HostAddress addr, record.addresses()) { ql.append(ServerAddress(addr, record.port())); }
+		foreach (HostAddress addr, record.addresses()) {
+			auto sa = ServerAddress(addr, record.port());
+			ql.append(sa);
+			qh[sa] = record.hostname();
+		}
 	}
 	qlAddresses = ql;
+	qhHostnames = qh;
 
 	// Exit the event loop with 'success' status code,
 	// to continue connecting to the server.
@@ -392,7 +404,7 @@ void ServerHandler::run() {
 		qbaDigest               = QByteArray();
 		bStrong                 = true;
 		qtsSock                 = new QSslSocket(this);
-		qtsSock->setPeerVerifyName(qsHostName);
+		qtsSock->setPeerVerifyName(qhHostnames[saTargetServer]);
 
 		if (!Global::get().s.bSuppressIdentity && CertWizard::validateCert(Global::get().s.kpCertificate)) {
 			qtsSock->setPrivateKey(Global::get().s.kpCertificate.second);
@@ -448,7 +460,7 @@ void ServerHandler::run() {
 
 		accUDP = accTCP = accClean;
 
-		uiVersion   = Version::UNKNOWN;
+		m_version   = Version::UNKNOWN;
 		qsRelease   = QString();
 		qsOS        = QString();
 		qsOSVersion = QString();
@@ -573,7 +585,7 @@ void ServerHandler::sendPingInternal() {
 		pingData.timestamp                    = t;
 		pingData.requestAdditionalInformation = false;
 
-		m_udpPingEncoder.setProtocolVersion(uiVersion);
+		m_udpPingEncoder.setProtocolVersion(m_version);
 		gsl::span< const Mumble::Protocol::byte > encodedPacket = m_udpPingEncoder.encodePingPacket(pingData);
 
 		sendMessage(encodedPacket.data(), encodedPacket.size(), true);
@@ -766,12 +778,8 @@ void ServerHandler::serverConnectionConnected() {
 	}
 
 	MumbleProto::Version mpv;
-	mpv.set_release(u8(QLatin1String(MUMBLE_RELEASE)));
-
-	unsigned int version = Version::getRaw();
-	if (version) {
-		mpv.set_version(version);
-	}
+	mpv.set_release(u8(Version::getRelease()));
+	MumbleProto::setVersion(mpv, Version::get());
 
 	if (!Global::get().s.bHideOS) {
 		mpv.set_os(u8(OSInfo::getOS()));
@@ -788,9 +796,6 @@ void ServerHandler::serverConnectionConnected() {
 	foreach (const QString &qs, tokens)
 		mpa.add_tokens(u8(qs));
 
-	QMap< int, CELTCodec * >::const_iterator i;
-	for (i = Global::get().qmCodecs.constBegin(); i != Global::get().qmCodecs.constEnd(); ++i)
-		mpa.add_celt_versions(i.key());
 	mpa.set_opus(true);
 	sendMessage(mpa);
 
@@ -1023,7 +1028,7 @@ void ServerHandler::setUserComment(unsigned int uiSession, const QString &commen
 void ServerHandler::setUserTexture(unsigned int uiSession, const QByteArray &qba) {
 	QByteArray texture;
 
-	if ((uiVersion >= 0x010202) || qba.isEmpty()) {
+	if ((m_version >= Version::fromComponents(1, 2, 2)) || qba.isEmpty()) {
 		texture = qba;
 	} else {
 		QByteArray raw = qba;

@@ -1,4 +1,4 @@
-// Copyright 2009-2022 The Mumble Developers. All rights reserved.
+// Copyright 2009-2023 The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -75,7 +75,7 @@ protected:
 	QIcon qiDeafenedSelf, qiDeafenedServer;
 	QIcon qiAuthenticated, qiChannel, qiLinkedChannel, qiActiveChannel;
 	QIcon qiFriend;
-	QIcon qiComment, qiCommentSeen, qiFilter;
+	QIcon qiComment, qiCommentSeen, qiFilter, qiPin;
 	QIcon qiLock_locked, qiLock_unlocked;
 	QIcon qiEar;
 	ModelItem *miRoot;
@@ -212,7 +212,7 @@ public slots:
 	void ensureSelfVisible();
 	void recheckLinks();
 	void updateOverlay() const;
-	void toggleChannelFiltered(Channel *c);
+	void forceVisualUpdate(Channel *c = nullptr);
 signals:
 	/// A signal emitted whenever a user is added to the model.
 	///

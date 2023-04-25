@@ -49,7 +49,7 @@
     </message>
     <message>
         <source>This revokes the %1 privilege. If a privilege is both allowed and denied, it is denied.&lt;br /&gt;%2</source>
-        <translation type="unfinished"></translation>
+        <translation>Це скасовує привілей %1. Якщо привілей одночасно дозволений і заборонений, він буде заборонений.&lt;br /&gt;%2</translation>
     </message>
     <message>
         <source>Dialog</source>
@@ -88,7 +88,8 @@
 This value enables you to change the way Mumble arranges the channels in the tree. A channel with a higher &lt;i&gt;Position&lt;/i&gt; value will always be placed below one with a lower value and the other way around. If the &lt;i&gt;Position&lt;/i&gt; value of two channels is equal they will get sorted alphabetically by their name.</source>
         <oldsource>&lt;b&gt;Position&lt;/b&gt;&lt;br/&gt;
 This value enables you to change the way mumble arranges the channels in the tree. A channel with a higher &lt;i&gt;Position&lt;/i&gt; value will always be placed below one with a lower value and the other way around. If the &lt;i&gt;Position&lt;/i&gt; value of two channels is equal they will get sorted alphabetically by their name.</oldsource>
-        <translation type="unfinished"></translation>
+        <translation>&lt;b&gt;Позиція&lt;/b&gt;&lt;br/&gt;
+Це значення дозволяє змінити спосіб розташування каналів Mumble у дереві. Канал з більшим значенням &lt;i&gt;Позиції&lt;/i&gt; завжди буде розміщено нижче каналу з меншим значенням і навпаки. Якщо значення &lt;i&gt;Позиції&lt;/i&gt; двох каналів однакові, вони будуть упорядковані абетково за їхніми назвами.</translation>
     </message>
     <message>
         <source>Position</source>
@@ -172,7 +173,7 @@ This value enables you to change the way mumble arranges the channels in the tre
     </message>
     <message>
         <source>This sets whether or not the ACL up the chain of parent channels are applied to this object. Only those entries that are marked in the parent as &quot;Apply to sub-channels&quot; will be inherited.</source>
-        <translation type="unfinished"></translation>
+        <translation>Задає, чи будуть застосовуватися ACL по ланцюжку батьківських каналів до цього об&apos;єкту чи ні. Успадковуватимуться лише ті записи, які у батьківському об&apos;єкті позначені як &quot;Застосовувати до підканалів&quot;.</translation>
     </message>
     <message>
         <source>Inherit ACLs</source>
@@ -184,7 +185,7 @@ This value enables you to change the way mumble arranges the channels in the tre
     </message>
     <message>
         <source>This moves the entry up in the list. As entries are evaluated in order, this may change the effective permissions of users. You cannot move an entry above an inherited entry, if you really need that you&apos;ll have to duplicate the inherited entry.</source>
-        <translation type="unfinished"></translation>
+        <translation>Переміщує запис вгору в списку. Оскільки записи оцінюються в порядку, це може змінити ефективні дозволи користувачів. Ви не можете перемістити запис вище успадкованого запису, якщо вам це дійсно потрібно, вам доведеться продублювати успадкований запис.</translation>
     </message>
     <message>
         <source>&amp;Up</source>
@@ -196,7 +197,7 @@ This value enables you to change the way mumble arranges the channels in the tre
     </message>
     <message>
         <source>This moves the entry down in the list. As entries are evaluated in order, this may change the effective permissions of users.</source>
-        <translation type="unfinished"></translation>
+        <translation>Переміщує запис вниз у списку. Оскільки записи оцінюються по порядку, це може змінити ефективні дозволи користувачів.</translation>
     </message>
     <message>
         <source>&amp;Down</source>
@@ -208,7 +209,7 @@ This value enables you to change the way mumble arranges the channels in the tre
     </message>
     <message>
         <source>This adds a new entry, initially set with no permissions and applying to all.</source>
-        <translation type="unfinished"></translation>
+        <translation>Додає новий запис, який спочатку був встановлений без дозволів і застосовується до всіх.</translation>
     </message>
     <message>
         <source>&amp;Add</source>
@@ -233,19 +234,19 @@ This value enables you to change the way mumble arranges the channels in the tre
     <message>
         <source>Entry should apply to this channel.</source>
         <oldsource>Entry should apply to this channel</oldsource>
-        <translation type="unfinished"></translation>
+        <translation>Застосовувати до каналу.</translation>
     </message>
     <message>
         <source>This makes the entry apply to this channel.</source>
-        <translation type="unfinished"></translation>
+        <translation>Робить запис застосовним до цього каналу.</translation>
     </message>
     <message>
         <source>Applies to this channel</source>
-        <translation type="unfinished"></translation>
+        <translation>Застосувати до цього каналу</translation>
     </message>
     <message>
         <source>Entry should apply to sub-channels.</source>
-        <translation type="unfinished"></translation>
+        <translation>Застосовувати до підканалів.</translation>
     </message>
     <message>
         <source>Add new group</source>
@@ -254,7 +255,8 @@ This value enables you to change the way mumble arranges the channels in the tre
     <message>
         <source>&lt;b&gt;Add&lt;/b&gt;&lt;br/&gt;
 Add a new group.</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;b&gt;Додати&lt;/b&gt;&lt;br/&gt;
+Додати нову групу.</translation>
     </message>
     <message>
         <source>Inherited members</source>
@@ -262,15 +264,15 @@ Add a new group.</source>
     </message>
     <message>
         <source>Contains the list of members added to the group by this channel.</source>
-        <translation type="unfinished"></translation>
+        <translation>Містить список користувачів, доданих до групи цим каналом.</translation>
     </message>
     <message>
         <source>Contains a list of members whose group membership will not be inherited from the parent channel.</source>
-        <translation type="unfinished"></translation>
+        <translation>Містить список користувачів, чиє членство в групі не буде успадковано з батьківського каналу.</translation>
     </message>
     <message>
         <source>Contains the list of members inherited by other channels.</source>
-        <translation type="unfinished"></translation>
+        <translation>Містить список учасників, успадкованих іншими каналами.</translation>
     </message>
     <message>
         <source>Type in the name of a user you wish to add to the group and click Add.</source>
@@ -290,11 +292,11 @@ Add a new group.</source>
     </message>
     <message>
         <source>This makes the entry apply to sub-channels of this channel.</source>
-        <translation type="unfinished"></translation>
+        <translation>Робить запис застосовним до підканалів цього каналу.</translation>
     </message>
     <message>
         <source>Applies to sub-channels</source>
-        <translation type="unfinished"></translation>
+        <translation>Застосовується до підканалів</translation>
     </message>
     <message>
         <source>Permissions</source>
@@ -306,7 +308,7 @@ Add a new group.</source>
     </message>
     <message>
         <source>Group this entry applies to</source>
-        <translation type="unfinished"></translation>
+        <translation>Група, до якої буде застосований цей запис</translation>
     </message>
     <message>
         <source>User ID</source>
@@ -314,11 +316,11 @@ Add a new group.</source>
     </message>
     <message>
         <source>User this entry applies to</source>
-        <translation type="unfinished"></translation>
+        <translation>Користувач, до якого застосовується цей запис</translation>
     </message>
     <message>
         <source>This controls which user this entry applies to. Just type in the user name and hit enter to query the server for a match.</source>
-        <translation type="unfinished"></translation>
+        <translation>Користувач, для якого потрібно застосувати данний запис. Просто напишіть ім&apos;я користувача і натисніть кнопку enter щоби надіслати запит на сервер.</translation>
     </message>
     <message>
         <source>&amp;Properties</source>
@@ -326,60 +328,65 @@ Add a new group.</source>
     </message>
     <message>
         <source>&lt;b&gt;Name&lt;/b&gt;&lt;br /&gt;Enter the channel name in this field. The name has to comply with the restriction imposed by the server you are connected to.</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;b&gt;Назва&lt;/b&gt;&lt;br /&gt;Введіть назву каналу у цьому полі. Вона повиння відповідати правилам сервера, до якого ви під&apos;єднані.</translation>
     </message>
     <message>
         <source>&lt;b&gt;Temporary&lt;/b&gt;&lt;br /&gt;
 When checked the channel created will be marked as temporary. This means when the last player leaves it the channel will be automatically deleted by the server.</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;b&gt;Тимчасовий&lt;/b&gt;&lt;br /&gt;
+При відмітці, створений канал буде позначено як тимчасовий. Це означає, що коли останній користувач його покине, канал буде автоматично видалено сервером.</translation>
     </message>
     <message>
         <source>&lt;b&gt;Group&lt;/b&gt;&lt;br /&gt;
 These are all the groups currently defined for the channel. To create a new group, just type in the name and press enter.</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;b&gt;Група&lt;/b&gt;&lt;br /&gt;
+Це всі групи, визначені для цього каналу. Щоб створити нову групу, просто впишіть її назву та натисніть enter.</translation>
     </message>
     <message>
         <source>&lt;b&gt;Remove&lt;/b&gt;&lt;br /&gt;This removes the currently selected group. If the group was inherited, it will not be removed from the list, but all local information about the group will be cleared.</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;b&gt;Видалити&lt;/b&gt;&lt;br /&gt;Це видаляє вибрану групу. Якщо група успадковується, її не буде видалено із списку, але вся локальна інформація про групу буде очищена.</translation>
     </message>
     <message>
         <source>&lt;b&gt;Inherit&lt;/b&gt;&lt;br /&gt;This inherits all the members in the group from the parent, if the group is marked as &lt;i&gt;Inheritable&lt;/i&gt; in the parent channel.</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;b&gt;Успадкувати&lt;/b&gt;&lt;br /&gt;Це успадковує всіх учасників від батьків, якщо група позначена як &lt;i&gt;Успадковувана&lt;/i&gt; в батьківському каналі.</translation>
     </message>
     <message>
         <source>&lt;b&gt;Inheritable&lt;/b&gt;&lt;br /&gt;This makes this group inheritable to sub-channels. If the group is non-inheritable, sub-channels are still free to create a new group with the same name.</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;b&gt;Успадковувана&lt;/b&gt;&lt;br /&gt;Це робить цю групу успадковуваною для підканалів. Якщо ця група не успадковувана, підканали все ще можуть створити нову групу із такою назвою.</translation>
     </message>
     <message>
         <source>&lt;b&gt;Inherited&lt;/b&gt;&lt;br /&gt;This indicates that the group was inherited from the parent channel. You cannot edit this flag, it&apos;s just for information.</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;b&gt;Успадкована&lt;/b&gt;&lt;br /&gt;Це вказує на те, що група була успадкована від батьківського каналу. Ви не можете редагувати цей прапорець, він існує лише для інформації.</translation>
     </message>
     <message>
         <source>&lt;b&gt;Members&lt;/b&gt;&lt;br /&gt;
 This list contains all members that were added to the group by the current channel. Be aware that this does not include members inherited by higher levels of the channel tree. These can be found in the &lt;i&gt;Inherited members&lt;/i&gt; list. To prevent this list to be inherited by lower level channels uncheck &lt;i&gt;Inheritable&lt;/i&gt; or manually add the members to the &lt;i&gt;Excluded members&lt;/i&gt; list.</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;b&gt;Користувачі&lt;/b&gt;&lt;br /&gt;
+Список містить усіх користувачів, доданих до групи батьківським каналом. Зверніть увагу, це не включає користувачів, доданих вищими гілками дерева каналів. Список таких користувачів можна знайити в &lt;i&gt;Успадкованих користувачах&lt;/i&gt;. Щоб цей список не був успадкований дочірніми каналами, зніміть мітку з &lt;i&gt;Успадковуваний&lt;/i&gt;, або вручну додайте користувачів до списку &lt;i&gt;Виключені користувачі&lt;/i&gt;.</translation>
     </message>
     <message>
         <source>&lt;b&gt;Excluded members&lt;/b&gt;&lt;br /&gt;
 Contains a list of members whose group membership will not be inherited from the parent channel.</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;b&gt;Виключені користувачі&lt;/b&gt;&lt;br /&gt;
+Містить список користувачів, чия участь у групі не буде успадкована з батьківського каналу.</translation>
     </message>
     <message>
         <source>&lt;b&gt;Inherited members&lt;/b&gt;&lt;br /&gt;
 Contains the list of members inherited by the current channel. Uncheck &lt;i&gt;Inherit&lt;/i&gt; to prevent inheritance from higher level channels.</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;b&gt;Успадковані користувачі&lt;/b&gt;&lt;br /&gt;
+Містить список користувачів, успадкованих батьківським каналом. Зніміть позначку з &lt;i&gt;Успадковувати&lt;/i&gt;, щоб заборонити успадковування з каналів вищого рівня.</translation>
     </message>
     <message>
         <source>This controls which group of users this entry applies to.&lt;br /&gt;Note that the group is evaluated in the context of the channel the entry is used in. For example, the default ACL on the Root channel gives &lt;i&gt;Write&lt;/i&gt; permission to the &lt;i&gt;admin&lt;/i&gt; group. This entry, if inherited by a channel, will give a user write privileges if he belongs to the &lt;i&gt;admin&lt;/i&gt; group in that channel, even if he doesn&apos;t belong to the &lt;i&gt;admin&lt;/i&gt; group in the channel where the ACL originated.&lt;br /&gt;If a group name starts with &apos;!&apos;, its membership is negated, and if it starts with &apos;~&apos;, it is evaluated in the channel the ACL was defined in, rather than the channel the ACL is active in.&lt;br /&gt;If a group name starts with &apos;#&apos;, it is interpreted as an access token. Users must have entered whatever follows the &apos;#&apos; in their list of access tokens to match. This can be used for very simple password access to channels for non-authenticated users.&lt;br /&gt;If a group name starts with &apos;$&apos;, it will only match users whose certificate hash matches what follows the &apos;$&apos;.&lt;br /&gt;A few special predefined groups are:&lt;br /&gt;&lt;b&gt;all&lt;/b&gt; - Everyone will match.&lt;br /&gt;&lt;b&gt;auth&lt;/b&gt; - All authenticated users will match.&lt;br /&gt;&lt;b&gt;sub,a,b,c&lt;/b&gt; - User currently in a sub-channel minimum &lt;i&gt;a&lt;/i&gt; common parents, and between &lt;i&gt;b&lt;/i&gt; and &lt;i&gt;c&lt;/i&gt; channels down the chain. See the website for more extensive documentation on this one.&lt;br /&gt;&lt;b&gt;in&lt;/b&gt; - Users currently in the channel will match (convenience for &apos;&lt;i&gt;sub,0,0,0&lt;/i&gt;&apos;).&lt;br /&gt;&lt;b&gt;out&lt;/b&gt; - Users outside the channel will match (convenience for &apos;&lt;i&gt;!sub,0,0,0&lt;/i&gt;&apos;).&lt;br /&gt;Note that an entry applies to either a user or a group, not both.</source>
-        <translation type="unfinished"></translation>
+        <translation>Це контролює до якої групи користувачів використовується цей запис.&lt;br /&gt;Зауважте, що група визначена в контексті каналу, в якому вона використана. Наприклад, стандартний СКД (список керування доступом) для каналу Root дає дозвіл &lt;i&gt;Запис&lt;/i&gt; для групи &lt;i&gt;admin&lt;/i&gt;. Цей запис, у разі успадкування каналом, дасть користувачу права запису, якщо він належить &lt;i&gt;admin&lt;/i&gt; в цьому каналі навіть якщо він не належить до групи &lt;i&gt;admin&lt;/i&gt; в каналі, де визначений СКД.&lt;br /&gt;Якщо назва групи починається з «!», то вона використовується як заперечення, і якщо вона починається з «~», то права групи визначаються в каналі, де був визначений СКД, замість каналу, де СКД активний.&lt;br /&gt;Якщо назва групи починається з «#», вона інтерпритується як ключ доступу. Користувачі мали б ввести те, що йде після «#» в їх списку ключів доступу, щоб вони могли ввійти. Це може бути використано для дуже простого парольного доступу до каналів для користувачів, що не автентифікувалися.&lt;br /&gt;Якщо назва групи починається з «$», увійти зможуть лише ті користувачі, чий хеш сертифікату зходиться з тим, що йде після «$».&lt;br /&gt;Спеціальні групи ,що визначені завчасно:&lt;br /&gt;&lt;b&gt;all&lt;/b&gt; - Усі користувачі.&lt;br /&gt;&lt;b&gt;auth&lt;/b&gt; - Усі автентифіковані користувачі.&lt;br /&gt;&lt;b&gt;sub,a,b,c&lt;/b&gt; - Користувачі у каналі не вище &lt;i&gt;a&lt;/i&gt;, і між &lt;i&gt;b&lt;/i&gt; і &lt;i&gt;c&lt;/i&gt; каналів вниз по ланцюжку. Перейдіть на вебсайт для перегляду повної документації.&lt;br /&gt;&lt;b&gt;in&lt;/b&gt; - Користувачі, що зараз знаходяться в каналі (зручніший варіант для «&lt;i&gt;sub,0,0,0&lt;/i&gt;»).&lt;br /&gt;&lt;b&gt;out&lt;/b&gt; - Користувачі, що знаходяться поза каналом (зручніший варіант для «&lt;i&gt;!sub,0,0,0&lt;/i&gt;»).&lt;br /&gt;Зауважте, що запис використовується або для користувача, або для групи, але не всіх зразу.</translation>
     </message>
     <message>
         <source>&lt;b&gt;Password&lt;/b&gt;&lt;br /&gt;This field allows you to easily set and change the password of a channel. It uses Mumble&apos;s access tokens feature in the background. Use ACLs and groups if you need more fine grained and powerful access control.</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;b&gt;Пароль&lt;/b&gt;&lt;br /&gt;Це поле дозволяє простим чином встановити, та змінити пароль каналу. Поле використовує в основі токени доступу Mumble. Використовуйте СКД (списки керування доступом) і групи якщо вам потрібно налаштувати більш тонкий і потужний контроль доступу.</translation>
     </message>
     <message>
         <source>This shows all the entries active on this channel. Entries inherited from parent channels will be shown in italics.&lt;br /&gt;ACLs are evaluated top to bottom, meaning priority increases as you move down the list.</source>
-        <translation type="unfinished"></translation>
+        <translation>Це вікно показує всі записи активні на цьому каналі. Записи унаслідовані від батьківського каналу будуть відображені в курсиві.&lt;br /&gt;СКД оброблюються зверху вниз, що значить що записи нижче по списку мають вищий пріоритет.</translation>
     </message>
     <message>
         <source>ID of the channel.</source>
@@ -396,31 +403,32 @@ Contains the list of members inherited by the current channel. Uncheck &lt;i&gt;
     <message>
         <source>&lt;b&gt;Maximum Users&lt;/b&gt;&lt;br /&gt;
 This value allows you to set the maximum number of users allowed in the channel. If the value is above zero, only that number of users will be allowed to enter the channel. If the value is zero, the maximum number of users in the channel is given by the server&apos;s default limit.</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;b&gt;Максимальна кількість користувачів&lt;/b&gt;&lt;br /&gt;
+Це значення дозволяє вам встановити максимальну дозволену кількість користувачів у каналі. Якщо значення вище нуля, тільки такій кількість користувачів буде дозволено зайти у канал. Якщо це значення нуль, то максимальна кількість користувачів каналу дається лімітом за замовчуванням сервера.</translation>
     </message>
     <message>
         <source>This is the sort order for the channel.</source>
-        <translation type="unfinished"></translation>
+        <translation>Це – порядок сортування каналу.</translation>
     </message>
     <message>
         <source>Properties</source>
-        <translation type="unfinished"></translation>
+        <translation>Властивості</translation>
     </message>
     <message>
         <source>Channel password</source>
-        <translation type="unfinished"></translation>
+        <translation>Пароль каналу</translation>
     </message>
     <message>
         <source>Maximum users</source>
-        <translation type="unfinished"></translation>
+        <translation>Максимальна кількість користувачів</translation>
     </message>
     <message>
         <source>Channel name</source>
-        <translation type="unfinished"></translation>
+        <translation>Ім&apos;я каналу</translation>
     </message>
     <message>
         <source>Inherited group members</source>
-        <translation type="unfinished"></translation>
+        <translation>Успадковані члени групи</translation>
     </message>
     <message>
         <source>Foreign group members</source>
@@ -428,22 +436,22 @@ This value allows you to set the maximum number of users allowed in the channel.
     </message>
     <message>
         <source>Inherited channel members</source>
-        <translation type="unfinished"></translation>
+        <translation>Успадковані члени каналу</translation>
     </message>
     <message>
         <source>Add members to group</source>
-        <translation type="unfinished"></translation>
+        <translation>Додати членів до групи</translation>
     </message>
     <message>
         <source>List of ACL entries</source>
-        <translation type="unfinished"></translation>
+        <translation>Список записів СКД</translation>
     </message>
 </context>
 <context>
     <name>ALSAAudioInput</name>
     <message>
         <source>Default ALSA Card</source>
-        <translation type="unfinished"></translation>
+        <translation>Аудіокарта ALSA за замовуванням</translation>
     </message>
     <message>
         <source>Opening chosen ALSA Input failed: %1</source>
@@ -639,6 +647,10 @@ This value allows you to set the maximum number of users allowed in the channel.
     </message>
     <message>
         <source>&lt;h3&gt;Mumble (%1)&lt;/h3&gt;&lt;p&gt;%3&lt;/p&gt;&lt;p&gt;&lt;b&gt;An Open Source, low-latency, high quality voice-chat utility&lt;/b&gt;&lt;/p&gt;&lt;p&gt;&lt;tt&gt;&lt;a href=&quot;%2&quot;&gt;%2&lt;/a&gt;&lt;/tt&gt;&lt;/p&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>For a list of authors, please see &lt;a href=&quot;https://github.com/mumble-voip/mumble/graphs/contributors&quot;&gt;https://github.com/mumble-voip/mumble/graphs/contributors&lt;/a&gt;</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -897,18 +909,6 @@ This value allows you to set the maximum number of users allowed in the channel.
         <translation>Різне</translation>
     </message>
     <message>
-        <source>Audible audio cue when starting or stopping to transmit</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&lt;b&gt;This enables transmission audio cues.&lt;/b&gt;&lt;br /&gt;Setting this will give you a short audio beep when you start and stop transmitting.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Audio cue</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Gets played when starting to transmit</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1026,6 +1026,34 @@ This value allows you to set the maximum number of users allowed in the channel.
     </message>
     <message>
         <source>Pre&amp;view</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Audio cue when using...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Audible audio cue when starting or stopping to transmit using Push To Talk</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;b&gt;This enables transmission audio cues when using Push To Talk.&lt;/b&gt;&lt;br /&gt;Setting this will give you a short audio beep when you start and stop transmitting.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Push To Talk</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Audible audio cue when starting or stopping to transmit using Voice Activity</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;b&gt;This enables transmission audio cues when using Voice Activity.&lt;/b&gt;&lt;br /&gt;Setting this will give you a short audio beep when you start and stop transmitting.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Voice Activity</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1426,6 +1454,10 @@ This value allows you to set the maximum number of users allowed in the channel.
     </message>
     <message>
         <source> m</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Positional audio cannot work with mono output devices!</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -3013,10 +3045,6 @@ Are you sure you wish to replace your certificate?
         <translation>Порт</translation>
     </message>
     <message>
-        <source>Addresses</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Website</source>
         <translation>Веб-сайт</translation>
     </message>
@@ -3046,6 +3074,14 @@ Are you sure you wish to replace your certificate?
     </message>
     <message>
         <source>Version</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>IPv4 address</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>IPv6 address</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -3359,7 +3395,7 @@ Without this option enabled, using Mumble&apos;s global shortcuts in privileged 
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Mumble&apos;s Global Shortcuts system does currently not work in combination with the Wayland protocol. For more information, visit &lt;a href=&quot;https://github.com/mumble-voip/mumble/issues/5257&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0057ae;&quot;&gt;https://github.com/mumble-voip/mumble/issues/5257&lt;/span&gt;&lt;/a&gt;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Mumble&apos;s Global Shortcuts system does currently not work properly in combination with the Wayland protocol. For more information, visit &lt;a href=&quot;https://github.com/mumble-voip/mumble/issues/5257&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0057ae;&quot;&gt;https://github.com/mumble-voip/mumble/issues/5257&lt;/span&gt;&lt;/a&gt;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -3626,13 +3662,6 @@ This field describes the size of an LCD device. The size is given either in pixe
     </message>
 </context>
 <context>
-    <name>ListenerLocalVolumeDialog</name>
-    <message>
-        <source>Adjusting local volume for listening to %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>Log</name>
     <message>
         <source>Debug</source>
@@ -3799,6 +3828,10 @@ This field describes the size of an LCD device. The size is given either in pixe
         <source>Plugin message</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>[embedded content]</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>LogConfig</name>
@@ -3883,10 +3916,6 @@ This field describes the size of an LCD device. The size is given either in pixe
     </message>
     <message>
         <source>Text To Speech</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Volume</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -4039,6 +4068,50 @@ The setting only applies for new messages, the already shown ones will retain th
         <source>Click here to toggle limiting for %1 events.&lt;br /&gt;If checked, notifications for this event type will not be played when the user count on the server exceeds the set threshold.</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Message Volume</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Volume adjustment for audio cues</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;b&gt;This is the volume adjustment for audio cues.&lt;/b&gt;&lt;br /&gt;A value of 0 dB means no change to the sound sample.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source> dB</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Text-to-Speech volume</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Notification volume adjustment</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Volume adjustment for notification sounds</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;b&gt;This is the volume adjustment for notification sounds.&lt;/b&gt;&lt;br /&gt;A value of 0 dB means no change to the sound sample.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Audio cue volume adjustment</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source> %</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Notification sound volume adjustment</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>LookConfig</name>
@@ -4093,10 +4166,6 @@ The setting only applies for new messages, the already shown ones will retain th
     </message>
     <message>
         <source>Users above Channels</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&lt;b&gt;If set, will verify you want to quit if connected.&lt;/b&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -4162,14 +4231,6 @@ The setting only applies for new messages, the already shown ones will retain th
     </message>
     <message>
         <source>Channel Dragging</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Ask whether to close or minimize when quitting Mumble.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Ask on quit while connected</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -4476,6 +4537,38 @@ The setting only applies for new messages, the already shown ones will retain th
         <source>Action (Channel):</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Quit Behavior</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This setting controls the behavior of clicking on the X in the top right corner.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This setting controls the behavior when closing Mumble. You can choose between being asked for confirmation, minimize instead if closing or just closing without any additional prompt. Optionally, the first two options can only apply when you are currently connected to a server (in that case, Mumble will quit without asking, when not connected to any server).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Always Ask</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ask when connected</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Always Minimize</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Minimize when connected</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Always Quit</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>MainWindow</name>
@@ -4568,10 +4661,6 @@ The setting only applies for new messages, the already shown ones will retain th
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Mumble is currently connected to a server. Do you want to Close or Minimize it?</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Mute Self</source>
         <comment>Global Shortcut</comment>
         <translation type="unfinished"></translation>
@@ -4629,10 +4718,6 @@ The setting only applies for new messages, the already shown ones will retain th
     </message>
     <message>
         <source>URL scheme is not &apos;mumble&apos;</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>This version of Mumble can&apos;t handle URLs for Mumble version %1.%2.%3</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -5611,10 +5696,6 @@ Otherwise abort and check your certificate and username.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Failed to load Opus, it will not be available for audio encoding/decoding.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>The server requests minimum client version %1</source>
         <translation type="unfinished"></translation>
     </message>
@@ -5660,10 +5741,6 @@ Otherwise abort and check your certificate and username.</source>
     </message>
     <message>
         <source>%1 unmuted by %2.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Unable to find matching CELT codecs with other clients. You will not be able to talk to all users.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -5858,10 +5935,6 @@ Otherwise abort and check your certificate and username.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>&amp;Filter on/off</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Enable or disable the filtering of select channels.
 By default all empty channels will be filtered.
 You can mark additional channels for filtering from
@@ -5878,14 +5951,6 @@ the channel&apos;s context menu.</source>
     </message>
     <message>
         <source>Reset the avatar of the selected user.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Locally adjust the user&apos;s speech volume.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Opens a dialog with a volume slider. Use this on other users in the same room.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -5930,10 +5995,6 @@ the channel&apos;s context menu.</source>
     </message>
     <message>
         <source>&amp;Ban...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Local Volume Adjustment...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -6042,10 +6103,6 @@ the channel&apos;s context menu.</source>
     </message>
     <message>
         <source>Listen to this channel without joining it</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Locally adjust the volume for this virtual ear.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -6262,6 +6319,48 @@ Valid actions are:
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>You are currently in minimal view but not connected to a server. Use the context menu to connect to a server or disable minimal view.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Local Volume Adjustment:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This version of Mumble can&apos;t handle URLs for Mumble version %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Listen to Channel</source>
+        <comment>Global Shortcut</comment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Toggles listening to the given channel.</source>
+        <comment>Global Shortcut</comment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Server instructed us to use an audio codec different from Opus, which is no longer supported. Disconnecting...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Are you sure you want to close Mumble? Perhaps you prefer to minimize it instead?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Remember this setting</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Channel &amp;Filter</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Pin Channel when Filtering</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Usage: mumble [options] [&lt;url&gt; | &lt;plugin_list&gt;]
 
 &lt;url&gt; specifies a URL to connect to after startup instead of showing
@@ -6274,7 +6373,7 @@ correct client version. It currently defaults to 1.2.0.
 
 Valid options are:
   -h, --help    Show this help text and exit.
-  -V, --version Print version information and exit
+  --version     Print version information and exit
   -m, --multiple
                 Allow multiple instances of the client to be started.
   -c, --config
@@ -6307,9 +6406,9 @@ Valid options are:
                 Print on stdout the echo cancellation queue state
                 (useful for debugging purposes)
   --translation-dir &lt;dir&gt;
-                Specifies an additional translation fir &lt;dir&gt; in which
-                Mumble will search for translation files that overwrite
-                the bundled ones
+                Specifies an additional translation directory &lt;dir&gt;
+                in which Mumble will search for translation files that
+                overwrite the bundled ones
                 Directories added this way have higher priority than
                 the default locations used otherwise
   --print-translation-dirs
@@ -7467,10 +7566,6 @@ To upgrade these files to their latest versions, click the button below.</source
 <context>
     <name>QObject</name>
     <message>
-        <source>CodecInit: Failed to load Opus, it will not be available for encoding/decoding audio.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Talking UI</source>
         <translation type="unfinished"></translation>
     </message>
@@ -7651,6 +7746,10 @@ You can register them again.</source>
     </message>
     <message>
         <source>Access to the microphone was denied due to system restrictions. You will not be able to use the microphone in this session.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Unknown Version</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -8024,6 +8123,10 @@ You can register them again.</source>
         <source>Press to show button combination</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>&lt; Unknown Channel &gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ShortcutTargetDialog</name>
@@ -8242,10 +8345,6 @@ An access token is a text string, which can be used as a password for very simpl
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>CELT Versions</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Details...</source>
         <translation type="unfinished"></translation>
     </message>
@@ -8368,6 +8467,10 @@ An access token is a text string, which can be used as a password for very simpl
         <source>Ping deviation</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Warning: The server seems to report a truncated protocol version for this client. (See: &lt;a href=&quot;https://github.com/mumble-voip/mumble/issues/5827/&quot;&gt;Issue #5827&lt;/a&gt;)</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>UserListModel</name>
@@ -8412,33 +8515,6 @@ An access token is a text string, which can be used as a password for very simpl
     </message>
     <message>
         <source>Adjusting local nickname for %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>UserLocalVolumeDialog</name>
-    <message>
-        <source>Local volume for other users</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&lt;b&gt;Adjust the volume of other users locally&lt;/b&gt;&lt;br /&gt;Mumble supports adjusting the volume of other users locally.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Adjusting local volume for %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source> dB</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Use the slider or the text box to change the volume of the user.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;font-weight:600;&quot;&gt;Attention!&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Increasing the volume of a user too much can permanently damage your hearing. It may also increase the background noise of the user.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>User volume</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -8583,6 +8659,10 @@ An access token is a text string, which can be used as a password for very simpl
     </message>
     <message>
         <source>Channel has access restrictions but you can enter nonetheless</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Channel will be pinned when filtering is enabled</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -8845,6 +8925,17 @@ Please contact your server administrator for further information.</source>
     </message>
     <message>
         <source>Unable to start recording - the audio output is miconfigured (0Hz sample rate)</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>VolumeSliderWidgetAction</name>
+    <message>
+        <source>Slider for volume adjustment</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Volume Adjustment</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

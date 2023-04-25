@@ -1,4 +1,4 @@
-// Copyright 2008-2022 The Mumble Developers. All rights reserved.
+// Copyright 2008-2023 The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -10,6 +10,7 @@
 #endif
 
 #include "Channel.h"
+#include "ChannelListenerManager.h"
 #include "Group.h"
 #include "Meta.h"
 #include "QtUtils.h"
@@ -81,12 +82,12 @@ void Server::setUserState(User *pUser, Channel *cChannel, bool mute, bool deaf, 
 	}
 
 	if (changed) {
-		sendAll(mpus, ~0x010202);
+		sendAll(mpus, Version::fromComponents(1, 2, 2), Version::CompareMode::LessThan);
 		if (mpus.has_comment() && !pUser->qbaCommentHash.isEmpty()) {
 			mpus.clear_comment();
 			mpus.set_comment_hash(blob(pUser->qbaCommentHash));
 		}
-		sendAll(mpus, 0x010202);
+		sendAll(mpus, Version::fromComponents(1, 2, 2), Version::CompareMode::AtLeast);
 
 		emit userStateChanged(pUser);
 	}
@@ -170,12 +171,12 @@ bool Server::setChannelState(Channel *cChannel, Channel *cParent, const QString 
 	if (updated)
 		updateChannel(cChannel);
 	if (changed) {
-		sendAll(mpcs, ~0x010202);
+		sendAll(mpcs, Version::fromComponents(1, 2, 2), Version::CompareMode::LessThan);
 		if (mpcs.has_description() && !cChannel->qbaDescHash.isEmpty()) {
 			mpcs.clear_description();
 			mpcs.set_description_hash(blob(cChannel->qbaDescHash));
 		}
-		sendAll(mpcs, 0x010202);
+		sendAll(mpcs, Version::fromComponents(1, 2, 2), Version::CompareMode::AtLeast);
 		emit channelStateChanged(cChannel);
 	}
 
@@ -357,14 +358,30 @@ void Server::startListeningToChannel(ServerUser *user, Channel *cChannel) {
 		return;
 	}
 
-	m_channelListenerManager.addListener(user->uiSession, cChannel->iId);
+	addChannelListener(*user, *cChannel);
 
 	MumbleProto::UserState mpus;
 	mpus.set_session(user->uiSession);
 
 	mpus.add_listening_channel_add(cChannel->iId);
 
-	sendAll(mpus);
+	if (!broadcastListenerVolumeAdjustments) {
+		sendExcept(user, mpus);
+	}
+
+	// Adding a listener might resurrect an old volume adjustment, so we need to
+	// inform the (all) client(s) about this volume adjustment.
+	float volumeAdjustment =
+		m_channelListenerManager.getListenerVolumeAdjustment(user->uiSession, cChannel->iId).factor;
+	MumbleProto::UserState::VolumeAdjustment *volume_adjustment = mpus.add_listening_volume_adjustment();
+	volume_adjustment->set_listening_channel(cChannel->iId);
+	volume_adjustment->set_volume_adjustment(volumeAdjustment);
+
+	if (broadcastListenerVolumeAdjustments) {
+		sendAll(mpus);
+	} else {
+		sendMessage(user, mpus);
+	}
 }
 
 void Server::stopListeningToChannel(ServerUser *user, Channel *cChannel) {
@@ -373,7 +390,7 @@ void Server::stopListeningToChannel(ServerUser *user, Channel *cChannel) {
 		return;
 	}
 
-	m_channelListenerManager.removeListener(user->uiSession, cChannel->iId);
+	disableChannelListener(*user, *cChannel);
 
 	MumbleProto::UserState mpus;
 	mpus.set_session(user->uiSession);
@@ -381,6 +398,25 @@ void Server::stopListeningToChannel(ServerUser *user, Channel *cChannel) {
 	mpus.add_listening_channel_remove(cChannel->iId);
 
 	sendAll(mpus);
+}
+
+void Server::setListenerVolumeAdjustment(ServerUser *user, const Channel *cChannel,
+										 const VolumeAdjustment &volumeAdjustment) {
+	setChannelListenerVolume(*user, *cChannel, volumeAdjustment.factor);
+
+	// Inform clients about this change
+	MumbleProto::UserState mpus;
+	mpus.set_session(user->uiSession);
+
+	MumbleProto::UserState::VolumeAdjustment *volume_adjustment = mpus.add_listening_volume_adjustment();
+	volume_adjustment->set_listening_channel(cChannel->iId);
+	volume_adjustment->set_volume_adjustment(volumeAdjustment.factor);
+
+	if (broadcastListenerVolumeAdjustments) {
+		sendAll(mpus);
+	} else {
+		sendMessage(user, mpus);
+	}
 }
 
 void Server::sendWelcomeMessageTo(ServerUser *user) {
@@ -395,8 +431,9 @@ void Meta::connectListener(QObject *obj) {
 	connect(this, SIGNAL(stopped(Server *)), obj, SLOT(stopped(Server *)));
 }
 
-void Meta::getVersion(int &major, int &minor, int &patch, QString &string) {
-	string = QLatin1String(MUMBLE_RELEASE);
+void Meta::getVersion(Version::component_t &major, Version::component_t &minor, Version::component_t &patch,
+					  QString &string) {
+	string = Version::getRelease();
 	major = minor = patch = 0;
-	Version::get(&major, &minor, &patch);
+	Version::getComponents(major, minor, patch);
 }

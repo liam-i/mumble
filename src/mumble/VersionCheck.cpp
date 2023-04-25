@@ -1,4 +1,4 @@
-// Copyright 2007-2022 The Mumble Developers. All rights reserved.
+// Copyright 2007-2023 The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -33,7 +33,7 @@ VersionCheck::VersionCheck(bool autocheck, QObject *p, bool focus) : QObject(p),
 
 		QList< QPair< QString, QString > > queryItems;
 		queryItems << qMakePair(QString::fromLatin1("ver"),
-								QString::fromLatin1(QUrl::toPercentEncoding(QLatin1String(MUMBLE_RELEASE))));
+								QString::fromLatin1(QUrl::toPercentEncoding(Version::getRelease())));
 #if defined(Q_OS_WIN)
 #	if defined(Q_OS_WIN64)
 		queryItems << qMakePair(QString::fromLatin1("os"), QString::fromLatin1("WinX64"));
@@ -150,7 +150,7 @@ void VersionCheck::fetched(QByteArray a, QUrl url) {
 								execinfo.nShow       = SW_NORMAL;
 
 								if (ShellExecuteExW(&execinfo)) {
-									Global::get().mw->bSuppressAskOnQuit = true;
+									Global::get().mw->forceQuit = true;
 									qApp->closeAllWindows();
 								} else {
 									Global::get().mw->msgBox(tr("Failed to launch snapshot installer."));

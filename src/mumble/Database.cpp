@@ -1,4 +1,4 @@
-// Copyright 2007-2022 The Mumble Developers. All rights reserved.
+// Copyright 2007-2023 The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -10,6 +10,7 @@
 #include "Utils.h"
 #include "Version.h"
 #include "Global.h"
+#include "GlobalShortcutTypes.h"
 
 #include <QSettings>
 #include <QtCore/QStandardPaths>
@@ -163,7 +164,9 @@ Database::Database(const QString &dbname) {
 
 	execQueryAndLogFailure(
 		query, QLatin1String("CREATE TABLE IF NOT EXISTS `shortcut` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `digest` "
-							 "BLOB, `shortcut` BLOB, `target` BLOB, `suppress` INTEGER)"));
+							 "BLOB, `type` INTEGER, `shortcut` BLOB, `target` BLOB, `suppress` INTEGER)"));
+	query.exec(QLatin1String(
+		"ALTER TABLE `shortcut` ADD COLUMN `type` INTEGER")); // Upgrade path, failing this query is not noteworthy
 	execQueryAndLogFailure(query,
 						   QLatin1String("CREATE INDEX IF NOT EXISTS `shortcut_host_port` ON `shortcut`(`digest`)"));
 
@@ -217,6 +220,9 @@ Database::Database(const QString &dbname) {
 							 "`server_cert_digest` TEXT NOT NULL, `channel_id` INTEGER NOT NULL)"));
 	execQueryAndLogFailure(query, QLatin1String("CREATE UNIQUE INDEX IF NOT EXISTS `filtered_channels_entry` ON "
 												"`filtered_channels`(`server_cert_digest`, `channel_id`)"));
+	query.exec(QLatin1String("ALTER TABLE `filtered_channels` ADD COLUMN `filter_mode` INTEGER DEFAULT ")
+			   + QString::number(
+				   static_cast< int >(ChannelFilterMode::HIDE))); // Upgrade path, failing this query is not noteworthy
 
 	execQueryAndLogFailure(query, QLatin1String("CREATE TABLE IF NOT EXISTS `pingcache` (`id` INTEGER PRIMARY KEY "
 												"AUTOINCREMENT, `hostname` TEXT, `port` INTEGER, `ping` INTEGER)"));
@@ -393,30 +399,41 @@ void Database::setLocalMuted(const QString &hash, bool muted) {
 	execQueryAndLogFailure(query);
 }
 
-bool Database::isChannelFiltered(const QByteArray &server_cert_digest, const int channel_id) {
+ChannelFilterMode Database::getChannelFilterMode(const QByteArray &server_cert_digest, const int channel_id) {
 	QSqlQuery query(db);
 
 	query.prepare(QLatin1String(
-		"SELECT `channel_id` FROM `filtered_channels` WHERE `server_cert_digest` = ? AND `channel_id` = ?"));
+		"SELECT `filter_mode` FROM `filtered_channels` WHERE `server_cert_digest` = ? AND `channel_id` = ?"));
 	query.addBindValue(server_cert_digest);
 	query.addBindValue(channel_id);
 	execQueryAndLogFailure(query);
 
-	return query.next();
+	if (query.first()) {
+		return static_cast< ChannelFilterMode >(query.value(0).toInt());
+	}
+
+	return ChannelFilterMode::NORMAL;
 }
 
-void Database::setChannelFiltered(const QByteArray &server_cert_digest, const int channel_id, const bool hidden) {
+void Database::setChannelFilterMode(const QByteArray &server_cert_digest, const int channel_id,
+									const ChannelFilterMode filterMode) {
 	QSqlQuery query(db);
 
-	if (hidden)
-		query.prepare(
-			QLatin1String("INSERT INTO `filtered_channels` (`server_cert_digest`, `channel_id`) VALUES (?, ?)"));
-	else
-		query.prepare(
-			QLatin1String("DELETE FROM `filtered_channels` WHERE `server_cert_digest` = ? AND `channel_id` = ?"));
+	switch (filterMode) {
+		case ChannelFilterMode::NORMAL:
+			query.prepare(
+				QLatin1String("DELETE FROM `filtered_channels` WHERE `server_cert_digest` = ? AND `channel_id` = ?"));
+			break;
+		case ChannelFilterMode::PIN:
+		case ChannelFilterMode::HIDE:
+			query.prepare(QLatin1String("INSERT OR REPLACE INTO `filtered_channels` (`server_cert_digest`, "
+										"`channel_id`, `filter_mode`) VALUES (?, ?, ?)"));
+			query.bindValue(2, static_cast< int >(filterMode));
+			break;
+	}
 
-	query.addBindValue(server_cert_digest);
-	query.addBindValue(channel_id);
+	query.bindValue(0, server_cert_digest);
+	query.bindValue(1, channel_id);
 
 	execQueryAndLogFailure(query);
 }
@@ -546,13 +563,25 @@ QList< Shortcut > Database::getShortcuts(const QByteArray &digest) {
 	QList< Shortcut > ql;
 	QSqlQuery query(db);
 
-	query.prepare(QLatin1String("SELECT `shortcut`,`target`,`suppress` FROM `shortcut` WHERE `digest` = ?"));
+	query.prepare(QLatin1String("SELECT `type`, `shortcut`,`target`,`suppress` FROM `shortcut` WHERE `digest` = ?"));
 	query.addBindValue(digest);
 	execQueryAndLogFailure(query);
 	while (query.next()) {
 		Shortcut sc;
 
-		QByteArray a = query.value(0).toByteArray();
+		QVariant type = query.value(0);
+
+		if (type.isNull()) {
+			// The shortcut's type was originally not explicitly stored, because the assumption was that the only
+			// server-specific shortcuts (which are the ones we're dealing with here) are those configuring whispers or
+			// shouts. Thus, if the field is not set, we assume that we're loading a shortcut from that era, which means
+			// that we'll assume it to be a whisper/shout shortcut as well.
+			sc.iIndex = GlobalShortcutType::Whisper_Shout;
+		} else {
+			sc.iIndex = type.toInt();
+		}
+
+		QByteArray a = query.value(1).toByteArray();
 
 		{
 			QDataStream s(&a, QIODevice::ReadOnly);
@@ -560,7 +589,7 @@ QList< Shortcut > Database::getShortcuts(const QByteArray &digest) {
 			s >> sc.qlButtons;
 		}
 
-		a = query.value(1).toByteArray();
+		a = query.value(2).toByteArray();
 
 		{
 			QDataStream s(&a, QIODevice::ReadOnly);
@@ -568,7 +597,7 @@ QList< Shortcut > Database::getShortcuts(const QByteArray &digest) {
 			s >> sc.qvData;
 		}
 
-		sc.bSuppress = query.value(2).toBool();
+		sc.bSuppress = query.value(3).toBool();
 		ql << sc;
 	}
 	return ql;
@@ -590,11 +619,13 @@ void Database::setShortcuts(const QByteArray &digest, const QList< Shortcut > &s
 	query.addBindValue(digest);
 	execQueryAndLogFailure(query);
 
-	query.prepare(
-		QLatin1String("INSERT INTO `shortcut` (`digest`, `shortcut`, `target`, `suppress`) VALUES (?,?,?,?)"));
+	query.prepare(QLatin1String(
+		"INSERT INTO `shortcut` (`digest`, `type`, `shortcut`, `target`, `suppress`) VALUES (?,?,?,?,?)"));
 	for (const Shortcut &sc : shortcuts) {
 		if (sc.isServerSpecific()) {
 			query.addBindValue(digest);
+
+			query.addBindValue(sc.iIndex);
 
 			QByteArray a;
 			{

@@ -1,4 +1,4 @@
-// Copyright 2007-2022 The Mumble Developers. All rights reserved.
+// Copyright 2007-2023 The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -10,6 +10,7 @@
 #include "AudioOutputSpeech.h"
 #include "Channel.h"
 #include "ChannelListenerManager.h"
+#include "Log.h"
 #include "PluginManager.h"
 #include "ServerHandler.h"
 #include "Timer.h"
@@ -76,6 +77,11 @@ bool AudioOutputRegistrar::canExclusive() const {
 	return false;
 }
 
+AudioOutput::AudioOutput() {
+	QObject::connect(this, &AudioOutput::bufferInvalidated, this, &AudioOutput::handleInvalidatedBuffer);
+	QObject::connect(this, &AudioOutput::bufferPositionChanged, this, &AudioOutput::handlePositionedBuffer);
+}
+
 AudioOutput::~AudioOutput() {
 	bRunning = false;
 	wait();
@@ -127,8 +133,23 @@ float AudioOutput::calcGain(float dotproduct, float distance) {
 }
 
 void AudioOutput::wipe() {
-	foreach (AudioOutputUser *aop, qmOutputs)
-		removeBuffer(aop);
+	// We need to remove all buffers from the qmOutputs map.
+	// However, the removeBuffer calls a signal-slot mechanism
+	// asynchronously. Doing that while iterating over the map
+	// will cause a concurrent modification
+
+	QList< AudioOutputBuffer * > list;
+
+	{
+		QReadLocker locker(&qrwlOutputs);
+		for (AudioOutputBuffer *buffer : qmOutputs) {
+			list.append(buffer);
+		}
+	}
+
+	for (AudioOutputBuffer *buffer : list) {
+		removeBuffer(buffer);
+	}
 }
 
 const float *AudioOutput::getSpeakerPos(unsigned int &speakers) {
@@ -145,16 +166,17 @@ void AudioOutput::addFrameToBuffer(ClientUser *sender, const Mumble::Protocol::A
 	}
 
 	qrwlOutputs.lockForRead();
-	// qmOutputs is a map of users and their AudioOutputUser objects, which will be created when audio from that user
-	// is received. This map will be iterated in mix(). After one's audio is finished, his AudioOutputUser will be
-	// removed from this map.
-	AudioOutputSpeech *aop = qobject_cast< AudioOutputSpeech * >(qmOutputs.value(sender));
+	// qmOutputs is a map of users and their AudioOutputSpeech objects, which will be created when audio from that user
+	// is received. It also contains AudioOutputSample objects with various other non-speech sounds.
+	// This map will be iterated in mix(). After the speech or sample audio is finished, the AudioOutputBuffer object
+	// will be removed from this map and deleted.
+	AudioOutputSpeech *speech = qobject_cast< AudioOutputSpeech * >(qmOutputs.value(sender));
 
-	if (!aop || (aop->m_codec != audioData.usedCodec)) {
+	if (!speech || (speech->m_codec != audioData.usedCodec)) {
 		qrwlOutputs.unlock();
 
-		if (aop) {
-			removeBuffer(aop);
+		if (speech) {
+			removeBuffer(static_cast< AudioOutputBuffer * >(speech));
 		}
 
 		while ((iMixerFreq == 0) && isAlive()) {
@@ -167,35 +189,67 @@ void AudioOutput::addFrameToBuffer(ClientUser *sender, const Mumble::Protocol::A
 
 		qrwlOutputs.lockForWrite();
 
-		aop = new AudioOutputSpeech(sender, iMixerFreq, audioData.usedCodec, iBufferSize);
-		qmOutputs.replace(sender, aop);
+		speech = new AudioOutputSpeech(sender, iMixerFreq, audioData.usedCodec, iBufferSize);
+		qmOutputs.replace(sender, speech);
 	}
 
-	aop->addFrameToBuffer(audioData);
+	speech->addFrameToBuffer(audioData);
 
 	qrwlOutputs.unlock();
 }
 
-void AudioOutput::removeBuffer(const ClientUser *user) {
-	removeBuffer(qmOutputs.value(user));
-}
-
-void AudioOutput::removeBuffer(AudioOutputUser *aop) {
+void AudioOutput::handleInvalidatedBuffer(AudioOutputBuffer *buffer) {
 	QWriteLocker locker(&qrwlOutputs);
-	QMultiHash< const ClientUser *, AudioOutputUser * >::iterator i;
-	for (i = qmOutputs.begin(); i != qmOutputs.end(); ++i) {
-		if (i.value() == aop) {
-			qmOutputs.erase(i);
-			delete aop;
+	for (auto iter = qmOutputs.begin(); iter != qmOutputs.end(); ++iter) {
+		if (iter.value() == buffer) {
+			qmOutputs.erase(iter);
+			delete buffer;
 			break;
 		}
 	}
 }
 
-AudioOutputSample *AudioOutput::playSample(const QString &filename, bool loop) {
+void AudioOutput::handlePositionedBuffer(AudioOutputBuffer *buffer, float x, float y, float z) {
+	QWriteLocker locker(&qrwlOutputs);
+	for (auto iter = qmOutputs.begin(); iter != qmOutputs.end(); ++iter) {
+		if (iter.value() == buffer) {
+			buffer->fPos[0] = x;
+			buffer->fPos[1] = y;
+			buffer->fPos[2] = z;
+			break;
+		}
+	}
+}
+
+void AudioOutput::setBufferPosition(const AudioOutputToken &token, float x, float y, float z) {
+	if (!token) {
+		return;
+	}
+
+	emit bufferPositionChanged(token.m_buffer, x, y, z);
+}
+
+void AudioOutput::removeBuffer(AudioOutputBuffer *buffer) {
+	if (!buffer) {
+		return;
+	}
+
+	emit bufferInvalidated(buffer);
+}
+
+void AudioOutput::removeUser(const ClientUser *user) {
+	removeBuffer(qmOutputs.value(user));
+}
+
+void AudioOutput::removeToken(AudioOutputToken &token) {
+	removeBuffer(token.m_buffer);
+	token = {};
+}
+
+AudioOutputToken AudioOutput::playSample(const QString &filename, float volume, bool loop) {
 	SoundFile *handle = AudioOutputSample::loadSndfile(filename);
 	if (!handle)
-		return nullptr;
+		return AudioOutputToken();
 
 	Timer t;
 	const quint64 oneSecond = 1000000;
@@ -207,17 +261,17 @@ AudioOutputSample *AudioOutput::playSample(const QString &filename, bool loop) {
 	// If we've waited for more than one second, we declare timeout.
 	if (t.isElapsed(oneSecond)) {
 		qWarning("AudioOutput: playSample() timed out after 1 second: device not ready");
-		return nullptr;
+		return AudioOutputToken();
 	}
 
 	if (!iMixerFreq)
-		return nullptr;
+		return AudioOutputToken();
 
 	QWriteLocker locker(&qrwlOutputs);
-	AudioOutputSample *aos = new AudioOutputSample(filename, handle, loop, iMixerFreq, iBufferSize);
-	qmOutputs.insert(nullptr, aos);
+	AudioOutputSample *sample = new AudioOutputSample(handle, volume, loop, iMixerFreq, iBufferSize);
+	qmOutputs.insert(nullptr, sample);
 
-	return aos;
+	return AudioOutputToken(sample);
 }
 
 void AudioOutput::initializeMixer(const unsigned int *chanmasks, bool forceheadphone) {
@@ -344,6 +398,10 @@ void AudioOutput::initializeMixer(const unsigned int *chanmasks, bool forceheadp
 	}
 	iSampleSize = static_cast< int >(iChannels * ((eSampleFormat == SampleFloat) ? sizeof(float) : sizeof(short)));
 	qWarning("AudioOutput: Initialized %d channel %d hz mixer", iChannels, iMixerFreq);
+
+	if (Global::get().s.bPositionalAudio && iChannels == 1) {
+		Global::get().l->logOrDefer(Log::Warning, tr("Positional audio cannot work with mono output devices!"));
+	}
 }
 
 bool AudioOutput::mix(void *outbuff, unsigned int frameCount) {
@@ -351,10 +409,10 @@ bool AudioOutput::mix(void *outbuff, unsigned int frameCount) {
 	positions.clear();
 #endif
 
-	// A list of users that have audio to contribute
-	QList< AudioOutputUser * > qlMix;
-	// A list of users that no longer have any audio to play and can thus be deleted
-	QList< AudioOutputUser * > qlDel;
+	// A list of buffers that have audio to contribute
+	QList< AudioOutputBuffer * > qlMix;
+	// A list of buffers that no longer have any audio to play and can thus be deleted
+	QList< AudioOutputBuffer * > qlDel;
 
 	if (Global::get().s.fVolume < 0.01f) {
 		return false;
@@ -374,13 +432,13 @@ bool AudioOutput::mix(void *outbuff, unsigned int frameCount) {
 	bool prioritySpeakerActive = false;
 
 	// Get the users that are currently talking (and are thus serving as an audio source)
-	QMultiHash< const ClientUser *, AudioOutputUser * >::const_iterator it = qmOutputs.constBegin();
+	QMultiHash< const ClientUser *, AudioOutputBuffer * >::const_iterator it = qmOutputs.constBegin();
 	while (it != qmOutputs.constEnd()) {
-		AudioOutputUser *aop = it.value();
-		if (!aop->prepareSampleBuffer(frameCount)) {
-			qlDel.append(aop);
+		AudioOutputBuffer *buffer = it.value();
+		if (!buffer->prepareSampleBuffer(frameCount)) {
+			qlDel.append(buffer);
 		} else {
-			qlMix.append(aop);
+			qlMix.append(buffer);
 
 			const ClientUser *user = it.key();
 			if (user && user->bPrioritySpeaker) {
@@ -486,28 +544,36 @@ bool AudioOutput::mix(void *outbuff, unsigned int frameCount) {
 			validListener = true;
 		}
 
-		foreach (AudioOutputUser *aop, qlMix) {
+		for (AudioOutputBuffer *buffer : qlMix) {
 			// Iterate through all audio sources and mix them together into the output (or the intermediate array)
-			float *RESTRICT pfBuffer = aop->pfBuffer;
+			float *RESTRICT pfBuffer = buffer->pfBuffer;
 			float volumeAdjustment   = 1;
 
-			// Check if the audio source is a user speaking (instead of a sample playback) and apply potential volume
+			// Check if the audio source is a user speaking or a sample playback and apply potential volume
 			// adjustments
-			AudioOutputSpeech *speech = qobject_cast< AudioOutputSpeech * >(aop);
+			AudioOutputSpeech *speech = qobject_cast< AudioOutputSpeech * >(buffer);
+			AudioOutputSample *sample = qobject_cast< AudioOutputSample * >(buffer);
 			const ClientUser *user    = nullptr;
 			if (speech) {
 				user = speech->p;
 
 				volumeAdjustment *= user->getLocalVolumeAdjustments();
 
-				if (user->cChannel
-					&& Global::get().channelListenerManager->isListening(Global::get().uiSession, user->cChannel->iId)
-					&& (speech->m_audioContext == Mumble::Protocol::AudioContext::LISTEN)) {
+				if (sh && sh->m_version >= Mumble::Protocol::PROTOBUF_INTRODUCTION_VERSION) {
+					// The new protocol supports sending volume adjustments which is used to figure out the correct
+					// volume adjustment for listeners on the server. Thus, we only have to apply that here.
+					volumeAdjustment *= speech->m_suggestedVolumeAdjustment;
+				} else if (user->cChannel
+						   && Global::get().channelListenerManager->isListening(Global::get().uiSession,
+																				user->cChannel->iId)
+						   && (speech->m_audioContext == Mumble::Protocol::AudioContext::LISTEN)) {
 					// We are receiving this audio packet only because we are listening to the channel
 					// the speaking user is in. Thus we receive the audio via our "listener proxy".
 					// Thus we'll apply the volume adjustment for our listener proxy as well
-					volumeAdjustment *=
-						Global::get().channelListenerManager->getListenerLocalVolumeAdjustment(user->cChannel->iId);
+					volumeAdjustment *= Global::get()
+											.channelListenerManager
+											->getListenerVolumeAdjustment(Global::get().uiSession, user->cChannel->iId)
+											.factor;
 				}
 
 				if (prioritySpeakerActive) {
@@ -515,6 +581,8 @@ bool AudioOutput::mix(void *outbuff, unsigned int frameCount) {
 						volumeAdjustment *= adjustFactor;
 					}
 				}
+			} else if (sample) {
+				volumeAdjustment *= sample->getVolume();
 			}
 
 			// As the events may cause the output PCM to change, the connection has to be direct in any case
@@ -550,19 +618,20 @@ bool AudioOutput::mix(void *outbuff, unsigned int frameCount) {
 				}
 			}
 
-			if (validListener && ((aop->fPos[0] != 0.0f) || (aop->fPos[1] != 0.0f) || (aop->fPos[2] != 0.0f))) {
+			if (validListener
+				&& ((buffer->fPos[0] != 0.0f) || (buffer->fPos[1] != 0.0f) || (buffer->fPos[2] != 0.0f))) {
 				// Add position to position map
-				AudioOutputSpeech *speech = qobject_cast< AudioOutputSpeech * >(aop);
+				AudioOutputSpeech *speech = qobject_cast< AudioOutputSpeech * >(buffer);
 #ifdef USE_MANUAL_PLUGIN
 				if (speech) {
 					const ClientUser *user = speech->p;
 					// The coordinates in the plane are actually given by x and z instead of x and y (y is up)
-					positions.insert(user->uiSession, { aop->fPos[0], aop->fPos[2] });
+					positions.insert(user->uiSession, { buffer->fPos[0], buffer->fPos[2] });
 				}
 #endif
 
 				// If positional audio is enabled, calculate the respective audio effect here
-				Position3D outputPos = { aop->fPos[0], aop->fPos[1], aop->fPos[2] };
+				Position3D outputPos = { buffer->fPos[0], buffer->fPos[1], buffer->fPos[2] };
 				Position3D ownPos    = Global::get().pluginManager->getPositionalData().getCameraPos();
 
 				Vector3D connectionVec = outputPos - ownPos;
@@ -578,16 +647,16 @@ bool AudioOutput::mix(void *outbuff, unsigned int frameCount) {
 								qWarning("Voice pos: %f %f %f", aop->fPos[0], aop->fPos[1], aop->fPos[2]);
 								qWarning("Voice dir: %f %f %f", connectionVec.x, connectionVec.y, connectionVec.z);
 				*/
-				if (!aop->pfVolume) {
-					aop->pfVolume = new float[nchan];
+				if (!buffer->pfVolume) {
+					buffer->pfVolume = new float[nchan];
 					for (unsigned int s = 0; s < nchan; ++s)
-						aop->pfVolume[s] = -1.0;
+						buffer->pfVolume[s] = -1.0;
 				}
 
-				if (!aop->piOffset) {
-					aop->piOffset = std::make_unique< unsigned int[] >(nchan);
+				if (!buffer->piOffset) {
+					buffer->piOffset = std::make_unique< unsigned int[] >(nchan);
 					for (unsigned int s = 0; s < nchan; ++s) {
-						aop->piOffset[s] = 0;
+						buffer->piOffset[s] = 0;
 					}
 				}
 
@@ -601,11 +670,11 @@ bool AudioOutput::mix(void *outbuff, unsigned int frameCount) {
 					// of bringing the lowest value up to 1/20, while keeping the highest value at 1.
 					// E.g. calcGain() = 1; 1 * 19/20 + 1/20 = 0.95 + 0.05 = 1
 					// calcGain() = 0; 0 * 19/20 + 1/20 = 0 + 0.05 = 0.05
-					const float str   = svol[s] * (1 / 20.0 + (19 / 20.0) * calcGain(dot, len)) * volumeAdjustment;
-					float *RESTRICT o = output + s;
-					const float old   = (aop->pfVolume[s] >= 0.0f) ? aop->pfVolume[s] : str;
-					const float inc   = (str - old) / static_cast< float >(frameCount);
-					aop->pfVolume[s]  = str;
+					const float str     = svol[s] * (1 / 20.0 + (19 / 20.0) * calcGain(dot, len)) * volumeAdjustment;
+					float *RESTRICT o   = output + s;
+					const float old     = (buffer->pfVolume[s] >= 0.0f) ? buffer->pfVolume[s] : str;
+					const float inc     = (str - old) / static_cast< float >(frameCount);
+					buffer->pfVolume[s] = str;
 
 					// Calculates the ITD offset of the audio data this frame.
 					// Interaural Time Delay (ITD) is a small time delay between your ears
@@ -619,9 +688,9 @@ bool AudioOutput::mix(void *outbuff, unsigned int frameCount) {
 					// abruptly changing the playback position) will create a clicking noise.
 					const int offset =
 						INTERAURAL_DELAY * (1.0 + dot) / 2.0; // Normalize dot to range [0,1] instead [-1,1]
-					const int oldOffset   = aop->piOffset[s];
+					const int oldOffset   = buffer->piOffset[s];
 					const float incOffset = (offset - oldOffset) / static_cast< float >(frameCount);
-					aop->piOffset[s]      = offset;
+					buffer->piOffset[s]   = offset;
 					/*
 										qWarning("%d: Pos %f %f %f : Dot %f Len %f Str %f", s, speaker[s*3+0],
 					   speaker[s*3+1], speaker[s*3+2], dot, len, str);
@@ -647,7 +716,7 @@ bool AudioOutput::mix(void *outbuff, unsigned int frameCount) {
 				for (unsigned int s = 0; s < nchan; ++s) {
 					const float str   = svol[s] * volumeAdjustment;
 					float *RESTRICT o = output + s;
-					if (aop->bStereo) {
+					if (buffer->bStereo) {
 						// Linear-panning stereo stream according to the projection of fSpeaker vector on left-right
 						// direction.
 						// frame: for a stereo stream, the [LR] pair inside ...[LR]LRLRLR.... is a frame
@@ -685,9 +754,10 @@ bool AudioOutput::mix(void *outbuff, unsigned int frameCount) {
 
 	qrwlOutputs.unlock();
 
-	// Delete all AudioOutputUsers that no longer provide any new audio
-	foreach (AudioOutputUser *aop, qlDel)
-		removeBuffer(aop);
+	// Delete all AudioOutputBuffer that no longer provide any new audio
+	for (AudioOutputBuffer *buffer : qlDel) {
+		removeBuffer(buffer);
+	}
 
 #ifdef USE_MANUAL_PLUGIN
 	Manual::setSpeakerPositions(positions);

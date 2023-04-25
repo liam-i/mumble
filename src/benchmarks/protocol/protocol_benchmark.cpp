@@ -1,3 +1,8 @@
+// Copyright 2022-2023 The Mumble Developers. All rights reserved.
+// Use of this source code is governed by a BSD-style license
+// that can be found in the LICENSE file at the root of the
+// Mumble source tree or at <https://www.mumble.info/LICENSE>.
+
 #include <benchmark/benchmark.h>
 
 #include "MumbleProtocol.h"
@@ -36,12 +41,12 @@ public:
 		audioData.frameNumber            = 42;
 		audioData.isLastFrame            = false;
 		audioData.senderSession          = 137;
-		audioData.targetOrContext        = Mumble::Protocol::AudioContext::Normal;
+		audioData.targetOrContext        = Mumble::Protocol::AudioContext::NORMAL;
 		audioData.usedCodec              = Mumble::Protocol::AudioCodec::Opus;
 		audioData.position               = { 1.25f, 1260.539f, -3.0765f };
 		audioData.containsPositionalData = true;
 
-		encoder.setProtocolVersion(Version::toRaw(1, 3, 0));
+		encoder.setProtocolVersion(Version::fromComponents(1, 3, 0));
 		encoder.encodeAudioPacket(audioData);
 		encoder.setProtocolVersion(Mumble::Protocol::PROTOBUF_INTRODUCTION_VERSION);
 		encoder.encodeAudioPacket(audioData);
@@ -71,7 +76,7 @@ BENCHMARK_REGISTER_F(Fixture, BM_encodeLegacyDirect)
 	->Range(FROM_PAYLOAD_SIZE, TO_PAYLOAD_SIZE);
 
 BENCHMARK_DEFINE_F(Fixture, BM_encodeLegacy)(::benchmark::State &state) {
-	encoder.setProtocolVersion(Version::toRaw(1, 3, 0));
+	encoder.setProtocolVersion(Version::fromComponents(1, 3, 0));
 
 	for (auto _ : state) {
 		encoder.encodeAudioPacket(audioData);
@@ -83,7 +88,7 @@ BENCHMARK_REGISTER_F(Fixture, BM_encodeLegacy)
 	->Range(FROM_PAYLOAD_SIZE, TO_PAYLOAD_SIZE);
 
 BENCHMARK_DEFINE_F(Fixture, BM_encodeLegacy_UpdateOnly)(::benchmark::State &state) {
-	encoder.setProtocolVersion(Version::toRaw(1, 3, 0));
+	encoder.setProtocolVersion(Version::fromComponents(1, 3, 0));
 
 	encoder.prepareAudioPacket(audioData);
 

@@ -649,6 +649,10 @@ Denne verdien gjør at du setter maksimalt antall brukere tillatt i kanalen. Hvi
         <source>&lt;h3&gt;Mumble (%1)&lt;/h3&gt;&lt;p&gt;%3&lt;/p&gt;&lt;p&gt;&lt;b&gt;An Open Source, low-latency, high quality voice-chat utility&lt;/b&gt;&lt;/p&gt;&lt;p&gt;&lt;tt&gt;&lt;a href=&quot;%2&quot;&gt;%2&lt;/a&gt;&lt;/tt&gt;&lt;/p&gt;</source>
         <translation type="unfinished">&lt;h3&gt;Mumble (%1)&lt;/h3&gt;&lt;p&gt;%3&lt;/p&gt;&lt;p&gt;&lt;b&gt;Et prateverktøy for spillere&lt;/b&gt;&lt;/p&gt;&lt;p&gt;&lt;tt&gt;&lt;a href=&quot;%2&quot;&gt;%2&lt;/a&gt;&lt;/tt&gt;&lt;/p&gt;</translation>
     </message>
+    <message>
+        <source>For a list of authors, please see &lt;a href=&quot;https://github.com/mumble-voip/mumble/graphs/contributors&quot;&gt;https://github.com/mumble-voip/mumble/graphs/contributors&lt;/a&gt;</source>
+        <translation>En liste over utviklere er å finne i &lt;a href=&quot;https://github.com/mumble-voip/mumble/graphs/contributors&quot;&gt;https://github.com/mumble-voip/mumble/graphs/contributors&lt;/a&gt;</translation>
+    </message>
 </context>
 <context>
     <name>AudioInput</name>
@@ -905,18 +909,6 @@ Denne verdien gjør at du setter maksimalt antall brukere tillatt i kanalen. Hvi
         <translation>Ymse</translation>
     </message>
     <message>
-        <source>Audible audio cue when starting or stopping to transmit</source>
-        <translation>Hørbar lydhint når lydoverføring stoppes eller startes</translation>
-    </message>
-    <message>
-        <source>&lt;b&gt;This enables transmission audio cues.&lt;/b&gt;&lt;br /&gt;Setting this will give you a short audio beep when you start and stop transmitting.</source>
-        <translation>&lt;b&gt;Dette skrur på lydhint for lydoverføringer.&lt;/b&gt;&lt;br /&gt;Å sette på dette vil gi deg et kort pip når du starter og slutter overføring.</translation>
-    </message>
-    <message>
-        <source>Audio cue</source>
-        <translation>Lydhint</translation>
-    </message>
-    <message>
         <source>Gets played when starting to transmit</source>
         <translation>Spilles når lydoverføring starter</translation>
     </message>
@@ -1035,6 +1027,34 @@ Denne verdien gjør at du setter maksimalt antall brukere tillatt i kanalen. Hvi
     <message>
         <source>Pre&amp;view</source>
         <translation>For&amp;hondsvis</translation>
+    </message>
+    <message>
+        <source>Audio cue when using...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Audible audio cue when starting or stopping to transmit using Push To Talk</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;b&gt;This enables transmission audio cues when using Push To Talk.&lt;/b&gt;&lt;br /&gt;Setting this will give you a short audio beep when you start and stop transmitting.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Push To Talk</source>
+        <translation type="unfinished">Trykk for å snakke</translation>
+    </message>
+    <message>
+        <source>Audible audio cue when starting or stopping to transmit using Voice Activity</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;b&gt;This enables transmission audio cues when using Voice Activity.&lt;/b&gt;&lt;br /&gt;Setting this will give you a short audio beep when you start and stop transmitting.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Voice Activity</source>
+        <translation type="unfinished">Stemmeaktivitet</translation>
     </message>
 </context>
 <context>
@@ -1438,6 +1458,10 @@ Når du er lenger unna enn dette vil andres stemme ikke bli dempet ytterligere.<
         <source> m</source>
         <translation> m</translation>
     </message>
+    <message>
+        <source>Positional audio cannot work with mono output devices!</source>
+        <translation type="unfinished">Posisjonsbasert lyd fungerer ikke med lydenheter som kun spiller mono (én kanal).</translation>
+    </message>
 </context>
 <context>
     <name>AudioOutputDialog</name>
@@ -1591,7 +1615,7 @@ Når du er lenger unna enn dette vil andres stemme ikke bli dempet ytterligere.<
     </message>
     <message>
         <source>This shows the peak power in the last frame (20 ms) after all processing. Ideally, this should be -96 dB when you&apos;re not talking. In reality, a sound studio should see -60 dB, and you should hopefully see somewhere around -20 dB. When you are talking, this should rise to somewhere between -5 and -10 dB.&lt;br /&gt;If you are using echo cancellation, and this rises to more than -15 dB when you&apos;re not talking, your setup is not working, and you&apos;ll annoy other users with echoes.</source>
-        <translation>&quot;Toppnivå for effekt i siste ramme (20 ms) (etter behandling).
+        <translation type="unfinished">Toppnivå for effekt i siste ramme (20 ms) (etter behandling).
 Dette er toppnivåene for forskjellige fall:
 -96dB ideell, teoretisk
 -60dB flott, studio
@@ -3067,10 +3091,6 @@ Er du sikker på at du vil erstatte ditt sertifikat?
         <translation>Port</translation>
     </message>
     <message>
-        <source>Addresses</source>
-        <translation>Adresser</translation>
-    </message>
-    <message>
         <source>Website</source>
         <translation>Nettside</translation>
     </message>
@@ -3101,6 +3121,14 @@ Er du sikker på at du vil erstatte ditt sertifikat?
     <message>
         <source>Version</source>
         <translation>Versjon</translation>
+    </message>
+    <message>
+        <source>IPv4 address</source>
+        <translation>IPv4-adresse</translation>
+    </message>
+    <message>
+        <source>IPv6 address</source>
+        <translation>IPv6-adresse</translation>
     </message>
 </context>
 <context>
@@ -3424,8 +3452,8 @@ Uten dette påskrudd kan du ikke bruke Mumble-snarveier i priviligerte programme
         <translation type="unfinished">Skru på bruk av snarveier i priviligerte programmer</translation>
     </message>
     <message>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Mumble&apos;s Global Shortcuts system does currently not work in combination with the Wayland protocol. For more information, visit &lt;a href=&quot;https://github.com/mumble-voip/mumble/issues/5257&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0057ae;&quot;&gt;https://github.com/mumble-voip/mumble/issues/5257&lt;/span&gt;&lt;/a&gt;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Snarveissystemet i Mumble fungerer ikke med Wayland. Mer info er å finne i &lt;a href=&quot;https://github.com/mumble-voip/mumble/issues/5257&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0057ae;&quot;&gt;https://github.com/mumble-voip/mumble/issues/5257&lt;/span&gt;&lt;/a&gt;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Mumble&apos;s Global Shortcuts system does currently not work properly in combination with the Wayland protocol. For more information, visit &lt;a href=&quot;https://github.com/mumble-voip/mumble/issues/5257&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0057ae;&quot;&gt;https://github.com/mumble-voip/mumble/issues/5257&lt;/span&gt;&lt;/a&gt;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Mumble sitt snarveissystem som fungerer overalt fungerer dog ikke med Wayland. Mer info er å finne i &lt;a href=&quot;https://github.com/mumble-voip/mumble/issues/5257&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0057ae;&quot;&gt;https://github.com/mumble-voip/mumble/issues/5257&lt;/span&gt;&lt;/a&gt;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
 </context>
 <context>
@@ -3698,13 +3726,6 @@ Dette feltet beskriver størrelsen på en LCD-enhet. Enten gitt i piksler (for g
     </message>
 </context>
 <context>
-    <name>ListenerLocalVolumeDialog</name>
-    <message>
-        <source>Adjusting local volume for listening to %1</source>
-        <translation>Justerer lokal lydstyrke for lytting til %1</translation>
-    </message>
-</context>
-<context>
     <name>Log</name>
     <message>
         <source>Debug</source>
@@ -3872,6 +3893,10 @@ Dette feltet beskriver størrelsen på en LCD-enhet. Enten gitt i piksler (for g
         <source>Plugin message</source>
         <translation>Programtilleggsmelding</translation>
     </message>
+    <message>
+        <source>[embedded content]</source>
+        <translation>[innebygd innhold]</translation>
+    </message>
 </context>
 <context>
     <name>LogConfig</name>
@@ -3957,10 +3982,6 @@ Dette feltet beskriver størrelsen på en LCD-enhet. Enten gitt i piksler (for g
     <message>
         <source>Text To Speech</source>
         <translation>Tekst til tale</translation>
-    </message>
-    <message>
-        <source>Volume</source>
-        <translation>Lydstyrke</translation>
     </message>
     <message>
         <source>Volume of Text-To-Speech Engine</source>
@@ -4114,6 +4135,50 @@ Har kun innvirkning for nye meldinger. Gamle meldinger vises i foregående tidsf
         <source>Click here to toggle limiting for %1 events.&lt;br /&gt;If checked, notifications for this event type will not be played when the user count on the server exceeds the set threshold.</source>
         <translation type="unfinished">Klikk her for å veksle begrensning for %1-hendelser.&lt;br /&gt;Merknader av denne hendelsestypen vil ikke spilles når antall brukere på tjeneren overskrider angitt terskel.</translation>
     </message>
+    <message>
+        <source>Message Volume</source>
+        <translation>Meldingslydstyrke</translation>
+    </message>
+    <message>
+        <source>Volume adjustment for audio cues</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;b&gt;This is the volume adjustment for audio cues.&lt;/b&gt;&lt;br /&gt;A value of 0 dB means no change to the sound sample.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source> dB</source>
+        <translation type="unfinished"> dB</translation>
+    </message>
+    <message>
+        <source>Text-to-Speech volume</source>
+        <translation>Tekst-til-tale -lydstyrke</translation>
+    </message>
+    <message>
+        <source>Notification volume adjustment</source>
+        <translation>Justering av merknadslydstyrke</translation>
+    </message>
+    <message>
+        <source>Volume adjustment for notification sounds</source>
+        <translation>Justering av lydstyrke for merknadslyder</translation>
+    </message>
+    <message>
+        <source>&lt;b&gt;This is the volume adjustment for notification sounds.&lt;/b&gt;&lt;br /&gt;A value of 0 dB means no change to the sound sample.</source>
+        <translation>&lt;b&gt;Dette er lydstyrkejusteringen for merknadslyder.&lt;/b&gt;&lt;br /&gt;En verdi på 0 dB betyr ingen endring av lydklippet.</translation>
+    </message>
+    <message>
+        <source>Audio cue volume adjustment</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source> %</source>
+        <translation type="unfinished"> %</translation>
+    </message>
+    <message>
+        <source>Notification sound volume adjustment</source>
+        <translation>Justering av lydstyrke for merknadslyd</translation>
+    </message>
 </context>
 <context>
     <name>LookConfig</name>
@@ -4170,10 +4235,6 @@ Har kun innvirkning for nye meldinger. Gamle meldinger vises i foregående tidsf
     <message>
         <source>Users above Channels</source>
         <translation>Brukere over kanaler</translation>
-    </message>
-    <message>
-        <source>&lt;b&gt;If set, will verify you want to quit if connected.&lt;/b&gt;</source>
-        <translation>&lt;b&gt;Hvis satt, vil spørre deg om bekreftelse ved avslutting hvis tilkoblet.&lt;/b&gt;</translation>
     </message>
     <message>
         <source>Show number of users in each channel</source>
@@ -4239,14 +4300,6 @@ Har kun innvirkning for nye meldinger. Gamle meldinger vises i foregående tidsf
     <message>
         <source>Channel Dragging</source>
         <translation>Kanaldraging</translation>
-    </message>
-    <message>
-        <source>Ask whether to close or minimize when quitting Mumble.</source>
-        <translation>Spør hvorvidt det skal lukkes eller minimeres når Mumble avsluttes.</translation>
-    </message>
-    <message>
-        <source>Ask on quit while connected</source>
-        <translation>Spør ved avslutning når tilkoblet</translation>
     </message>
     <message>
         <source>Always On Top</source>
@@ -4552,6 +4605,38 @@ Har kun innvirkning for nye meldinger. Gamle meldinger vises i foregående tidsf
         <source>Action (Channel):</source>
         <translation type="unfinished">Handling (kanal):</translation>
     </message>
+    <message>
+        <source>Quit Behavior</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This setting controls the behavior of clicking on the X in the top right corner.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This setting controls the behavior when closing Mumble. You can choose between being asked for confirmation, minimize instead if closing or just closing without any additional prompt. Optionally, the first two options can only apply when you are currently connected to a server (in that case, Mumble will quit without asking, when not connected to any server).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Always Ask</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ask when connected</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Always Minimize</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Minimize when connected</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Always Quit</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>MainWindow</name>
@@ -4644,10 +4729,6 @@ Har kun innvirkning for nye meldinger. Gamle meldinger vises i foregående tidsf
         <translation>Lukk</translation>
     </message>
     <message>
-        <source>Mumble is currently connected to a server. Do you want to Close or Minimize it?</source>
-        <translation>Mumble er ikke koblet til en tjener. Ønsker du å lukke eller minimere det?</translation>
-    </message>
-    <message>
         <source>Mute Self</source>
         <comment>Global Shortcut</comment>
         <translation>Gjør deg selv stum</translation>
@@ -4706,10 +4787,6 @@ Har kun innvirkning for nye meldinger. Gamle meldinger vises i foregående tidsf
     <message>
         <source>URL scheme is not &apos;mumble&apos;</source>
         <translation type="unfinished">URL-forordningen er ikke &apos;mumble&apos;</translation>
-    </message>
-    <message>
-        <source>This version of Mumble can&apos;t handle URLs for Mumble version %1.%2.%3</source>
-        <translation>Denne versjonen av Mumble kan ikke håndtere URL-er for Mumble versjon %1.%2.%3</translation>
     </message>
     <message>
         <source>Connecting to %1</source>
@@ -5690,10 +5767,6 @@ Ellers avbryt alt og sjekk ditt sertifikat og brukernavn.</translation>
         <translation>Tjener</translation>
     </message>
     <message>
-        <source>Failed to load Opus, it will not be available for audio encoding/decoding.</source>
-        <translation type="unfinished">Klarte ikke å laste inn Opus til bruk for lydkoding og dekoding.</translation>
-    </message>
-    <message>
         <source>The server requests minimum client version %1</source>
         <translation>Tjeneren forespør minimum klientversjon %1</translation>
     </message>
@@ -5740,10 +5813,6 @@ Ellers avbryt alt og sjekk ditt sertifikat og brukernavn.</translation>
     <message>
         <source>%1 unmuted by %2.</source>
         <translation>%2 opphevet %1 sin stumhet.</translation>
-    </message>
-    <message>
-        <source>Unable to find matching CELT codecs with other clients. You will not be able to talk to all users.</source>
-        <translation>Kunne ikke finne samsvarende CELT-kodek delt av andre klienter. Du vil ikke kunne snakke med alle brukerne.</translation>
     </message>
     <message>
         <source>You were muted and deafened by %1.</source>
@@ -5939,10 +6008,6 @@ Ellers avbryt alt og sjekk ditt sertifikat og brukernavn.</translation>
         <translation>Dette lar deg endre den tjenerbaserte bannlysningslisten over IP-adresser.</translation>
     </message>
     <message>
-        <source>&amp;Filter on/off</source>
-        <translation>&amp;Filter på/av</translation>
-    </message>
-    <message>
         <source>Enable or disable the filtering of select channels.
 By default all empty channels will be filtered.
 You can mark additional channels for filtering from
@@ -5962,14 +6027,6 @@ Du kan markere ytterligere kanaler fra filtrering fra kanalens bindeleddsmeny.</
     <message>
         <source>Reset the avatar of the selected user.</source>
         <translation>Tilbakestill avataren tilhørende valgt bruker.</translation>
-    </message>
-    <message>
-        <source>Locally adjust the user&apos;s speech volume.</source>
-        <translation>Lokal justering av brukerens talelydstyrkenivå</translation>
-    </message>
-    <message>
-        <source>Opens a dialog with a volume slider. Use this on other users in the same room.</source>
-        <translation>Åpner en dialog med en lydstyrkeglidebryter. Bruk denne på andre brukere i samme rom.</translation>
     </message>
     <message>
         <source>&amp;Developer</source>
@@ -6014,10 +6071,6 @@ Du kan markere ytterligere kanaler fra filtrering fra kanalens bindeleddsmeny.</
     <message>
         <source>&amp;Ban...</source>
         <translation>&amp;Bannlys…</translation>
-    </message>
-    <message>
-        <source>Local Volume Adjustment...</source>
-        <translation>Lokal lydstyrkejustering…</translation>
     </message>
     <message>
         <source>Send &amp;Message...</source>
@@ -6126,10 +6179,6 @@ Du kan markere ytterligere kanaler fra filtrering fra kanalens bindeleddsmeny.</
     <message>
         <source>Listen to this channel without joining it</source>
         <translation>Lytt til denne kanalen uten å ta del i den</translation>
-    </message>
-    <message>
-        <source>Locally adjust the volume for this virtual ear.</source>
-        <translation type="unfinished">Juster lydstyrken for dette virtuelle øret lokalt.</translation>
     </message>
     <message>
         <source>&amp;Listener</source>
@@ -6364,6 +6413,54 @@ Mulige handlinger:
         <translation>Fant ugyldig innstillingsfil.</translation>
     </message>
     <message>
+        <source>Directory %1 does not exist.
+</source>
+        <translation type="unfinished">Mappen «%1» finnes ikke.
+</translation>
+    </message>
+    <message>
+        <source>You are currently in minimal view but not connected to a server. Use the context menu to connect to a server or disable minimal view.</source>
+        <translation type="unfinished">Du er nå i minimal visning, men ikke tilkoblet noen tjener. Bruk bindeleddsmenyen for å koble til en tjener, eller skru av den minimale visningen.</translation>
+    </message>
+    <message>
+        <source>Local Volume Adjustment:</source>
+        <translation>Lokal lydstyrkejustering:</translation>
+    </message>
+    <message>
+        <source>This version of Mumble can&apos;t handle URLs for Mumble version %1</source>
+        <translation type="unfinished">Denne versjonen av Mumble kan ikke håndtere URL-er for Mumble versjon %1</translation>
+    </message>
+    <message>
+        <source>Listen to Channel</source>
+        <comment>Global Shortcut</comment>
+        <translation>Lytt til kanalen</translation>
+    </message>
+    <message>
+        <source>Toggles listening to the given channel.</source>
+        <comment>Global Shortcut</comment>
+        <translation>Veksler lytting til gitt kanal.</translation>
+    </message>
+    <message>
+        <source>Server instructed us to use an audio codec different from Opus, which is no longer supported. Disconnecting...</source>
+        <translation>Tjeneren instruerte bruk av et annet lydkodeks enn Opus, noe som ikke lenger støttes. Kobler fra …</translation>
+    </message>
+    <message>
+        <source>Are you sure you want to close Mumble? Perhaps you prefer to minimize it instead?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Remember this setting</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Channel &amp;Filter</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Pin Channel when Filtering</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Usage: mumble [options] [&lt;url&gt; | &lt;plugin_list&gt;]
 
 &lt;url&gt; specifies a URL to connect to after startup instead of showing
@@ -6376,7 +6473,7 @@ correct client version. It currently defaults to 1.2.0.
 
 Valid options are:
   -h, --help    Show this help text and exit.
-  -V, --version Print version information and exit
+  --version     Print version information and exit
   -m, --multiple
                 Allow multiple instances of the client to be started.
   -c, --config
@@ -6409,9 +6506,9 @@ Valid options are:
                 Print on stdout the echo cancellation queue state
                 (useful for debugging purposes)
   --translation-dir &lt;dir&gt;
-                Specifies an additional translation fir &lt;dir&gt; in which
-                Mumble will search for translation files that overwrite
-                the bundled ones
+                Specifies an additional translation directory &lt;dir&gt;
+                in which Mumble will search for translation files that
+                overwrite the bundled ones
                 Directories added this way have higher priority than
                 the default locations used otherwise
   --print-translation-dirs
@@ -6426,12 +6523,6 @@ Valid options are:
                 Mumble&apos;s settings.
 </source>
         <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Directory %1 does not exist.
-</source>
-        <translation type="unfinished">Mappen «%1» finnes ikke.
-</translation>
     </message>
 </context>
 <context>
@@ -6888,7 +6979,7 @@ Forhindrer klienten fra å sende potensielt identifiserende informasjon om opera
     <message>
         <source>This sets whether the overlay is enabled or not. This setting is only checked when applications are started, so make sure Mumble is running and this option is on before you start the application.&lt;br /&gt;Please note that if you start Mumble after starting the application, or if you disable the overlay while the application is running, there is no safe way to restart the overlay without also restarting the application.</source>
         <oldsource>This sets whether the overlay is enabled or not. This setting is only checked when applications are started, so make sure Mumble is running and this option is on before you start the application.&lt;br /&gt;Please note that if you start the application after starting Mumble, or if you disable the overlay while running, there is no safe way to restart the overlay without also restarting the application.</oldsource>
-        <translation>Endringer i forgrunnslag trer kun i effekt i det et program startes. Start programmer på ny etter å ha gjort endringer for å se dem.</translation>
+        <translation type="unfinished">Endringer i forgrunnslag trer kun i effekt i det et program startes.&lt;br /&gt;Start programmer på ny etter å ha gjort endringer for å se dem.</translation>
     </message>
     <message>
         <source>Layout</source>
@@ -7580,10 +7671,6 @@ Trykk på knappen nedefor for å oppgradere.</translation>
 <context>
     <name>QObject</name>
     <message>
-        <source>CodecInit: Failed to load Opus, it will not be available for encoding/decoding audio.</source>
-        <translation type="unfinished">CodecInit: Klarte ikke å laste inn Opus for koding og dekoding av lyd.</translation>
-    </message>
-    <message>
         <source>Talking UI</source>
         <translation>Snakkingsgrensesnitt</translation>
     </message>
@@ -7768,6 +7855,10 @@ Du kan registrere dem igjen.</translation>
     <message>
         <source>Access to the microphone was denied due to system restrictions. You will not be able to use the microphone in this session.</source>
         <translation>Tilgang til mikrofon ble ikke innvilget som følge av systembegrensninger. Du vil ikke kunne bruke mikrofonen i denne økten.</translation>
+    </message>
+    <message>
+        <source>Unknown Version</source>
+        <translation>Ukjent versjon</translation>
     </message>
 </context>
 <context>
@@ -8140,6 +8231,10 @@ Du kan registrere dem igjen.</translation>
         <source>Press to show button combination</source>
         <translation>Trykk for å vise tastekombinasjon</translation>
     </message>
+    <message>
+        <source>&lt; Unknown Channel &gt;</source>
+        <translation>&lt; Ukjent kanal &gt;</translation>
+    </message>
 </context>
 <context>
     <name>ShortcutTargetDialog</name>
@@ -8361,10 +8456,6 @@ Et tilgangssymbol er en tekststring, som kan brukes som et passord for veldig en
         <translation>IP-adresse</translation>
     </message>
     <message>
-        <source>CELT Versions</source>
-        <translation>CELT-versjoner</translation>
-    </message>
-    <message>
         <source>Details...</source>
         <translation>Detaljer…</translation>
     </message>
@@ -8487,6 +8578,10 @@ Et tilgangssymbol er en tekststring, som kan brukes som et passord for veldig en
         <source>Ping deviation</source>
         <translation>Svartidsavvik</translation>
     </message>
+    <message>
+        <source>Warning: The server seems to report a truncated protocol version for this client. (See: &lt;a href=&quot;https://github.com/mumble-voip/mumble/issues/5827/&quot;&gt;Issue #5827&lt;/a&gt;)</source>
+        <translation>Advarsel: Denne tjeneren rapporterer en forkortet protokollversjon for denne klienten. (Sjekk &lt;a href=&quot;https://github.com/mumble-voip/mumble/issues/5827/&quot;&gt;problem #5827&lt;/a&gt;)</translation>
+    </message>
 </context>
 <context>
     <name>UserListModel</name>
@@ -8532,33 +8627,6 @@ Et tilgangssymbol er en tekststring, som kan brukes som et passord for veldig en
     <message>
         <source>Adjusting local nickname for %1</source>
         <translation>Justerer lokalt kallenavn for %1</translation>
-    </message>
-</context>
-<context>
-    <name>UserLocalVolumeDialog</name>
-    <message>
-        <source>Local volume for other users</source>
-        <translation>Lokalt lydstyrkenivå for andre brukere</translation>
-    </message>
-    <message>
-        <source>&lt;b&gt;Adjust the volume of other users locally&lt;/b&gt;&lt;br /&gt;Mumble supports adjusting the volume of other users locally.</source>
-        <translation>&lt;b&gt;Juster lydstyrkenivået til andre brukere lokalt&lt;/b&gt;&lt;br /&gt;Mumble støtter justering av volumet til andre brukere lokalt.</translation>
-    </message>
-    <message>
-        <source>Adjusting local volume for %1</source>
-        <translation>Justerer lokalt voum for %1</translation>
-    </message>
-    <message>
-        <source> dB</source>
-        <translation> dB</translation>
-    </message>
-    <message>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Use the slider or the text box to change the volume of the user.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;font-weight:600;&quot;&gt;Attention!&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Increasing the volume of a user too much can permanently damage your hearing. It may also increase the background noise of the user.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Bruk glidebryteren eller tekstboksen for å endre lydstyrken på brukeren.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;font-weight:600;&quot;&gt;Advarsel!&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Økning av lydstyrken av en bruker kan skade hørselen din permanent. Det kan også øke bakgrunnstøten til brukeren.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
-    </message>
-    <message>
-        <source>User volume</source>
-        <translation>Brukerlydstyrke</translation>
     </message>
 </context>
 <context>
@@ -8703,6 +8771,10 @@ Et tilgangssymbol er en tekststring, som kan brukes som et passord for veldig en
     <message>
         <source>Channel has access restrictions but you can enter nonetheless</source>
         <translation>Kanalen har tilgangsbegrensninger, men du kan ta del iden likevel</translation>
+    </message>
+    <message>
+        <source>Channel will be pinned when filtering is enabled</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -8965,6 +9037,17 @@ Please contact your server administrator for further information.</source>
     <message>
         <source>Unable to start recording - the audio output is miconfigured (0Hz sample rate)</source>
         <translation type="unfinished">Kunne ikke starte opptak — lydutgangen er satt opp feil (0 Hz samplingstakt)</translation>
+    </message>
+</context>
+<context>
+    <name>VolumeSliderWidgetAction</name>
+    <message>
+        <source>Slider for volume adjustment</source>
+        <translation>Glidebryter for lydstyrkejustering</translation>
+    </message>
+    <message>
+        <source>Volume Adjustment</source>
+        <translation>Lydstyrkejustering</translation>
     </message>
 </context>
 <context>

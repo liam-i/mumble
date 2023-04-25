@@ -1,4 +1,4 @@
-// Copyright 2021-2022 The Mumble Developers. All rights reserved.
+// Copyright 2021-2023 The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -124,5 +124,5 @@ procid_t ProcessBase::find(const std::string &name, const std::multimap< std::ws
 		return 0;
 	}
 
-	return static_cast< procid_t >(iter->second);
+	return iter->second;
 }

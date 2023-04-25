@@ -1,4 +1,4 @@
-// Copyright 2007-2022 The Mumble Developers. All rights reserved.
+// Copyright 2007-2023 The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -72,7 +72,7 @@ MetaParams::MetaParams() {
 	iDBPort                    = 0;
 	qsDBusService              = "net.sourceforge.mumble.murmur";
 	qsDBDriver                 = "QSQLITE";
-	qsLogfile                  = "murmur.log";
+	qsLogfile                  = "mumble-server.log";
 
 	iLogDays = 31;
 
@@ -105,6 +105,8 @@ MetaParams::MetaParams() {
 
 	iPluginMessageLimit = 4;
 	iPluginMessageBurst = 15;
+
+	broadcastListenerVolumeAdjustments = false;
 
 	qsCiphers = MumbleSSL::defaultOpenSSLCipherString();
 
@@ -169,6 +171,7 @@ void MetaParams::read(QString fname) {
 		datapaths << appdir.absolutePath() + QLatin1String("/Mumble");
 #else
 		datapaths << QDir::homePath() + QLatin1String("/.murmurd");
+		datapaths << QDir::homePath() + QLatin1String("/.mumble-server");
 		datapaths << QDir::homePath() + QLatin1String("/.config/Mumble");
 #endif
 
@@ -181,20 +184,24 @@ void MetaParams::read(QString fname) {
 		datapaths << QDir::currentPath();
 		datapaths << QCoreApplication::instance()->applicationDirPath();
 
-		foreach (const QString &p, datapaths) {
+		for (const QString &p : datapaths) {
 			if (!p.isEmpty()) {
-				QFileInfo fi(p, "murmur.ini");
-				if (fi.exists() && fi.isReadable()) {
-					qdBasePath            = QDir(p);
-					qsAbsSettingsFilePath = fi.absoluteFilePath();
-					break;
+				// Prefer "mumble-server.ini" but for legacy reasons also keep looking for "murmur.ini"
+				for (const QString &currentFileName :
+					 { QStringLiteral("mumble-server.ini"), QStringLiteral("murmur.ini") }) {
+					QFileInfo fi(p, currentFileName);
+					if (fi.exists() && fi.isReadable()) {
+						qdBasePath            = QDir(p);
+						qsAbsSettingsFilePath = fi.absoluteFilePath();
+						break;
+					}
 				}
 			}
 		}
 		if (qsAbsSettingsFilePath.isEmpty()) {
 			QDir::root().mkpath(qdBasePath.absolutePath());
 			qdBasePath            = QDir(datapaths.at(0));
-			qsAbsSettingsFilePath = qdBasePath.absolutePath() + QLatin1String("/murmur.ini");
+			qsAbsSettingsFilePath = qdBasePath.absolutePath() + QLatin1String("/mumble-server.ini");
 		}
 	} else {
 		QFile f(fname);
@@ -208,6 +215,18 @@ void MetaParams::read(QString fname) {
 	QDir::setCurrent(qdBasePath.absolutePath());
 	qsSettings = new QSettings(qsAbsSettingsFilePath, QSettings::IniFormat);
 	qsSettings->setIniCodec("UTF-8");
+
+	qsSettings->sync();
+	switch (qsSettings->status()) {
+		case QSettings::NoError:
+			break;
+		case QSettings::AccessError:
+			qFatal("Access error while trying to access %s", qPrintable(qsSettings->fileName()));
+			break;
+		case QSettings::FormatError:
+			qFatal("Your INI file at %s is invalid - check for syntax errors!", qPrintable(qsSettings->fileName()));
+			break;
+	}
 
 	qWarning("Initializing settings from %s (basepath %s)", qPrintable(qsSettings->fileName()),
 			 qPrintable(qdBasePath.absolutePath()));
@@ -302,9 +321,7 @@ void MetaParams::read(QString fname) {
 	iBanTime       = typeCheckedFromSettings("autobanTime", iBanTime);
 	bBanSuccessful = typeCheckedFromSettings("autobanSuccessfulConnections", bBanSuccessful);
 
-	qvSuggestVersion = Version::getRaw(qsSettings->value("suggestVersion").toString());
-	if (qvSuggestVersion.toUInt() == 0)
-		qvSuggestVersion = QVariant();
+	m_suggestVersion = Version::fromConfig(qsSettings->value("suggestVersion"));
 
 	qvSuggestPositional = qsSettings->value("suggestPositional");
 	if (qvSuggestPositional.toString().trimmed().isEmpty())
@@ -355,6 +372,8 @@ void MetaParams::read(QString fname) {
 	iPluginMessageLimit = typeCheckedFromSettings("pluginmessagelimit", 4);
 	iPluginMessageBurst = typeCheckedFromSettings("pluginmessageburst", 15);
 
+	broadcastListenerVolumeAdjustments = typeCheckedFromSettings("broadcastlistenervolumeadjustments", false);
+
 	bool bObfuscate = typeCheckedFromSettings("obfuscate", false);
 	if (bObfuscate) {
 		qWarning("IP address obfuscation enabled.");
@@ -404,8 +423,7 @@ void MetaParams::read(QString fname) {
 	qmConfig.insert(QLatin1String("certrequired"), bCertRequired ? QLatin1String("true") : QLatin1String("false"));
 	qmConfig.insert(QLatin1String("forceExternalAuth"),
 					bForceExternalAuth ? QLatin1String("true") : QLatin1String("false"));
-	qmConfig.insert(QLatin1String("suggestversion"),
-					qvSuggestVersion.isNull() ? QString() : qvSuggestVersion.toString());
+	qmConfig.insert(QLatin1String("suggestversion"), Version::toConfigString(m_suggestVersion));
 	qmConfig.insert(QLatin1String("suggestpositional"),
 					qvSuggestPositional.isNull() ? QString() : qvSuggestPositional.toString());
 	qmConfig.insert(QLatin1String("suggestpushtotalk"),
@@ -553,7 +571,7 @@ bool MetaParams::loadSSLSettings() {
 	QString qsSSLDHParamsIniValue = qsSettings->value(QLatin1String("sslDHParams")).toString();
 	if (!qsSSLDHParamsIniValue.isEmpty()) {
 		qFatal("MetaParams: This version of Murmur does not support Diffie-Hellman parameters (sslDHParams). Murmur "
-			   "will not start unless you remove the option from your murmur.ini file.");
+			   "will not start unless you remove the option from your mumble-server.ini (murmur.ini)file.");
 		return false;
 	}
 #endif

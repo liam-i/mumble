@@ -1,4 +1,4 @@
-// Copyright 2007-2022 The Mumble Developers. All rights reserved.
+// Copyright 2007-2023 The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -58,6 +58,9 @@ bool Shortcut::isServerSpecific() const {
 	if (qvData.canConvert< ShortcutTarget >()) {
 		const ShortcutTarget &sc = qvariant_cast< ShortcutTarget >(qvData);
 		return sc.isServerSpecific();
+	}
+	if (qvData.canConvert< ChannelTarget >()) {
+		return true;
 	}
 	return false;
 }
@@ -378,6 +381,26 @@ QDataStream &operator>>(QDataStream &qds, ShortcutTarget &st) {
 	}
 }
 
+QDataStream &operator<<(QDataStream &qds, const ChannelTarget &target) {
+	return qds << target.channelID;
+}
+
+QDataStream &operator>>(QDataStream &qds, ChannelTarget &target) {
+	return qds >> target.channelID;
+}
+
+bool operator==(const ChannelTarget &lhs, const ChannelTarget &rhs) {
+	return lhs.channelID == rhs.channelID;
+}
+
+bool operator<(const ChannelTarget &lhs, const ChannelTarget &rhs) {
+	return lhs.channelID < rhs.channelID;
+}
+
+quint32 qHash(const ChannelTarget &target) {
+	return qHash(target.channelID);
+}
+
 const QString Settings::cqsDefaultPushClickOn  = QLatin1String(":/on.ogg");
 const QString Settings::cqsDefaultPushClickOff = QLatin1String(":/off.ogg");
 
@@ -492,6 +515,8 @@ Settings::Settings() {
 #endif
 	qRegisterMetaType< ShortcutTarget >("ShortcutTarget");
 	qRegisterMetaTypeStreamOperators< ShortcutTarget >("ShortcutTarget");
+	qRegisterMetaType< ChannelTarget >("ChannelTarget");
+	qRegisterMetaTypeStreamOperators< ChannelTarget >("ChannelTarget");
 	qRegisterMetaType< QVariant >("QVariant");
 	qRegisterMetaType< PluginSetting >("PluginSetting");
 	qRegisterMetaTypeStreamOperators< PluginSetting >("PluginSetting");
@@ -499,9 +524,6 @@ Settings::Settings() {
 	qRegisterMetaType< Search::SearchDialog::ChannelAction >("SearchDialog::ChannelAction");
 
 
-#ifdef USE_RNNOISE
-	noiseCancelMode = NoiseCancelRNN;
-#endif
 #ifdef Q_OS_MACOS
 	// The echo cancellation feature on macOS is experimental and known to be able to cause problems
 	// (e.g. muting the user instead of only cancelling echo - https://github.com/mumble-voip/mumble/issues/4912)
@@ -533,6 +555,7 @@ Settings::Settings() {
 
 #ifdef Q_OS_LINUX
 	if (EnvUtils::waylandIsUsed()) {
+		// Due to the issues we're currently having on Wayland, we disable shortcuts by default
 		bShortcutEnable = false;
 	}
 #endif
@@ -765,7 +788,7 @@ void Settings::legacyLoad(const QString &path) {
 	LOADENUM(atTransmit, "audio/transmit");
 	LOAD(uiDoublePush, "audio/doublepush");
 	LOAD(pttHold, "audio/ptthold");
-	LOAD(bTxAudioCue, "audio/pushclick");
+	LOAD(audioCueEnabledPTT, "audio/pushclick");
 	LOAD(qsTxAudioCueOn, "audio/pushclickon");
 	LOAD(qsTxAudioCueOff, "audio/pushclickoff");
 	LOAD(bTxMuteCue, "audio/mutecue");
@@ -930,7 +953,6 @@ void Settings::legacyLoad(const QString &path) {
 	LOADENUM(ceChannelDrag, "ui/drag");
 	LOADENUM(ceUserDrag, "ui/userdrag");
 	LOADENUM(aotbAlwaysOnTop, "ui/alwaysontop");
-	LOAD(bAskOnQuit, "ui/askonquit");
 	LOAD(bEnableDeveloperMenu, "ui/developermenu");
 	LOAD(bLockLayout, "ui/locklayout");
 	LOAD(bMinimalView, "ui/minimalview");
@@ -971,6 +993,15 @@ void Settings::legacyLoad(const QString &path) {
 	LOAD(iChatMessageMargins, "ui/ChatMessageMargins");
 	LOAD(bDisablePublicList, "ui/disablepubliclist");
 
+	if (settings_ptr->contains("ui/askonquit")) {
+		// Compatibility layer for overtaking the old (now deprecated) settings
+		// This block should only be called once at the first start of the new Mumble version
+		bool deprecatedAskOnQuit = true;
+		LOAD(deprecatedAskOnQuit, "ui/askonquit");
+
+		quitBehavior = deprecatedAskOnQuit ? QuitBehavior::ALWAYS_ASK : QuitBehavior::ALWAYS_QUIT;
+	}
+
 	// TalkingUI
 	LOAD(qpTalkingUI_Position, "ui/talkingUIPosition");
 	LOAD(bShowTalkingUI, "ui/showTalkingUI");
@@ -1003,7 +1034,6 @@ void Settings::legacyLoad(const QString &path) {
 	LOAD(iRecordingFormat, "recording/format");
 
 	// Special configuration options not exposed to UI
-	LOAD(bDisableCELT, "audio/disablecelt");
 	LOAD(disableConnectDialogEditing, "ui/disableconnectdialogediting");
 	LOAD(bPingServersDialogViewed, "consent/pingserversdialogviewed");
 
@@ -1027,13 +1057,6 @@ void Settings::legacyLoad(const QString &path) {
 	LOAD(bEnableGKey, "shortcut/gkey");
 	LOAD(bEnableXboxInput, "shortcut/windows/xbox/enable");
 	LOAD(bEnableUIAccess, "shortcut/windows/uiaccess/enable");
-
-#ifdef Q_OS_LINUX
-	if (EnvUtils::waylandIsUsed()) {
-		// Global shortcuts don't work on Wayland
-		bShortcutEnable = false;
-	}
-#endif
 
 	// Search options
 	LOAD(searchForUsers, "search/search_for_users");

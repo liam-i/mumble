@@ -1,4 +1,4 @@
-// Copyright 2021 The Mumble Developers. All rights reserved.
+// Copyright 2022-2023 The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -24,7 +24,8 @@
 	PROCESS(audio, TRANSMIT_MODE_KEY, atTransmit)                                           \
 	PROCESS(audio, DOUBLE_PUSH_DELAY_KEY, uiDoublePush)                                     \
 	PROCESS(audio, PTT_HOLD_KEY, pttHold)                                                   \
-	PROCESS(audio, PLAY_TRANSMIT_CUE_KEY, bTxAudioCue)                                      \
+	PROCESS(audio, TRANSMIT_CUE_WHEN_PTT_KEY, audioCueEnabledPTT)                           \
+	PROCESS(audio, TRANSMIT_CUE_WHEN_VAD_KEY, audioCueEnabledVAD)                           \
 	PROCESS(audio, TRANSMIT_CUE_START_KEY, qsTxAudioCueOn)                                  \
 	PROCESS(audio, TRANSMIT_CUE_STOP_KEY, qsTxAudioCueOff)                                  \
 	PROCESS(audio, PLAY_MUTE_CUE_KEY, bTxMuteCue)                                           \
@@ -52,6 +53,8 @@
 	PROCESS(audio, EXCLUSIVE_OUTPUT_KEY, bExclusiveOutput)                                  \
 	PROCESS(audio, INPUT_SYSTEM_KEY, qsAudioInput)                                          \
 	PROCESS(audio, OUTPUT_SYSTEM_KEY, qsAudioOutput)                                        \
+	PROCESS(audio, NOTIFICATION_VOLUME_KEY, notificationVolume)                             \
+	PROCESS(audio, CUE_VOLUME_KEY, cueVolume)                                               \
 	PROCESS(audio, RESTRICT_WHISPERS_TO_FRIENDS_KEY, bWhisperFriends)                       \
 	PROCESS(audio, NOTIFICATION_USER_LIMIT_KEY, iMessageLimitUserThreshold)
 
@@ -141,7 +144,7 @@
 	PROCESS(ui, CHANNEL_DRAG_MODE_KEY, ceChannelDrag)                            \
 	PROCESS(ui, USER_DRAG_MODE_KEY, ceUserDrag)                                  \
 	PROCESS(ui, ALWAYS_ON_TOP_KEY, aotbAlwaysOnTop)                              \
-	PROCESS(ui, ASK_ON_QUIT_KEY, bAskOnQuit)                                     \
+	PROCESS(ui, QUIT_BEHAVIOR_KEY, quitBehavior)                                 \
 	PROCESS(ui, SHOW_DEVELOPER_MENU_KEY, bEnableDeveloperMenu)                   \
 	PROCESS(ui, LOCK_LAYOUT_KEY, bLockLayout)                                    \
 	PROCESS(ui, MINIMAL_VIEW_KEY, bMinimalView)                                  \
@@ -221,9 +224,7 @@
 	PROCESS(recording, RECORDING_FORMAT_KEY, iRecordingFormat)
 
 
-#define HIDDEN_SETTINGS                             \
-	PROCESS(hidden, DISABLE_CELT_KEY, bDisableCELT) \
-	PROCESS(hidden, DISABLE_CONNECT_DIALOG_EDITING_KEY, disableConnectDialogEditing)
+#define HIDDEN_SETTINGS PROCESS(hidden, DISABLE_CONNECT_DIALOG_EDITING_KEY, disableConnectDialogEditing)
 
 
 #define WIN_OVERLAY_SETTINGS                                                            \

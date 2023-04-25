@@ -34,11 +34,6 @@ Build an x86 overlay
 Bundle Qt's translations as well
 (Default: ${static})
 
-### bundled-celt
-
-Build the included version of CELT instead of looking for one on the system.
-(Default: ON)
-
 ### bundled-gsl
 
 Use the bundled GSL version instead of looking for one on the system
@@ -47,11 +42,6 @@ Use the bundled GSL version instead of looking for one on the system
 ### bundled-json
 
 Build the included version of nlohmann_json instead of looking for one on the system
-(Default: ON)
-
-### bundled-opus
-
-Build the included version of Opus instead of looking for one on the system.
 (Default: ON)
 
 ### bundled-rnnoise
@@ -77,11 +67,6 @@ Build support for CoreAudio.
 ### crash-report
 
 Include support for reporting crashes to the Mumble developers.
-(Default: ON)
-
-### dbus
-
-Build support for DBus.
 (Default: ON)
 
 ### debug-dependency-search
@@ -121,7 +106,7 @@ Build support for JackAudio.
 
 ### lto
 
-Enables link-time optimizations
+Enables link-time optimizations for release builds
 (Default: ${LTO_DEFAULT})
 
 ### manual-plugin
@@ -139,16 +124,6 @@ Whether or not tests that need a working internet connection should be included
 Build a heavily optimized version, specific to the machine it's being compiled on.
 (Default: OFF)
 
-### OPUS_BUILD_SHARED_LIBRARY
-
-(No description available)
-(Default: ON)
-
-### OPUS_STACK_PROTECTOR
-
-(No description available)
-(Default: OFF)
-
 ### oss
 
 Build support for OSS.
@@ -157,7 +132,7 @@ Build support for OSS.
 ### overlay
 
 Build overlay.
-(Default: ON)
+(Default: ${client})
 
 ### overlay-xcompile
 

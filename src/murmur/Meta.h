@@ -1,4 +1,4 @@
-// Copyright 2007-2022 The Mumble Developers. All rights reserved.
+// Copyright 2007-2023 The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -7,6 +7,8 @@
 #define MUMBLE_MURMUR_META_H_
 
 #include "Timer.h"
+
+#include "Version.h"
 
 #ifdef Q_OS_WIN
 #	include "win.h"
@@ -102,6 +104,8 @@ public:
 	unsigned int iPluginMessageLimit;
 	unsigned int iPluginMessageBurst;
 
+	bool broadcastListenerVolumeAdjustments;
+
 	QSslCertificate qscCert;
 	QSslKey qskKey;
 
@@ -136,7 +140,7 @@ public:
 	QString qsName;
 #endif
 
-	QVariant qvSuggestVersion;
+	Version::full_t m_suggestVersion;
 	QVariant qvSuggestPositional;
 	QVariant qvSuggestPushToTalk;
 
@@ -205,7 +209,8 @@ public:
 	void killAll();
 	void getOSInfo();
 	void connectListener(QObject *);
-	static void getVersion(int &major, int &minor, int &patch, QString &string);
+	static void getVersion(Version::component_t &major, Version::component_t &minor, Version::component_t &patch,
+						   QString &string);
 signals:
 	void started(Server *);
 	void stopped(Server *);

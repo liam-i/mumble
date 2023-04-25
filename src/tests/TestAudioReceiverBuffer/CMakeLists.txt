@@ -1,4 +1,4 @@
-# Copyright 2020-2021 The Mumble Developers. All rights reserved.
+# Copyright 2022-2023 The Mumble Developers. All rights reserved.
 # Use of this source code is governed by a BSD-style license
 # that can be found in the LICENSE file at the root of the
 # Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -22,10 +22,12 @@ get_filename_component(SOURCE_NAME "${SOURCE_TO_COPY}" NAME)
 set(COPIED_HEADER "${CUSTOM_INCLUDE_DIR}/${HEADER_NAME}")
 set(COPIED_SOURCE "${CMAKE_CURRENT_BINARY_DIR}/${SOURCE_NAME}")
 
-add_custom_command(OUTPUT "${COPIED_SOURCE}"
+add_custom_command(
+	OUTPUT "${COPIED_SOURCE}"
 	COMMAND ${CMAKE_COMMAND} -E copy "${HEADER_TO_COPY}" "${COPIED_HEADER}"
 	COMMAND ${CMAKE_COMMAND} -E copy "${SOURCE_TO_COPY}" "${COPIED_SOURCE}"
 	DEPENDS "${HEADER_TO_COPY}" "${SOURCE_TO_COPY}"
+	COMMENT "Copying necessary source files"
 )
 
 target_sources(TestAudioReceiverBuffer PRIVATE "${COPIED_SOURCE}")

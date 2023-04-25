@@ -1,4 +1,4 @@
-:: Copyright 2021-2022 The Mumble Developers. All rights reserved.
+:: Copyright 2021-2023 The Mumble Developers. All rights reserved.
 :: Use of this source code is governed by a BSD-style license
 :: that can be found in the LICENSE file at the root of the
 :: Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -35,6 +35,9 @@ for /f "tokens=* USEBACKQ" %%g in (`python "scripts\mumble-build-number.py" --co
 if not exist "%MUMBLE_BUILD_DIRECTORY%" mkdir "%MUMBLE_BUILD_DIRECTORY%
 
 cd "%MUMBLE_BUILD_DIRECTORY%"
+
+for /f "tokens=* USEBACKQ" %%g in (`vswhere -latest -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 ^
+	-property installationPath`) do ( set "VCVARS_PATH=%%g\VC\Auxiliary\Build\vcvars64.bat" )
 
 call "%VCVARS_PATH%"
 

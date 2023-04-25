@@ -1,4 +1,4 @@
-// Copyright 2021-2022 The Mumble Developers. All rights reserved.
+// Copyright 2021-2023 The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -213,13 +213,14 @@ PipeWireEngine::~PipeWireEngine() {
 		return;
 	}
 
+	if (m_stream) {
+		pws->pw_stream_destroy(m_stream);
+	}
+
 	if (m_thread) {
 		pws->pw_thread_loop_destroy(m_thread);
 	}
 
-	if (m_stream) {
-		pws->pw_stream_destroy(m_stream);
-	}
 
 	if (m_loop) {
 		pws->pw_loop_destroy(m_loop);

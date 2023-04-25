@@ -1,5 +1,11 @@
 #!/usr/bin/env python3
 
+# Copyright 2022-2023 The Mumble Developers. All rights reserved.
+# Use of this source code is governed by a BSD-style license
+# that can be found in the LICENSE file at the root of the
+# Mumble source tree or at <https://www.mumble.info/LICENSE>.
+
+
 import argparse
 import re
 from collections import OrderedDict
@@ -133,9 +139,11 @@ def getDefaultValueForType(dataType):
     elif dataType in ["IdleAction"]:
         return "Settings::Deafen"
     elif dataType in ["NoiseCancel"]:
-        return "Settings::NoiseCancelSpeex"
+        return "Settings::NoiseCancelBoth"
     elif dataType in ["EchoCancelOptionID"]:
         return "EchoCancelOptionID::SPEEX_MULTICHANNEL"
+    elif dataType in ["QuitBehavior"]:
+        return "QuitBehavior::ALWAYS_QUIT"
     elif dataType in ["OverlayShow"]:
         return "OverlaySettings::HomeChannel"
     elif dataType in ["OverlayShow"]:

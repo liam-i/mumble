@@ -1,3 +1,8 @@
+// Copyright 2022-2023 The Mumble Developers. All rights reserved.
+// Use of this source code is governed by a BSD-style license
+// that can be found in the LICENSE file at the root of the
+// Mumble source tree or at <https://www.mumble.info/LICENSE>.
+
 #include <benchmark/benchmark.h>
 
 #include "AudioReceiverBuffer.h"
@@ -9,10 +14,11 @@
 
 std::random_device rd;
 std::mt19937 rng(rd());
-std::uniform_int_distribution< unsigned int > random_context(Mumble::Protocol::AudioContext::begin,
-															 Mumble::Protocol::AudioContext::end);
+std::uniform_int_distribution< unsigned int > random_context(Mumble::Protocol::AudioContext::BEGIN,
+															 Mumble::Protocol::AudioContext::END);
 std::uniform_int_distribution< int > random_volume_adjustment(-60, 30 + 1);
-std::uniform_int_distribution< unsigned int > random_version(Version::toRaw(1, 2, 0), Version::toRaw(1, 6, 0));
+std::uniform_int_distribution< Version::full_t > random_version(Version::fromComponents(1, 2, 0),
+																Version::fromComponents(1, 6, 0));
 
 std::vector< Mumble::Protocol::audio_context_t > contexts;
 std::vector< VolumeAdjustment > volumeAdjustments;

@@ -1,14 +1,17 @@
-// Copyright 2007-2022 The Mumble Developers. All rights reserved.
+// Copyright 2007-2023 The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
 
 #include "ACL.h"
 #include "Channel.h"
+#include "ChannelListenerManager.h"
+#include "ClientType.h"
 #include "Connection.h"
 #include "Group.h"
 #include "Meta.h"
 #include "MumbleConstants.h"
+#include "ProtoUtils.h"
 #include "QtUtils.h"
 #include "Server.h"
 #include "ServerDB.h"
@@ -21,8 +24,9 @@
 #include <QtCore/QtEndian>
 
 #include <cassert>
+#include <unordered_map>
 
-#include <Tracy.hpp>
+#include <tracy/Tracy.hpp>
 
 #define RATELIMIT(user)                   \
 	if (user->leakyBucket.ratelimit(1)) { \
@@ -70,7 +74,7 @@
 	{                                                                 \
 		MumbleProto::PermissionDenied mppd;                           \
 		mppd.set_type(MumbleProto::PermissionDenied_DenyType_##type); \
-		if (uSource->uiVersion < version)                             \
+		if (uSource->m_version < version)                             \
 			mppd.set_reason(u8(text));                                \
 		sendMessage(uSource, mppd);                                   \
 	}
@@ -161,21 +165,27 @@ bool isChannelEnterRestricted(Channel *c) {
 void Server::msgAuthenticate(ServerUser *uSource, MumbleProto::Authenticate &msg) {
 	ZoneScoped;
 
-	if ((msg.tokens_size() > 0) || (uSource->sState == ServerUser::Authenticated)) {
+	if (uSource->sState == ServerUser::Authenticated && (msg.tokens_size() > 0 || !uSource->qslAccessTokens.empty())) {
+		// Process a change in access tokens for already authenticated users
 		QStringList qsl;
-		for (int i = 0; i < msg.tokens_size(); ++i)
+
+		for (int i = 0; i < msg.tokens_size(); ++i) {
 			qsl << u8(msg.tokens(i));
+		}
+
 		{
 			QMutexLocker qml(&qmCache);
 			uSource->qslAccessTokens = qsl;
 		}
+
 		clearACLCache(uSource);
 
 		// Send back updated enter states of all channels
 		MumbleProto::ChannelState mpcs;
-		foreach (Channel *chan, qhChannels) {
+
+		for (Channel *chan : qhChannels) {
 			mpcs.set_channel_id(chan->iId);
-			mpcs.set_can_enter(ChanACL::hasPermission(uSource, chan, ChanACL::Enter, &acCache));
+			mpcs.set_can_enter(hasPermission(uSource, chan, ChanACL::Enter));
 			// As no ACLs have changed, we don't need to update the is_access_restricted message field
 
 			sendMessage(uSource, mpcs);
@@ -210,6 +220,28 @@ void Server::msgAuthenticate(ServerUser *uSource, MumbleProto::Authenticate &msg
 						  uSource->bVerified, uSource->peerCertificateChain());
 
 	uSource->iId = id >= 0 ? id : -1;
+
+	if (uSource->iId >= 0) {
+		if (msg.tokens_size() > 0) {
+			// Set the access tokens for the newly connected user
+			QStringList qsl;
+
+			for (int i = 0; i < msg.tokens_size(); ++i) {
+				qsl << u8(msg.tokens(i));
+			}
+
+			{
+				QMutexLocker qml(&qmCache);
+				uSource->qslAccessTokens = qsl;
+			}
+		}
+
+		// Clear cache as the "auth" ACL depends on the user id
+		// and any cached ACL won't have taken that into account yet
+		// Also, if we set access tokens above, we have to reset
+		// the ACL cache anyway.
+		clearACLCache(uSource);
+	}
 
 	QString reason;
 	MumbleProto::Reject_RejectType rtType = MumbleProto::Reject_RejectType_None;
@@ -344,6 +376,7 @@ void Server::msgAuthenticate(ServerUser *uSource, MumbleProto::Authenticate &msg
 	QSet< Channel * > chans;
 	q << root;
 	MumbleProto::ChannelState mpcs;
+
 	while (!q.isEmpty()) {
 		c = q.dequeue();
 		chans.insert(c);
@@ -360,7 +393,7 @@ void Server::msgAuthenticate(ServerUser *uSource, MumbleProto::Authenticate &msg
 
 		mpcs.set_position(c->iPosition);
 
-		if ((uSource->uiVersion >= 0x010202) && !c->qbaDescHash.isEmpty())
+		if ((uSource->m_version >= Version::fromComponents(1, 2, 2)) && !c->qbaDescHash.isEmpty())
 			mpcs.set_description_hash(blob(c->qbaDescHash));
 		else if (!c->qsDesc.isEmpty())
 			mpcs.set_description(u8(c->qsDesc));
@@ -369,7 +402,7 @@ void Server::msgAuthenticate(ServerUser *uSource, MumbleProto::Authenticate &msg
 
 		// Include info about enter restrictions of this channel
 		mpcs.set_is_enter_restricted(isChannelEnterRestricted(c));
-		mpcs.set_can_enter(ChanACL::hasPermission(uSource, c, ChanACL::Enter, &acCache));
+		mpcs.set_can_enter(hasPermission(uSource, c, ChanACL::Enter));
 
 		sendMessage(uSource, mpcs);
 
@@ -388,6 +421,8 @@ void Server::msgAuthenticate(ServerUser *uSource, MumbleProto::Authenticate &msg
 			sendMessage(uSource, mpcs);
 		}
 	}
+
+	loadChannelListenersOf(*uSource);
 
 	// Transmit user profile
 	MumbleProto::UserState mpus;
@@ -425,7 +460,7 @@ void Server::msgAuthenticate(ServerUser *uSource, MumbleProto::Authenticate &msg
 
 	mpus.set_channel_id(uSource->cChannel->iId);
 
-	sendAll(mpus, 0x010202);
+	sendAll(mpus, Version::fromComponents(1, 2, 2), Version::CompareMode::AtLeast);
 
 	if ((uSource->qbaTexture.length() >= 4)
 		&& (qFromBigEndian< unsigned int >(reinterpret_cast< const unsigned char * >(uSource->qbaTexture.constData()))
@@ -433,7 +468,7 @@ void Server::msgAuthenticate(ServerUser *uSource, MumbleProto::Authenticate &msg
 		mpus.set_texture(blob(uSource->qbaTexture));
 	if (!uSource->qsComment.isEmpty())
 		mpus.set_comment(u8(uSource->qsComment));
-	sendAll(mpus, ~0x010202);
+	sendAll(mpus, Version::fromComponents(1, 2, 2), Version::CompareMode::LessThan);
 
 	// Transmit other users profiles
 	foreach (ServerUser *u, qhUsers) {
@@ -448,7 +483,7 @@ void Server::msgAuthenticate(ServerUser *uSource, MumbleProto::Authenticate &msg
 		mpus.set_name(u8(u->qsName));
 		if (u->iId >= 0)
 			mpus.set_user_id(u->iId);
-		if (uSource->uiVersion >= 0x010202) {
+		if (uSource->m_version >= Version::fromComponents(1, 2, 2)) {
 			if (!u->qbaTextureHash.isEmpty())
 				mpus.set_texture_hash(blob(u->qbaTextureHash));
 			else if (!u->qbaTexture.isEmpty())
@@ -475,15 +510,23 @@ void Server::msgAuthenticate(ServerUser *uSource, MumbleProto::Authenticate &msg
 			mpus.set_self_deaf(true);
 		else if (u->bSelfMute)
 			mpus.set_self_mute(true);
-		if ((uSource->uiVersion >= 0x010202) && !u->qbaCommentHash.isEmpty())
+		if ((uSource->m_version >= Version::fromComponents(1, 2, 2)) && !u->qbaCommentHash.isEmpty())
 			mpus.set_comment_hash(blob(u->qbaCommentHash));
 		else if (!u->qsComment.isEmpty())
 			mpus.set_comment(u8(u->qsComment));
 		if (!u->qsHash.isEmpty())
 			mpus.set_hash(u8(u->qsHash));
 
-		foreach (int channelID, m_channelListenerManager.getListenedChannelsForUser(u->uiSession)) {
+
+		for (int channelID : m_channelListenerManager.getListenedChannelsForUser(u->uiSession)) {
 			mpus.add_listening_channel_add(channelID);
+
+			if (broadcastListenerVolumeAdjustments) {
+				VolumeAdjustment volume = m_channelListenerManager.getListenerVolumeAdjustment(u->uiSession, channelID);
+				MumbleProto::UserState::VolumeAdjustment *adjustment = mpus.add_listening_volume_adjustment();
+				adjustment->set_listening_channel(channelID);
+				adjustment->set_volume_adjustment(volume.factor);
+			}
 		}
 
 		sendMessage(uSource, mpus);
@@ -506,6 +549,39 @@ void Server::msgAuthenticate(ServerUser *uSource, MumbleProto::Authenticate &msg
 
 	sendMessage(uSource, mpss);
 
+	// Transmit user's listeners - this has to be done AFTER the server-sync message has been sent to uSource as the
+	// client may require its own session ID for processing the listeners properly.
+	mpus.Clear();
+	mpus.set_session(uSource->uiSession);
+	for (int channelID : m_channelListenerManager.getListenedChannelsForUser(uSource->uiSession)) {
+		mpus.add_listening_channel_add(channelID);
+	}
+
+	// If we are not intending to broadcast the volume adjustments to everyone, we have to send the message to all but
+	// uSource without the volume adjustments. Then append the adjustments, but only send them to uSource. If we are in
+	// fact broadcasting, just append the adjustments and send to everyone.
+	if (!broadcastListenerVolumeAdjustments && mpus.listening_channel_add_size() > 0) {
+		sendExcept(uSource, mpus, Version::fromComponents(1, 2, 2), Version::CompareMode::AtLeast);
+	}
+
+	std::unordered_map< int, VolumeAdjustment > volumeAdjustments =
+		m_channelListenerManager.getAllListenerVolumeAdjustments(uSource->uiSession);
+	for (auto it = volumeAdjustments.begin(); it != volumeAdjustments.end(); ++it) {
+		MumbleProto::UserState::VolumeAdjustment *adjustment = mpus.add_listening_volume_adjustment();
+		adjustment->set_listening_channel(it->first);
+		adjustment->set_volume_adjustment(it->second.factor);
+	}
+
+	if (mpus.listening_channel_add_size() > 0 || mpus.listening_volume_adjustment_size() > 0) {
+		if (!broadcastListenerVolumeAdjustments) {
+			if (uSource->m_version >= Version::fromComponents(1, 2, 2)) {
+				sendMessage(uSource, mpus);
+			}
+		} else {
+			sendAll(mpus, Version::fromComponents(1, 2, 2), Version::CompareMode::AtLeast);
+		}
+	}
+
 	MumbleProto::ServerConfig mpsc;
 	mpsc.set_allow_html(bAllowHTML);
 	mpsc.set_message_length(iMaxTextMessageLength);
@@ -515,8 +591,9 @@ void Server::msgAuthenticate(ServerUser *uSource, MumbleProto::Authenticate &msg
 	sendMessage(uSource, mpsc);
 
 	MumbleProto::SuggestConfig mpsug;
-	if (!qvSuggestVersion.isNull())
-		mpsug.set_version(qvSuggestVersion.toUInt());
+	if (m_suggestVersion != Version::UNKNOWN) {
+		MumbleProto::setSuggestedVersion(mpsug, m_suggestVersion);
+	}
 	if (!qvSuggestPositional.isNull())
 		mpsug.set_positional(qvSuggestPositional.toBool());
 	if (!qvSuggestPushToTalk.isNull())
@@ -530,7 +607,7 @@ void Server::msgAuthenticate(ServerUser *uSource, MumbleProto::Authenticate &msg
 		sendMessage(uSource, mpsug);
 	}
 
-	if (uSource->uiVersion < 0x010400 && Meta::mp.iMaxListenersPerChannel != 0
+	if (uSource->m_version < Version::fromComponents(1, 4, 0) && Meta::mp.iMaxListenersPerChannel != 0
 		&& Meta::mp.iMaxListenerProxiesPerUser != 0) {
 		// The server has the ChannelListener feature enabled but the client that connects doesn't have version 1.4.0 or
 		// newer meaning that this client doesn't know what ChannelListeners are. Thus we'll send that user a
@@ -552,6 +629,17 @@ void Server::msgAuthenticate(ServerUser *uSource, MumbleProto::Authenticate &msg
 		}
 
 		sendMessage(uSource, mptm);
+	}
+
+	switch (msg.client_type()) {
+		case static_cast< int >(ClientType::BOT):
+			uSource->m_clientType = ClientType::BOT;
+			m_botCount++;
+			break;
+		case static_cast< int >(ClientType::REGULAR):
+			// No-op (also applies to unknown values of msg.client_type())
+			// (The default client type is regular anyway, so we don't need to change anything here)
+			break;
 	}
 
 	log(uSource, "Authenticated");
@@ -692,7 +780,7 @@ void Server::msgUserState(ServerUser *uSource, MumbleProto::UserState &msg) {
 			return;
 		}
 		if (isChannelFull(c, uSource)) {
-			PERM_DENIED_FALLBACK(ChannelFull, 0x010201, QLatin1String("Channel is full"));
+			PERM_DENIED_FALLBACK(ChannelFull, Version::fromComponents(1, 2, 1), QLatin1String("Channel is full"));
 			return;
 		}
 	}
@@ -715,7 +803,7 @@ void Server::msgUserState(ServerUser *uSource, MumbleProto::UserState &msg) {
 		if (Meta::mp.iMaxListenersPerChannel >= 0
 			&& Meta::mp.iMaxListenersPerChannel - m_channelListenerManager.getListenerCountForChannel(c->iId) - 1 < 0) {
 			// A limit for the amount of listener proxies per channel is set and it has been reached already
-			PERM_DENIED_FALLBACK(ChannelListenerLimit, 0x010400,
+			PERM_DENIED_FALLBACK(ChannelListenerLimit, Version::fromComponents(1, 4, 0),
 								 QLatin1String("No more listeners allowed in this channel"));
 			continue;
 		}
@@ -726,7 +814,7 @@ void Server::msgUserState(ServerUser *uSource, MumbleProto::UserState &msg) {
 					   - passedChannelListener - 1
 				   < 0) {
 			// A limit for the amount of listener proxies per user is set and it has been reached already
-			PERM_DENIED_FALLBACK(UserListenerLimit, 0x010400,
+			PERM_DENIED_FALLBACK(UserListenerLimit, Version::fromComponents(1, 4, 0),
 								 QLatin1String("No more listeners allowed in this channel"));
 			continue;
 		}
@@ -741,13 +829,27 @@ void Server::msgUserState(ServerUser *uSource, MumbleProto::UserState &msg) {
 			PERM_DENIED_TYPE(SuperUser);
 			return;
 		}
-		if (uSource->cChannel->bTemporary) {
-			PERM_DENIED_TYPE(TemporaryChannel);
-			return;
-		}
 		if (!hasPermission(uSource, pDstServerUser->cChannel, ChanACL::MuteDeafen) || msg.suppress()) {
 			PERM_DENIED(uSource, pDstServerUser->cChannel, ChanACL::MuteDeafen);
 			return;
+		}
+	}
+
+	if (msg.has_mute() || msg.has_deaf() || msg.has_suppress()) {
+		if (pDstServerUser->cChannel->bTemporary) {
+			// If the destination user is inside a temporary channel,
+			// the source user needs to have the MuteDeafen ACL in the first
+			// non-temporary parent channel.
+
+			Channel *c = pDstServerUser->cChannel;
+			while (c && c->bTemporary) {
+				c = c->cParent;
+			}
+
+			if (!c || !hasPermission(uSource, c, ChanACL::MuteDeafen)) {
+				PERM_DENIED_TYPE(TemporaryChannel);
+				return;
+			}
 		}
 	}
 
@@ -942,7 +1044,7 @@ void Server::msgUserState(ServerUser *uSource, MumbleProto::UserState &msg) {
 			mptm.set_message(u8(QString(QLatin1String("User '%1' stopped recording")).arg(pDstServerUser->qsName)));
 		}
 
-		sendAll(mptm, ~0x010203);
+		sendAll(mptm, Version::fromComponents(1, 2, 3), Version::CompareMode::LessThan);
 
 		bBroadcast = true;
 	}
@@ -957,18 +1059,42 @@ void Server::msgUserState(ServerUser *uSource, MumbleProto::UserState &msg) {
 
 	// Handle channel listening
 	// Note that it is important to handle the listening channels after channel-joins
-	foreach (Channel *c, listeningChannelsAdd) {
-		m_channelListenerManager.addListener(pDstServerUser->uiSession, c->iId);
+	QSet< int > volumeAdjustedChannels;
+	for (int i = 0; i < msg.listening_volume_adjustment_size(); i++) {
+		const MumbleProto::UserState::VolumeAdjustment &adjustment = msg.listening_volume_adjustment(i);
+
+		const Channel *channel = qhChannels.value(adjustment.listening_channel());
+
+		if (channel) {
+			setChannelListenerVolume(*pDstServerUser, *channel, adjustment.volume_adjustment());
+
+			volumeAdjustedChannels << channel->iId;
+		} else {
+			log(uSource, QString::fromLatin1("Invalid channel ID \"%1\" in volume adjustment")
+							 .arg(adjustment.listening_channel()));
+		}
+	}
+	for (Channel *c : listeningChannelsAdd) {
+		addChannelListener(*pDstServerUser, *c);
 
 		log(QString::fromLatin1("\"%1\" is now listening to channel \"%2\"")
 				.arg(QString(*pDstServerUser))
 				.arg(QString(*c)));
+
+		float volumeAdjustment =
+			m_channelListenerManager.getListenerVolumeAdjustment(pDstServerUser->uiSession, c->iId).factor;
+
+		if (volumeAdjustment != 1.0f && !volumeAdjustedChannels.contains(c->iId)) {
+			MumbleProto::UserState::VolumeAdjustment *adjustment = msg.add_listening_volume_adjustment();
+			adjustment->set_listening_channel(c->iId);
+			adjustment->set_volume_adjustment(volumeAdjustment);
+		}
 	}
 	for (int i = 0; i < msg.listening_channel_remove_size(); i++) {
 		Channel *c = qhChannels.value(msg.listening_channel_remove(i));
 
 		if (c) {
-			m_channelListenerManager.removeListener(pDstServerUser->uiSession, c->iId);
+			disableChannelListener(*pDstServerUser, *c);
 
 			log(QString::fromLatin1("\"%1\" is no longer listening to \"%2\"")
 					.arg(QString(*pDstServerUser))
@@ -976,9 +1102,17 @@ void Server::msgUserState(ServerUser *uSource, MumbleProto::UserState &msg) {
 		}
 	}
 
-	bool listenerChanged = !listeningChannelsAdd.isEmpty() || msg.listening_channel_remove_size() > 0;
+	bool listenerVolumeChanged = msg.listening_volume_adjustment_size() > 0;
+	bool listenerChanged       = !listeningChannelsAdd.isEmpty() || msg.listening_channel_remove_size() > 0;
 
-	bBroadcast = bBroadcast || listenerChanged;
+	bool broadcastingBecauseOfVolumeChange = !bBroadcast && listenerVolumeChanged;
+	bBroadcast                             = bBroadcast || listenerChanged || listenerVolumeChanged;
+
+	if (listenerChanged || listenerVolumeChanged) {
+		// As whisper targets also contain information about ChannelListeners and
+		// their associated volume adjustment, we have to clear the target cache
+		clearWhisperTargetCache();
+	}
 
 
 	bool bDstAclChanged = false;
@@ -1012,12 +1146,12 @@ void Server::msgUserState(ServerUser *uSource, MumbleProto::UserState &msg) {
 				!= 600 * 60 * 4)) {
 			// This is a new style texture, don't send it because the client doesn't handle it correctly / crashes.
 			msg.clear_texture();
-			sendAll(msg, ~0x010202);
+			sendAll(msg, Version::fromComponents(1, 2, 2), Version::CompareMode::LessThan);
 			msg.set_texture(blob(pDstServerUser->qbaTexture));
 		} else {
 			// This is an old style texture, empty texture or there was no texture in this packet,
 			// send the message unchanged.
-			sendAll(msg, ~0x010202);
+			sendAll(msg, Version::fromComponents(1, 2, 2), Version::CompareMode::LessThan);
 		}
 
 		// Texture / comment handling for clients >= 1.2.2.
@@ -1031,11 +1165,21 @@ void Server::msgUserState(ServerUser *uSource, MumbleProto::UserState &msg) {
 			msg.set_comment_hash(blob(pDstServerUser->qbaCommentHash));
 		}
 
-		sendAll(msg, 0x010202);
+		if (uSource->m_version >= Version::fromComponents(1, 2, 2)) {
+			sendMessage(uSource, msg);
+		}
+		if (!broadcastListenerVolumeAdjustments) {
+			// Don't broadcast the volume adjustments to everyone
+			msg.clear_listening_volume_adjustment();
+		}
+
+		if (broadcastListenerVolumeAdjustments || !broadcastingBecauseOfVolumeChange) {
+			sendExcept(uSource, msg, Version::fromComponents(1, 2, 2), Version::CompareMode::AtLeast);
+		}
 
 		if (bDstAclChanged) {
 			clearACLCache(pDstServerUser);
-		} else if (listenerChanged) {
+		} else if (listenerChanged || listenerVolumeChanged) {
 			// We only have to do this if the ACLs didn't change as
 			// clearACLCache calls clearWhisperTargetChache anyways
 			clearWhisperTargetCache();
@@ -1154,7 +1298,8 @@ void Server::msgChannelState(ServerUser *uSource, MumbleProto::ChannelState &msg
 		// a channel in or move a channel into this parent.
 
 		if (!canNest(p, c)) {
-			PERM_DENIED_FALLBACK(NestingLimit, 0x010204, QLatin1String("Channel nesting limit reached"));
+			PERM_DENIED_FALLBACK(NestingLimit, Version::fromComponents(1, 2, 4),
+								 QLatin1String("Channel nesting limit reached"));
 			return;
 		}
 	}
@@ -1166,7 +1311,8 @@ void Server::msgChannelState(ServerUser *uSource, MumbleProto::ChannelState &msg
 			return;
 
 		if (iChannelCountLimit != 0 && qhChannels.count() >= iChannelCountLimit) {
-			PERM_DENIED_FALLBACK(ChannelCountLimit, 0x010300, QLatin1String("Channel count limit reached"));
+			PERM_DENIED_FALLBACK(ChannelCountLimit, Version::fromComponents(1, 3, 0),
+								 QLatin1String("Channel count limit reached"));
 			return;
 		}
 
@@ -1213,12 +1359,12 @@ void Server::msgChannelState(ServerUser *uSource, MumbleProto::ChannelState &msg
 		log(uSource, QString("Added channel %1 under %2").arg(QString(*c), QString(*p)));
 		emit channelCreated(c);
 
-		sendAll(msg, ~0x010202);
+		sendAll(msg, Version::fromComponents(1, 2, 2), Version::CompareMode::LessThan);
 		if (!c->qbaDescHash.isEmpty()) {
 			msg.clear_description();
 			msg.set_description_hash(blob(c->qbaDescHash));
 		}
-		sendAll(msg, 0x010202);
+		sendAll(msg, Version::fromComponents(1, 2, 2), Version::CompareMode::AtLeast);
 
 		if (c->bTemporary) {
 			// If a temporary channel has been created move the creator right in there
@@ -1357,12 +1503,12 @@ void Server::msgChannelState(ServerUser *uSource, MumbleProto::ChannelState &msg
 		updateChannel(c);
 		emit channelStateChanged(c);
 
-		sendAll(msg, ~0x010202);
+		sendAll(msg, Version::fromComponents(1, 2, 2), Version::CompareMode::LessThan);
 		if (msg.has_description() && !c->qbaDescHash.isEmpty()) {
 			msg.clear_description();
 			msg.set_description_hash(blob(c->qbaDescHash));
 		}
-		sendAll(msg, 0x010202);
+		sendAll(msg, Version::fromComponents(1, 2, 2), Version::CompareMode::AtLeast);
 	}
 }
 
@@ -1799,11 +1945,12 @@ void Server::msgACL(ServerUser *uSource, MumbleProto::ACL &msg) {
 		// Send refreshed enter states of this channel to all clients
 		MumbleProto::ChannelState mpcs;
 		mpcs.set_channel_id(c->iId);
-		foreach (ServerUser *user, qhUsers) {
-			mpcs.set_is_enter_restricted(isChannelEnterRestricted(c));
-			mpcs.set_can_enter(ChanACL::hasPermission(user, c, ChanACL::Enter, &acCache));
 
-			sendMessage(uSource, mpcs);
+		for (ServerUser *user : qhUsers) {
+			mpcs.set_is_enter_restricted(isChannelEnterRestricted(c));
+			mpcs.set_can_enter(hasPermission(user, c, ChanACL::Enter));
+
+			sendMessage(user, mpcs);
 		}
 	}
 }
@@ -1926,9 +2073,7 @@ void Server::msgVersion(ServerUser *uSource, MumbleProto::Version &msg) {
 
 	RATELIMIT(uSource);
 
-	if (msg.has_version()) {
-		uSource->uiVersion = msg.version();
-	}
+	uSource->m_version = MumbleProto::getVersion(msg);
 	if (msg.has_release()) {
 		uSource->qsRelease = convertWithSizeRestriction(msg.release(), 100);
 	}
@@ -1941,7 +2086,7 @@ void Server::msgVersion(ServerUser *uSource, MumbleProto::Version &msg) {
 	}
 
 	log(uSource, QString("Client version %1 (%2 %3: %4)")
-					 .arg(Version::toString(uSource->uiVersion))
+					 .arg(Version::toString(uSource->m_version))
 					 .arg(uSource->qsOS)
 					 .arg(uSource->qsOSVersion)
 					 .arg(uSource->qsRelease));
@@ -2013,7 +2158,7 @@ void Server::msgUserList(ServerUser *uSource, MumbleProto::UserList &msg) {
 				} else {
 					MumbleProto::PermissionDenied mppd;
 					mppd.set_type(MumbleProto::PermissionDenied_DenyType_UserName);
-					if (uSource->uiVersion < 0x010201)
+					if (uSource->m_version < Version::fromComponents(1, 2, 1))
 						mppd.set_reason(u8(QString::fromLatin1("%1 is not a valid username").arg(name)));
 					else
 						mppd.set_name(u8(name));
@@ -2145,10 +2290,12 @@ void Server::msgUserStats(ServerUser *uSource, MumbleProto::UserStats &msg) {
 		MumbleProto::Version *mpv;
 
 		mpv = msg.mutable_version();
-		if (pDstServerUser->uiVersion)
-			mpv->set_version(pDstServerUser->uiVersion);
-		if (!pDstServerUser->qsRelease.isEmpty())
+		if (pDstServerUser->m_version != Version::UNKNOWN) {
+			MumbleProto::setVersion(*mpv, pDstServerUser->m_version);
+		}
+		if (!pDstServerUser->qsRelease.isEmpty()) {
 			mpv->set_release(u8(pDstServerUser->qsRelease));
+		}
 		if (!pDstServerUser->qsOS.isEmpty()) {
 			mpv->set_os(u8(pDstServerUser->qsOS));
 			if (!pDstServerUser->qsOSVersion.isEmpty())

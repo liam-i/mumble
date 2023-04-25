@@ -1,4 +1,4 @@
-// Copyright 2009-2022 The Mumble Developers. All rights reserved.
+// Copyright 2009-2023 The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -237,7 +237,11 @@ bool ChatbarTextEdit::event(QEvent *evt) {
 			const QString msg = toPlainText();
 			if (!msg.isEmpty()) {
 				addToHistory(msg);
-				emit entered(msg);
+				if (kev->modifiers() & Qt::ControlModifier) {
+					emit ctrlEnterPressed(msg);
+				} else {
+					emit entered(msg);
+				}
 			}
 			return true;
 		}

@@ -1,4 +1,4 @@
-// Copyright 2008-2022 The Mumble Developers. All rights reserved.
+// Copyright 2008-2023 The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -342,10 +342,10 @@ int main(int argc, char **argv) {
 			detach = false;
 		} else if ((arg == "-v")) {
 			bVerbose = true;
-		} else if ((arg == "-version") || (arg == "--version") || (arg == "-V")) {
+		} else if ((arg == "-version") || (arg == "--version")) {
 			// Print version and exit (print to regular std::cout to avoid adding any useless meta-information from
 			// using e.g. qWarning
-			std::cout << "Mumble server version " << Version::toString(Version::getRaw()).toStdString() << std::endl;
+			std::cout << "Mumble server version " << Version::getRelease().toStdString() << std::endl;
 			return 0;
 		} else if (args.at(i) == QLatin1String("-license") || args.at(i) == QLatin1String("--license")) {
 #ifdef Q_OS_WIN
@@ -362,7 +362,8 @@ int main(int argc, char **argv) {
 			ad.exec();
 			return 0;
 #else
-			qInfo("%s\n", qPrintable(License::authors()));
+			qInfo("%s\n",
+				  "For a list of authors, please see https://github.com/mumble-voip/mumble/graphs/contributors");
 			return 0;
 #endif
 		} else if (args.at(i) == QLatin1String("-third-party-licenses")
@@ -378,7 +379,7 @@ int main(int argc, char **argv) {
 		} else if ((arg == "-h") || (arg == "-help") || (arg == "--help")) {
 			detach = false;
 			qInfo("Usage: %s [-ini <inifile>] [-supw <password>]\n"
-				  "  -V, --version          Print version information and exit\n"
+				  "  --version              Print version information and exit\n"
 				  "  -ini <inifile>         Specify ini file to use.\n"
 				  "  -supw <pw> [srv]       Set password for 'SuperUser' account on server srv.\n"
 #ifdef Q_OS_UNIX
@@ -648,11 +649,7 @@ int main(int argc, char **argv) {
 
 	meta->getOSInfo();
 
-	int major, minor, patch;
-	QString strver;
-	meta->getVersion(major, minor, patch, strver);
-
-	qWarning("Murmur %d.%d.%d (%s) running on %s: %s: Booting servers", major, minor, patch, qPrintable(strver),
+	qWarning("Murmur %s running on %s: %s: Booting servers", qPrintable(Version::toString(Version::get())),
 			 qPrintable(meta->qsOS), qPrintable(meta->qsOSVersion));
 
 	meta->bootAll();

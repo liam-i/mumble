@@ -1,4 +1,4 @@
-// Copyright 2007-2022 The Mumble Developers. All rights reserved.
+// Copyright 2007-2023 The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -278,8 +278,7 @@ void os_init() {
 		}
 	}
 
-	QString comment = QString::fromLatin1("%1\n%2\n%3")
-						  .arg(QString::fromLatin1(MUMBLE_RELEASE), QString::fromLatin1(MUMTEXT(MUMBLE_VERSION)), hash);
+	QString comment = QString::fromLatin1("%1\n%2").arg(Version::getRelease(), hash);
 
 	wcscpy_s(wcComment, DUMP_BUFFER_SIZE, comment.toStdWString().c_str());
 	musComment.Type       = CommentStreamW;

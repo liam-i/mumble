@@ -649,6 +649,10 @@ Bu değer kanalda izin verilen azami kullanıcı sayısını ayarlamanıza izin 
         <source>&lt;h3&gt;Mumble (%1)&lt;/h3&gt;&lt;p&gt;%3&lt;/p&gt;&lt;p&gt;&lt;b&gt;An Open Source, low-latency, high quality voice-chat utility&lt;/b&gt;&lt;/p&gt;&lt;p&gt;&lt;tt&gt;&lt;a href=&quot;%2&quot;&gt;%2&lt;/a&gt;&lt;/tt&gt;&lt;/p&gt;</source>
         <translation>&lt;h3&gt;Mumble (%1)&lt;/h3&gt;&lt;p&gt;%3&lt;/p&gt;&lt;p&gt;&lt;b&gt;Açık kaynaklı, düşük gecikmeli, yüksek kaliteli sesli sohbet aracı &lt;/b&gt;&lt;/p&gt;&lt;p&gt;&lt;tt&gt;&lt;a href=&quot;%2&quot;&gt;%2&lt;/a&gt;&lt;/tt&gt;&lt;/p&gt;</translation>
     </message>
+    <message>
+        <source>For a list of authors, please see &lt;a href=&quot;https://github.com/mumble-voip/mumble/graphs/contributors&quot;&gt;https://github.com/mumble-voip/mumble/graphs/contributors&lt;/a&gt;</source>
+        <translation>Yazarların listesi için lütfen &lt;a href=&quot;https://github.com/mumble-voip/mumble/graphs/contributors&quot;&gt;https://github.com/mumble-voip/mumble/graphs/contributors&lt;/a&gt; adresine bakın</translation>
+    </message>
 </context>
 <context>
     <name>AudioInput</name>
@@ -905,18 +909,6 @@ Bu değer kanalda izin verilen azami kullanıcı sayısını ayarlamanıza izin 
         <translation>Çeşitli</translation>
     </message>
     <message>
-        <source>Audible audio cue when starting or stopping to transmit</source>
-        <translation>Aktarım başladığında ve bittiğinde duyulabilir işaret</translation>
-    </message>
-    <message>
-        <source>&lt;b&gt;This enables transmission audio cues.&lt;/b&gt;&lt;br /&gt;Setting this will give you a short audio beep when you start and stop transmitting.</source>
-        <translation>&lt;b&gt;Aktarım ses işaretlerin etkinleştirir.&lt;/b&gt;&lt;br /&gt;Seçilirse, aktarmaya başladığınızda ve bu sona erdiğinde kısa bir bip sesi duyarsınız.</translation>
-    </message>
-    <message>
-        <source>Audio cue</source>
-        <translation>Sesli işaretler</translation>
-    </message>
-    <message>
         <source>Gets played when starting to transmit</source>
         <translation>Aktarıma başlanıldığında çalınır</translation>
     </message>
@@ -1035,6 +1027,34 @@ Bu değer kanalda izin verilen azami kullanıcı sayısını ayarlamanıza izin 
     <message>
         <source>Pre&amp;view</source>
         <translation>Ön izleme</translation>
+    </message>
+    <message>
+        <source>Audio cue when using...</source>
+        <translation>Kullanırken ses işareti...</translation>
+    </message>
+    <message>
+        <source>Audible audio cue when starting or stopping to transmit using Push To Talk</source>
+        <translation>Bas ve konuş kullanarak aktarımı başlatırken veya durdururken duyulabilir ses işareti</translation>
+    </message>
+    <message>
+        <source>&lt;b&gt;This enables transmission audio cues when using Push To Talk.&lt;/b&gt;&lt;br /&gt;Setting this will give you a short audio beep when you start and stop transmitting.</source>
+        <translation>&lt;b&gt;Bu, Bas ve konuş kullanırken aktarım ses işaretlerini etkinleştirir.&lt;/b&gt;&lt;br /&gt;Bunu ayarlamak, aktarımı başlattığınızda ve durdurduğunuzda size kısa bir ses bip sesi verecektir.</translation>
+    </message>
+    <message>
+        <source>Push To Talk</source>
+        <translation>Bas ve Konuş</translation>
+    </message>
+    <message>
+        <source>Audible audio cue when starting or stopping to transmit using Voice Activity</source>
+        <translation>Ses Etkinliğini kullanarak aktarımı başlatırken veya durdururken duyulabilir ses işareti</translation>
+    </message>
+    <message>
+        <source>&lt;b&gt;This enables transmission audio cues when using Voice Activity.&lt;/b&gt;&lt;br /&gt;Setting this will give you a short audio beep when you start and stop transmitting.</source>
+        <translation>&lt;b&gt;Bu, Ses Etkinliğini kullanırken aktarım ses işaretlerini etkinleştirir.&lt;/b&gt;&lt;br /&gt;Bunu ayarlamak, aktarımı başlattığınızda ve durdurduğunuzda size kısa bir ses bip sesi verecektir.</translation>
+    </message>
+    <message>
+        <source>Voice Activity</source>
+        <translation>Ses Etkinliği</translation>
     </message>
 </context>
 <context>
@@ -1435,6 +1455,10 @@ Bu değer kanalda izin verilen azami kullanıcı sayısını ayarlamanıza izin 
     <message>
         <source> m</source>
         <translation> m</translation>
+    </message>
+    <message>
+        <source>Positional audio cannot work with mono output devices!</source>
+        <translation>Konumsal ses, mono çıkış aygıtlarıyla çalışamaz!</translation>
     </message>
 </context>
 <context>
@@ -1982,7 +2006,7 @@ Mumble devamlı olarak geliştirilmektedir ve geliştirme ekibi kullanıcıları
     </message>
     <message>
         <source>Enables attenuation of other applications while users talk to you. This means that as soon someone starts to speak to you in Mumble, the sound of all other applications (like audio players) will get attenuated so you can hear them more clearly.</source>
-        <translation>Kullanıcılar sizinle konuştuğunda diğer uygulamaların zayıflatılmasını etkinleştirir. Bu, birisinin sizinle konuşmaya başladığı zaman onu daha iyi duyabilmeniz için tüm diğer uygulamaların (müzik çalarlar gibi) sesinin zayıflatılacağı anlamına gelir.</translation>
+        <translation>Kullanıcılar sizinle konuştuğunda diğer uygulamaların zayıflatılmasını etkinleştirir. Bu, Mumble&apos;da birisinin sizinle konuşmaya başladığı zaman onu daha iyi duyabilmeniz için tüm diğer uygulamaların (müzik çalarlar gibi) sesinin zayıflatılacağı anlamına gelir.</translation>
     </message>
     <message>
         <source>Apply some high contrast optimizations for visually impaired users</source>
@@ -3041,7 +3065,7 @@ Sertifikanızı değiştirmek istediğinize emin misiniz?
     </message>
     <message>
         <source>Hostname</source>
-        <translation>Bilgisayar ismi</translation>
+        <translation>Ana makine adı</translation>
     </message>
     <message>
         <source>Bonjour name</source>
@@ -3050,10 +3074,6 @@ Sertifikanızı değiştirmek istediğinize emin misiniz?
     <message>
         <source>Port</source>
         <translation>Bağlantı noktası</translation>
-    </message>
-    <message>
-        <source>Addresses</source>
-        <translation>Adresler</translation>
     </message>
     <message>
         <source>Website</source>
@@ -3087,6 +3107,14 @@ Sertifikanızı değiştirmek istediğinize emin misiniz?
         <source>Version</source>
         <translation>Sürüm</translation>
     </message>
+    <message>
+        <source>IPv4 address</source>
+        <translation>IPv4 adresi</translation>
+    </message>
+    <message>
+        <source>IPv6 address</source>
+        <translation>IPv6 adresi</translation>
+    </message>
 </context>
 <context>
     <name>ConnectDialogEdit</name>
@@ -3113,7 +3141,7 @@ Internet address of the server. This can be a normal hostname, an IPv4/IPv6 addr
         <oldsource>&lt;b&gt;Address&lt;/b&gt;&lt;/br&gt;
 Internet address of the server. This can be a normal hostname, an ipv4/6 address or a bonjour service identifier. Bonjour service identifiers have to be prefixed with a &apos;@&apos; to be recognized by Mumble.</oldsource>
         <translation>&lt;b&gt;Adres&lt;/b&gt;&lt;br/&gt;
-Sunucunun İnternet adresi. Bu normal bir bilgisayar ismi, bir İPv4/İPv6 adresi ya da bir Bonjour servis tanımlayıcısı olabilir. Bonjour servis tanımlayıcılarına Mumbe tarafından tanınmaları için &apos;@&apos; öneki konulmalıdır.</translation>
+Sunucunun internet adresi. Bu normal bir ana makine adı, bir IPv4/IPv6 adresi ya da bir Bonjour hizmet tanımlayıcısı olabilir. Bonjour hizmet tanımlayıcılarına Mumble tarafından tanınmaları için &apos;@&apos; ön eki konulmalıdır.</translation>
     </message>
     <message>
         <source>&amp;Port</source>
@@ -3157,15 +3185,15 @@ Do you want to fill the dialog with the connection data of this server?
 Host: %1 Port: %2</source>
         <translation>Şu anda bir sunucuya bağlısınız.
 Diyaloğu bu sunucunun bağlantı verileriyle doldurmak istiyor musunuz?
-Makine: %1 Bağlantı noktası: %2</translation>
+Ana makine: %1 Bağlantı noktası: %2</translation>
     </message>
     <message>
         <source>You have an URL in your clipboard.
 Do you want to fill the dialog with this data?
 Host: %1 Port: %2</source>
-        <translation>Panonuzda bir URL bulunmaktadır.
+        <translation>Panonuzda bir URL var.
 Diyaloğu bu verilerle doldurmak istiyor musunuz?
-Makine: %1 Bağlantı noktası: %2</translation>
+Ana makine: %1 Bağlantı noktası: %2</translation>
     </message>
     <message>
         <source>Password</source>
@@ -3409,8 +3437,8 @@ Bu seçenek seçilmediyse, yetkili programlarda Mumble&apos;ın genel kısayolla
         <translation>Ayrıcalıklı uygulamalarda kısayolları etkinleştir</translation>
     </message>
     <message>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Mumble&apos;s Global Shortcuts system does currently not work in combination with the Wayland protocol. For more information, visit &lt;a href=&quot;https://github.com/mumble-voip/mumble/issues/5257&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0057ae;&quot;&gt;https://github.com/mumble-voip/mumble/issues/5257&lt;/span&gt;&lt;/a&gt;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Mumble&apos;ın Genel Kısayollar sistemi şu anda Wayland protokolü ile birlikte çalışmıyor. Daha fazla bilgi için &lt;a href=&quot;https://github.com/mumble-voip/mumble/issues/5257&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0057ae;&quot;&gt;https://github.com/mumble-voip/mumble/issues/5257&lt;/span&gt;&lt;/a&gt; adresini ziyaret edin.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Mumble&apos;s Global Shortcuts system does currently not work properly in combination with the Wayland protocol. For more information, visit &lt;a href=&quot;https://github.com/mumble-voip/mumble/issues/5257&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0057ae;&quot;&gt;https://github.com/mumble-voip/mumble/issues/5257&lt;/span&gt;&lt;/a&gt;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Mumble&apos;ın Genel Kısayollar sistemi şu anda Wayland protokolü ile birlikte düzgün çalışmıyor. Daha fazla bilgi için &lt;a href=&quot;https://github.com/mumble-voip/mumble/issues/5257&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0057ae;&quot;&gt;https://github.com/mumble-voip/mumble/issues/5257&lt;/span&gt;&lt;/a&gt; adresini ziyaret edin.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
 </context>
 <context>
@@ -3683,13 +3711,6 @@ Bu alan LCD aygıtın boyutunu belirtir. Boyut ya piksel olarak (Grafik LCD ekra
     </message>
 </context>
 <context>
-    <name>ListenerLocalVolumeDialog</name>
-    <message>
-        <source>Adjusting local volume for listening to %1</source>
-        <translation>%1 unsurunu dinlemek için yerel ses düzeyi ayarlanıyor</translation>
-    </message>
-</context>
-<context>
     <name>Log</name>
     <message>
         <source>Debug</source>
@@ -3857,6 +3878,10 @@ Bu alan LCD aygıtın boyutunu belirtir. Boyut ya piksel olarak (Grafik LCD ekra
         <source>Plugin message</source>
         <translation>Eklenti mesajı</translation>
     </message>
+    <message>
+        <source>[embedded content]</source>
+        <translation>[gömülü içerik]</translation>
+    </message>
 </context>
 <context>
     <name>LogConfig</name>
@@ -3942,10 +3967,6 @@ Bu alan LCD aygıtın boyutunu belirtir. Boyut ya piksel olarak (Grafik LCD ekra
     <message>
         <source>Text To Speech</source>
         <translation>Konuşma Sentezi</translation>
-    </message>
-    <message>
-        <source>Volume</source>
-        <translation>Seviye</translation>
     </message>
     <message>
         <source>Volume of Text-To-Speech Engine</source>
@@ -4099,6 +4120,50 @@ Bu ayar sadece yeni mesajlara uygulanır, zaten görüntülenmiş olanlar öncek
         <source>Click here to toggle limiting for %1 events.&lt;br /&gt;If checked, notifications for this event type will not be played when the user count on the server exceeds the set threshold.</source>
         <translation>%1 olayları için sınırlamayı değiştirmek için buraya tıklayın.&lt;br /&gt;İşaretlenirse, sunucudaki kullanıcı sayısı ayarlanan eşiği aştığında bu olay türü için bildirimler oynatılmayacaktır.</translation>
     </message>
+    <message>
+        <source>Message Volume</source>
+        <translation>Mesaj Ses Seviyesi</translation>
+    </message>
+    <message>
+        <source>Volume adjustment for audio cues</source>
+        <translation>Ses işaretleri için ses seviyesi ayarı</translation>
+    </message>
+    <message>
+        <source>&lt;b&gt;This is the volume adjustment for audio cues.&lt;/b&gt;&lt;br /&gt;A value of 0 dB means no change to the sound sample.</source>
+        <translation>&lt;b&gt;Bu, ses işaretleri için ses seviyesi ayarıdır.&lt;/b&gt;&lt;br /&gt;0 dB değeri, ses örneğinde hiçbir değişiklik olmadığı anlamına gelir.</translation>
+    </message>
+    <message>
+        <source> dB</source>
+        <translation> dB</translation>
+    </message>
+    <message>
+        <source>Text-to-Speech volume</source>
+        <translation>Konuşma sentezi ses seviyesi</translation>
+    </message>
+    <message>
+        <source>Notification volume adjustment</source>
+        <translation>Bildirim ses seviyesi ayarı</translation>
+    </message>
+    <message>
+        <source>Volume adjustment for notification sounds</source>
+        <translation>Bildirim sesleri için ses seviyesi ayarı</translation>
+    </message>
+    <message>
+        <source>&lt;b&gt;This is the volume adjustment for notification sounds.&lt;/b&gt;&lt;br /&gt;A value of 0 dB means no change to the sound sample.</source>
+        <translation>&lt;b&gt;Bu, bildirim sesleri için ses seviyesi ayarıdır.&lt;/b&gt;&lt;br /&gt;0 dB değeri, ses örneğinde hiçbir değişiklik olmadığı anlamına gelir.</translation>
+    </message>
+    <message>
+        <source>Audio cue volume adjustment</source>
+        <translation>Ses işareti ses seviyesi ayarı</translation>
+    </message>
+    <message>
+        <source> %</source>
+        <translation> %</translation>
+    </message>
+    <message>
+        <source>Notification sound volume adjustment</source>
+        <translation>Bildirim sesi ses seviyesi ayarı</translation>
+    </message>
 </context>
 <context>
     <name>LookConfig</name>
@@ -4154,10 +4219,6 @@ Bu ayar sadece yeni mesajlara uygulanır, zaten görüntülenmiş olanlar öncek
     <message>
         <source>Users above Channels</source>
         <translation>Kullanıcılar kanalların üstünde</translation>
-    </message>
-    <message>
-        <source>&lt;b&gt;If set, will verify you want to quit if connected.&lt;/b&gt;</source>
-        <translation>&lt;b&gt;Bağlantıdayken programdan çıkmak istediğinizde, emin olup olmadığınızı sorar.&lt;/b&gt;</translation>
     </message>
     <message>
         <source>Show number of users in each channel</source>
@@ -4225,14 +4286,6 @@ Bu ayar sadece yeni mesajlara uygulanır, zaten görüntülenmiş olanlar öncek
         <translation>Kanal Kaydırma</translation>
     </message>
     <message>
-        <source>Ask whether to close or minimize when quitting Mumble.</source>
-        <translation>Mumle&apos;dan çıkış seçildiğinde uygulamanın kapatılması ve küçültülmesi seçimi sun.</translation>
-    </message>
-    <message>
-        <source>Ask on quit while connected</source>
-        <translation>Bağlantıdayken çıkışta sor</translation>
-    </message>
-    <message>
         <source>Always On Top</source>
         <translation>Her Zaman Üstte</translation>
     </message>
@@ -4262,7 +4315,7 @@ Bu ayar sadece yeni mesajlara uygulanır, zaten görüntülenmiş olanlar öncek
     </message>
     <message>
         <source>In minimal view</source>
-        <translation>Minimal görünümde</translation>
+        <translation>Küçük görünümde</translation>
     </message>
     <message>
         <source>In normal view</source>
@@ -4278,7 +4331,7 @@ Bu ayar sadece yeni mesajlara uygulanır, zaten görüntülenmiş olanlar öncek
     </message>
     <message>
         <source>This setting controls in which situations the application will stay always on top. If you select &lt;i&gt;Never&lt;/i&gt; the application will not stay on top. &lt;i&gt;Always&lt;/i&gt; will always keep the application on top. &lt;i&gt;In minimal view&lt;/i&gt; / &lt;i&gt;In normal view&lt;/i&gt; will only keep the application always on top when minimal view is activated / deactivated.</source>
-        <translation>Bu seçenek hangi durumlarda uygulamanın en üstte kalacağını belirler. &lt;i&gt;Hiçbir zaman&lt;/i&gt;ı seçerseniz uygulama üstte kalmaz. &lt;i&gt;Daima&lt;/i&gt; uygulamayı her zaman en üstte tutar. &lt;i&gt;Minimal görünümde&lt;/i&gt; / &lt;i&gt;Normal görünümde&lt;/i&gt; uygulamayı en üste sadece minimal görünüm etkinleştirildiğinde / devre dışı bırakıldığında koyar.</translation>
+        <translation>Bu seçenek hangi durumlarda uygulamanın en üstte kalacağını belirler. &lt;i&gt;Hiçbir zaman&lt;/i&gt;ı seçerseniz uygulama üstte kalmaz. &lt;i&gt;Daima&lt;/i&gt; uygulamayı her zaman en üstte tutar. &lt;i&gt;Küçük görünümde&lt;/i&gt; / &lt;i&gt;Normal görünümde&lt;/i&gt; uygulamayı en üste sadece küçük görünüm etkinleştirildiğinde / devre dışı bırakıldığında koyar.</translation>
     </message>
     <message>
         <source>Show context menu in menu bar</source>
@@ -4536,6 +4589,38 @@ Bu ayar sadece yeni mesajlara uygulanır, zaten görüntülenmiş olanlar öncek
         <source>Action (Channel):</source>
         <translation>Eylem (Kanal):</translation>
     </message>
+    <message>
+        <source>Quit Behavior</source>
+        <translation>Çıkış Davranışı</translation>
+    </message>
+    <message>
+        <source>This setting controls the behavior of clicking on the X in the top right corner.</source>
+        <translation>Bu ayar, sağ üst köşedeki X işaretine tıklandığında ne olacağını denetler.</translation>
+    </message>
+    <message>
+        <source>This setting controls the behavior when closing Mumble. You can choose between being asked for confirmation, minimize instead if closing or just closing without any additional prompt. Optionally, the first two options can only apply when you are currently connected to a server (in that case, Mumble will quit without asking, when not connected to any server).</source>
+        <translation>Bu ayar Mumble&apos;ı kapatırkenki davranışı denetler. Onay istenmesi, kapanma yerine simge durumuna küçültme veya herhangi bir ek istem olmadan yalnızca kapanma arasında seçim yapabilirsiniz. İsteğe bağlı olarak, ilk iki seçenek yalnızca o anda bir sunucuya bağlı olduğunuzda uygulanabilir (bu durumda, Mumble herhangi bir sunucuya bağlı değilken sormadan çıkacaktır).</translation>
+    </message>
+    <message>
+        <source>Always Ask</source>
+        <translation>Her Zaman Sor</translation>
+    </message>
+    <message>
+        <source>Ask when connected</source>
+        <translation>Bağlandığında sor</translation>
+    </message>
+    <message>
+        <source>Always Minimize</source>
+        <translation>Her Zaman Küçült</translation>
+    </message>
+    <message>
+        <source>Minimize when connected</source>
+        <translation>Bağlandığında küçült</translation>
+    </message>
+    <message>
+        <source>Always Quit</source>
+        <translation>Her Zaman Çık</translation>
+    </message>
 </context>
 <context>
     <name>MainWindow</name>
@@ -4591,7 +4676,7 @@ Bu ayar sadece yeni mesajlara uygulanır, zaten görüntülenmiş olanlar öncek
     <message>
         <source>Toggle Minimal</source>
         <comment>Global Shortcut</comment>
-        <translation>Küçültülmüş hâli açıp kapat</translation>
+        <translation>Küçültülmüş hâli aç/kapat</translation>
     </message>
     <message>
         <source>Volume Up (+10%)</source>
@@ -4626,10 +4711,6 @@ Bu ayar sadece yeni mesajlara uygulanır, zaten görüntülenmiş olanlar öncek
     <message>
         <source>Close</source>
         <translation>Kapat</translation>
-    </message>
-    <message>
-        <source>Mumble is currently connected to a server. Do you want to Close or Minimize it?</source>
-        <translation>Mumble hâlihazırda bir sunucuya bağlıdır. Kapatmak mı istiyorsunuz, küçültmek mi?</translation>
     </message>
     <message>
         <source>Mute Self</source>
@@ -4690,10 +4771,6 @@ Bu ayar sadece yeni mesajlara uygulanır, zaten görüntülenmiş olanlar öncek
     <message>
         <source>URL scheme is not &apos;mumble&apos;</source>
         <translation>URL düzeni &apos;mumble&apos; değil</translation>
-    </message>
-    <message>
-        <source>This version of Mumble can&apos;t handle URLs for Mumble version %1.%2.%3</source>
-        <translation>Mumble&apos;ın bu sürümü %1.%2.%3 sayılı sürümün URL&apos;lerini işleyemez</translation>
     </message>
     <message>
         <source>Connecting to %1</source>
@@ -5424,7 +5501,7 @@ deneyiniz. Yoksa iptal edip parolanızı kontrol ediniz.</translation>
     </message>
     <message>
         <source>&amp;Minimal View</source>
-        <translation>K&amp;üçük Görüntü</translation>
+        <translation>&amp;Küçük Görünüm</translation>
     </message>
     <message>
         <source>Toggle minimal window modes</source>
@@ -5432,7 +5509,7 @@ deneyiniz. Yoksa iptal edip parolanızı kontrol ediniz.</translation>
     </message>
     <message>
         <source>This will toggle minimal mode, where the log window and menu is hidden.</source>
-        <translation>Kütük ve menü pencerelerinin saklandığı küçük görüntü kipini açıp kapatır.</translation>
+        <translation>Günlük penceresinin ve menünün gizlendiği küçük görüntü kipini açıp kapatır.</translation>
     </message>
     <message>
         <source>You muted and deafened %1.</source>
@@ -5673,10 +5750,6 @@ deneyiniz. Yoksa iptal edip parolanızı kontrol ediniz.</translation>
         <translation>Sunucu</translation>
     </message>
     <message>
-        <source>Failed to load Opus, it will not be available for audio encoding/decoding.</source>
-        <translation>Opus&apos;ın yüklenmesi başarısız oldu, ses kodlaması ve kodlama çözmesi için kullanılamayacaktır.</translation>
-    </message>
-    <message>
         <source>The server requests minimum client version %1</source>
         <translation>Sunucu asgari %1 istemci sürümünü talep ediyor</translation>
     </message>
@@ -5723,10 +5796,6 @@ deneyiniz. Yoksa iptal edip parolanızı kontrol ediniz.</translation>
     <message>
         <source>%1 unmuted by %2.</source>
         <translation>%1 adlı kullanıcının susturulması %2 tarafından kaldırıldı.</translation>
-    </message>
-    <message>
-        <source>Unable to find matching CELT codecs with other clients. You will not be able to talk to all users.</source>
-        <translation>Diğer istemcilerle uyumlu CELT kodekleri bulunamadı. Diğer kullanıcılar ile konuşamayacaksınız.</translation>
     </message>
     <message>
         <source>You were muted and deafened by %1.</source>
@@ -5922,10 +5991,6 @@ deneyiniz. Yoksa iptal edip parolanızı kontrol ediniz.</translation>
         <translation>Bu, sunucuda IP yasaklama listesini düzenlemenize izin verir.</translation>
     </message>
     <message>
-        <source>&amp;Filter on/off</source>
-        <translation>&amp;Filtre Aç/Kapat</translation>
-    </message>
-    <message>
         <source>Enable or disable the filtering of select channels.
 By default all empty channels will be filtered.
 You can mark additional channels for filtering from
@@ -5946,14 +6011,6 @@ filtrelenmesi için ilave kanallar ekleyebilirsiniz.</translation>
     <message>
         <source>Reset the avatar of the selected user.</source>
         <translation>Seçilen kullanıcının havarisini sıfırla.</translation>
-    </message>
-    <message>
-        <source>Locally adjust the user&apos;s speech volume.</source>
-        <translation>Kullanıcının konuşma ses seviyesini yerel olarak ayarla.</translation>
-    </message>
-    <message>
-        <source>Opens a dialog with a volume slider. Use this on other users in the same room.</source>
-        <translation>Ses seviyesini belirleyen kaydırıcı içeren bir diyalog açar. Bunu, aynı odadaki diğer kullanıcılar üzerinde kullanın.</translation>
     </message>
     <message>
         <source>&amp;Developer</source>
@@ -5998,10 +6055,6 @@ filtrelenmesi için ilave kanallar ekleyebilirsiniz.</translation>
     <message>
         <source>&amp;Ban...</source>
         <translation>&amp;Yasakla...</translation>
-    </message>
-    <message>
-        <source>Local Volume Adjustment...</source>
-        <translation>Yerel Ses Ayarı...</translation>
     </message>
     <message>
         <source>Send &amp;Message...</source>
@@ -6110,10 +6163,6 @@ filtrelenmesi için ilave kanallar ekleyebilirsiniz.</translation>
     <message>
         <source>Listen to this channel without joining it</source>
         <translation>Bu kanalı ona katılmadan dinle</translation>
-    </message>
-    <message>
-        <source>Locally adjust the volume for this virtual ear.</source>
-        <translation>Bu sanal kulak için ses seviyesini yerel olarak ayarla.</translation>
     </message>
     <message>
         <source>&amp;Listener</source>
@@ -6347,11 +6396,53 @@ Geçerli eylemler şunlardır:
     </message>
     <message>
         <source>Mumble - Minimal View</source>
-        <translation>Mumble - Minimal Görünüm</translation>
+        <translation>Mumble - Küçük Görünüm</translation>
     </message>
     <message>
         <source>Invalid settings file encountered.</source>
         <translation>Geçersiz ayar dosyası bulundu.</translation>
+    </message>
+    <message>
+        <source>You are currently in minimal view but not connected to a server. Use the context menu to connect to a server or disable minimal view.</source>
+        <translation>Şu anda küçük görünümdesiniz ancak bir sunucuya bağlı değilsiniz. Bir sunucuya bağlanmak veya küçük görünümü devre dışı bırakmak için içerik menüsünü kullanın.</translation>
+    </message>
+    <message>
+        <source>Local Volume Adjustment:</source>
+        <translation>Yerel Ses Ayarı:</translation>
+    </message>
+    <message>
+        <source>This version of Mumble can&apos;t handle URLs for Mumble version %1</source>
+        <translation>Mumble&apos;ın bu sürümü Mumble %1 sürümü için URL&apos;leri işleyemiyor</translation>
+    </message>
+    <message>
+        <source>Listen to Channel</source>
+        <comment>Global Shortcut</comment>
+        <translation>Kanalı Dinle</translation>
+    </message>
+    <message>
+        <source>Toggles listening to the given channel.</source>
+        <comment>Global Shortcut</comment>
+        <translation>Verilen kanalı dinlemeye geçer.</translation>
+    </message>
+    <message>
+        <source>Server instructed us to use an audio codec different from Opus, which is no longer supported. Disconnecting...</source>
+        <translation>Sunucu, artık desteklenmeyen Opus&apos;tan farklı bir ses codec&apos;i kullanmamızı istedi. Bağlantı kesiliyor...</translation>
+    </message>
+    <message>
+        <source>Are you sure you want to close Mumble? Perhaps you prefer to minimize it instead?</source>
+        <translation>Mumble&apos;ı kapatmak istediğinizden emin misiniz? Belki de bunun yerine küçültmeyi tercih edersiniz?</translation>
+    </message>
+    <message>
+        <source>Remember this setting</source>
+        <translation>Bu ayarı hatırla</translation>
+    </message>
+    <message>
+        <source>Channel &amp;Filter</source>
+        <translation>Kanal &amp;Filtresi</translation>
+    </message>
+    <message>
+        <source>&amp;Pin Channel when Filtering</source>
+        <translation>Filtreleme Sırasında Kanalı &amp;Sabitle</translation>
     </message>
     <message>
         <source>Usage: mumble [options] [&lt;url&gt; | &lt;plugin_list&gt;]
@@ -6366,7 +6457,7 @@ correct client version. It currently defaults to 1.2.0.
 
 Valid options are:
   -h, --help    Show this help text and exit.
-  -V, --version Print version information and exit
+  --version     Print version information and exit
   -m, --multiple
                 Allow multiple instances of the client to be started.
   -c, --config
@@ -6399,9 +6490,9 @@ Valid options are:
                 Print on stdout the echo cancellation queue state
                 (useful for debugging purposes)
   --translation-dir &lt;dir&gt;
-                Specifies an additional translation fir &lt;dir&gt; in which
-                Mumble will search for translation files that overwrite
-                the bundled ones
+                Specifies an additional translation directory &lt;dir&gt;
+                in which Mumble will search for translation files that
+                overwrite the bundled ones
                 Directories added this way have higher priority than
                 the default locations used otherwise
   --print-translation-dirs
@@ -6417,63 +6508,65 @@ Valid options are:
 </source>
         <translation>Kullanım: mumble [seçenekler] [&lt;url&gt; | &lt;eklenti_listesi&gt;]
 
-&lt;url&gt;, bağlantı penceresini göstermek yerine başlangıçtan sonra
+&lt;url&gt;başlangıçta bağlantı penceresinin gösterilmesi yerine
 bağlanılacak bir URL belirtir ve aşağıdaki biçime sahiptir:
-mumble://[&lt;kullanıcı_adı&gt;[:&lt;parola&gt;]@]&lt;ana_makine&gt;[:&lt;bağlantı_noktası&gt;][/&lt;kanal&gt;[/&lt;alt_kanal&gt;...]][?version=&lt;x.y.z&gt;]
+mumble://[&lt;kullanıcıismi&gt;[:&lt;parola&gt;]@]&lt;makine&gt;[:&lt;port&gt;][/&lt;salon&gt;[/&lt;altsalon&gt;...]][?sürüm=&lt;x.y.z&gt;]
 
-eklenti_listesi, kurulacak eklenti dosyalarının bir listesidir.
-Doğru istemci sürümünü çağırmak için sürüm sorgu parametresinin
-ayarlanması gerekir. Şu anda öntanımlı olarak 1.2.0&apos;dır.
+&lt;eklenti_listesi&gt;, kurulması gereken eklenti dosyaları listesidir
+Sürüm sorgulama parametresi doğru istemci sürümünün
+çağrılabilmesi için ayarlanmalıdır. Güncel olarak varsayılan 1.2.0.
 
 Geçerli seçenekler şunlardır:
-  -h, --help    Bu yardım metnini göster ve çık.
-  -V, --version Sürüm bilgisini yazdır ve çık.
+  -h, --help    Bu yardımı görüntüle ve çık.
+  --version     Sürüm bilgisini göster ve çık
   -m, --multiple
-                İstemcinin birden çok örneğinin başlatılmasına izin ver.
+                İstemcinin birden fazla örneklemesinin başlatılmasına izin ver.
   -c, --config
                 Alternatif bir yapılandırma dosyası belirt.
-                Bunu aynı anda birden fazla Mumble örneğini çalıştırmak için
-                kullanırsanız, yapılandırmada farklı bir &apos;veri tabanı&apos; değeri
-                ayarladığınızdan emin olun.
+                Eğer bunu Mumble birden fazla örneklemesini ayna anda
+                çalıştırmak için kullanıyorsanız, yapılandırmada alternatif bir
+                &apos;database&apos; değeri ayarladığınızdan emin olun.
   --default-certificate-dir &lt;dizin&gt;
-                Alternatif bir öntanımlı sertifika yolu belirt.
-                Bu yol, yalnızca ayarlardan yüklenen bir sertifika yoksa kullanılır.
+                Alternatif bir varsayılan sertifika yolu belirt.
+                Bu yol sadece ayarlardan hiçbir sertifika yüklenmedi
+                ise kullanılır.
   -n, --noidentity
-                Kimlik dosyalarının (örn., sertifikalar) yüklenmesini engelle.
-  -jn, --jackname &lt;argüman&gt;
-                Jack istemci adı ayarla.
+                Kimlik dosyalarının (yani sertifikaların) yüklenmelerini engelle.
+  -jn, --jackname &lt;arg&gt;
+                Kişiselleştirilmiş bir Jack istemcisi ismi ayarla.
   --license
-                Mumble lisansını göster.
+                Mumble&apos;ın lisansını göster.
   --authors
-                Mumble yazarlarını göster.
+                Mumble&apos;ın yazarlarını göster.
   --third-party-licenses
-                Mumble tarafından kullanılan üçüncü taraf yazılımların lisanslarını göster.
-  --window-title-ext &lt;argüman&gt;
-                Özel bir pencere başlığı uzantısı ayarlar.
+                Mumble tarafından kullanılan üçüncü taraf yazılımların
+                lisanslarını göster.
+  --window-title-ext &lt;arg&gt;
+                Kişiselleştirilmiş bir pencere başlığı uzantısı ayarlar.
   --dump-input-streams
-                Girdi zincirinin çeşitli bölümlerinde PCM akışlarını dök
-                (hata ayıklama için kullanışlıdır)
+                Girdi dizelerinin çeşitli bölümlerinden PCM akımlarını dök
+                (hata ayıklama maksadı için yararlıdır)
                 - ham mikrofon girdisi
-                - yankı iptali için hoparlör okuması
-                - işlenen mikrofon girdisi
+                - yankı iptali için hoparlörlerden geri okuma
+                - işlenmiş mikrofon girdisi
   --print-echocancel-queue
-                standart çıktıya yankı iptali kuyruğu durumunu yazdır
-                (hata ayıklama için kullanışlıdır)
+                stdout üzerinde yankı iptal kuyruğunun durumunu göster
+                (hata ayıklama maksadı için yararlıdır)
   --translation-dir &lt;dizin&gt;
-                Mumble&apos;ın paketlenmiş olanların üzerine yazan çeviri
-                dosyalarını arayacağı ek bir çeviri dizini olarak &lt;dizin&gt;
-                belirtir.
-                Bu şekilde eklenen dizinler, diğer türlü kullanılan öntanımlı
-                konumlardan daha yüksek önceliğe sahiptir.
+                İlave bir &lt;dizin&gt; tercüme dizini belirtir, ki Mumble burada
+                yazılımla gelen tercüme dosyalarının üzerine yazılacak
+                tercüme dosyalarını arayacaktır
+                Bu şekilde eklenen dizinlerin önceliği diğer durumlarda
+                kullanılan varsayılan konumlardan daha yüksektir
   --print-translation-dirs
-                Mumble&apos;ın paketlenmiş olanların üzerine yazan çeviri
-                dosyalarını arayacağı yolları yazdır.
-                (Çevirilerini test eden çevirmenler için kullanışlıdır)
-  --locale &lt;yerel_ayar&gt;
-                Verilen yerel ayar dizgesine karşılık gelen bir yerel ayar ile
-                Mumble&apos;ın ayarlarındaki yerel ayarın üzerine yaz.
-                Biçim geçersiz ise, Mumble hata verecektir.
-                Değilse yerel ayar Mumble ayarlarına kalıcı olarak
+                Mumble&apos;ın yazılımla gelen tercüme dosyalarının üzerine
+                yazılacak tercüme dosyalarını arayacağı yolları göster.
+                (Çevirilerini deneyen tercümanlar için yararlıdır)
+  --locale &lt;locale&gt;
+                Mumble ayarlarındaki yerel ayarın verilen yerel ayar
+                 dizesine karşılık gelen bir yerel ile üzerine yazar.
+                Şayet biçim geçersizse, Mumble bir hata gösterecektir.
+                Yoksa yerel ayar daimi olarak Mumble&apos;ın ayarlarına
                 kaydedilecektir.
 </translation>
     </message>
@@ -6622,11 +6715,11 @@ Geçerli seçenekler şunlardır:
     </message>
     <message>
         <source>Hostname</source>
-        <translation>Makine ismi</translation>
+        <translation>Ana makine adı</translation>
     </message>
     <message>
         <source>Hostname of the proxy</source>
-        <translation>Vekilin makine ismi</translation>
+        <translation>Vekilin ana makine adı</translation>
     </message>
     <message>
         <source>Force TCP mode</source>
@@ -6662,7 +6755,7 @@ Geçerli seçenekler şunlardır:
     </message>
     <message>
         <source>&lt;b&gt;Hostname of the proxy.&lt;/b&gt;&lt;br /&gt;This field specifies the hostname of the proxy you wish to tunnel network traffic through.</source>
-        <translation>&lt;b&gt;Vekilin bilgisayar ismi.&lt;/b&gt;&lt;br /&gt;Bu alan, şebeke trafiğinin tünelleneceği vekilin makine ismini (hostname) belirtir.</translation>
+        <translation>&lt;b&gt;Vekilin ana makine adı.&lt;/b&gt;&lt;br /&gt;Bu alan, şebeke trafiğinin tünelleneceği vekilin ana makine adını belirtir.</translation>
     </message>
     <message>
         <source>Port</source>
@@ -7624,10 +7717,6 @@ Bu dosyaları son sürümlerine güncellemek için aşağıdaki düğmeyi tıkla
 <context>
     <name>QObject</name>
     <message>
-        <source>CodecInit: Failed to load Opus, it will not be available for encoding/decoding audio.</source>
-        <translation>CodecInit: Opus&apos;un yüklenmesi başarısız oldu, ses kodlamak/kodlamayı açmak için kullanılamayacaktır.</translation>
-    </message>
-    <message>
         <source>Talking UI</source>
         <translation>Konuşma Arayüzü</translation>
     </message>
@@ -7813,6 +7902,10 @@ Bunları tekrar kaydedebilirsiniz.</translation>
         <source>Access to the microphone was denied due to system restrictions. You will not be able to use the microphone in this session.</source>
         <translation>Sistem kısıtlamaları nedeniyle mikrofona erişim reddedildi. Bu oturumda mikrofonu kullanamayacaksınız.</translation>
     </message>
+    <message>
+        <source>Unknown Version</source>
+        <translation>Bilinmeyen Sürüm</translation>
+    </message>
 </context>
 <context>
     <name>RichTextEditor</name>
@@ -7966,7 +8059,7 @@ Bunları tekrar kaydedebilirsiniz.</translation>
     <name>ServerHandler</name>
     <message>
         <source>Unable to resolve hostname</source>
-        <translation>Makine ismi çözümlenemedi</translation>
+        <translation>Ana makine adı çözümlenemedi</translation>
     </message>
     <message>
         <source>Server is not responding to TCP pings</source>
@@ -8005,7 +8098,7 @@ Bunları tekrar kaydedebilirsiniz.</translation>
     </message>
     <message>
         <source>&lt;b&gt;Host:&lt;/b&gt;</source>
-        <translation>&lt;b&gt; Ana Bilgisayar: &lt;/b&gt;</translation>
+        <translation>&lt;b&gt;Ana makine:&lt;/b&gt;</translation>
     </message>
     <message>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Port:&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
@@ -8183,6 +8276,10 @@ Bunları tekrar kaydedebilirsiniz.</translation>
     <message>
         <source>Press to show button combination</source>
         <translation>Düğme kombinasyonunu göstermek için basın</translation>
+    </message>
+    <message>
+        <source>&lt; Unknown Channel &gt;</source>
+        <translation>&lt; Bilinmeyen Kanal &gt;</translation>
     </message>
 </context>
 <context>
@@ -8403,10 +8500,6 @@ Erişim jetonu bir metindir ve kanallara erişimin çok basit bir şekilde yöne
         <translation>İP Adresi</translation>
     </message>
     <message>
-        <source>CELT Versions</source>
-        <translation>CELT Sürümleri</translation>
-    </message>
-    <message>
         <source>Details...</source>
         <translation>Ayrıntılar...</translation>
     </message>
@@ -8529,6 +8622,10 @@ Erişim jetonu bir metindir ve kanallara erişimin çok basit bir şekilde yöne
         <source>Ping deviation</source>
         <translation>Ping sapması</translation>
     </message>
+    <message>
+        <source>Warning: The server seems to report a truncated protocol version for this client. (See: &lt;a href=&quot;https://github.com/mumble-voip/mumble/issues/5827/&quot;&gt;Issue #5827&lt;/a&gt;)</source>
+        <translation>Uyarı: Sunucu bu istemci için kesilmiş bir protokol sürümü bildiriyor gibi görünüyor. (Bkz: &lt;a href=&quot;https://github.com/mumble-voip/mumble/issues/5827/&quot;&gt;Sorun #5827&lt;/a&gt;)</translation>
+    </message>
 </context>
 <context>
     <name>UserListModel</name>
@@ -8574,33 +8671,6 @@ Erişim jetonu bir metindir ve kanallara erişimin çok basit bir şekilde yöne
     <message>
         <source>Adjusting local nickname for %1</source>
         <translation>%1 için yerel takma ad ayarlanıyor</translation>
-    </message>
-</context>
-<context>
-    <name>UserLocalVolumeDialog</name>
-    <message>
-        <source>Local volume for other users</source>
-        <translation>Diğer kullanıcılar için yerel ses seviyesi</translation>
-    </message>
-    <message>
-        <source>&lt;b&gt;Adjust the volume of other users locally&lt;/b&gt;&lt;br /&gt;Mumble supports adjusting the volume of other users locally.</source>
-        <translation>&lt;b&gt;Diğer kullanıcıların ses seviyesini yerel olarak ayarla&lt;/b&gt;&lt;br /&gt;Mumble, diğer kullanıcıların ses seviyesinin yerel olarak ayarlanmasını destekler.</translation>
-    </message>
-    <message>
-        <source>Adjusting local volume for %1</source>
-        <translation>%1 için yerel ses seviyesi ayarlanıyor</translation>
-    </message>
-    <message>
-        <source> dB</source>
-        <translation> dB</translation>
-    </message>
-    <message>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Use the slider or the text box to change the volume of the user.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;font-weight:600;&quot;&gt;Attention!&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Increasing the volume of a user too much can permanently damage your hearing. It may also increase the background noise of the user.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Kullanıcın ses seviyesini değiştirmek için sürgüyü ya da metin kutusunu kullanın. &lt;/p&gt;&lt;p&gt;&lt;span style=&quot;font-weight:600;&quot;&gt;Dikkat!&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Herhangi bir kullanıcının ses seviyesini fazla arttırmanız kalıcı işitme kaybına sebep olabilir. Aynı zamanda kullanıcının arka plan gürültüsünün artmasına yol açabilir.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
-    </message>
-    <message>
-        <source>User volume</source>
-        <translation>Kullanıcı ses seviyesi</translation>
     </message>
 </context>
 <context>
@@ -8745,6 +8815,10 @@ Erişim jetonu bir metindir ve kanallara erişimin çok basit bir şekilde yöne
     <message>
         <source>Channel has access restrictions but you can enter nonetheless</source>
         <translation>Kanalın erişim kısıtlamaları var ancak yine de girebilirsiniz</translation>
+    </message>
+    <message>
+        <source>Channel will be pinned when filtering is enabled</source>
+        <translation>Filtreleme etkinleştirildiğinde kanal sabitlenecektir</translation>
     </message>
 </context>
 <context>
@@ -8965,7 +9039,7 @@ Erişim jetonu bir metindir ve kanallara erişimin çok basit bir şekilde yöne
     </message>
     <message>
         <source>Inserts the hostname</source>
-        <translation>Bilgisayar ismini ekler</translation>
+        <translation>Ana makine adını ekler</translation>
     </message>
     <message>
         <source>Recorder still running</source>
@@ -9011,6 +9085,17 @@ Daha fazla bilgi için sunucu yöneticisi ile irtibata geçiniz.</translation>
     </message>
 </context>
 <context>
+    <name>VolumeSliderWidgetAction</name>
+    <message>
+        <source>Slider for volume adjustment</source>
+        <translation>Ses seviyesi ayarı için kaydırıcı</translation>
+    </message>
+    <message>
+        <source>Volume Adjustment</source>
+        <translation>Ses Ayarı</translation>
+    </message>
+</context>
+<context>
     <name>WASAPIInput</name>
     <message>
         <source>Access to the microphone was denied. Please check that your operating system&apos;s microphone settings allow Mumble to use the microphone.</source>
@@ -9032,7 +9117,7 @@ Daha fazla bilgi için sunucu yöneticisi ile irtibata geçiniz.</translation>
     </message>
     <message>
         <source>Push to talk</source>
-        <translation>Tıklayıp konuşun</translation>
+        <translation>Bas ve konuş</translation>
     </message>
 </context>
 </TS>

@@ -1,4 +1,4 @@
-// Copyright 2007-2022 The Mumble Developers. All rights reserved.
+// Copyright 2007-2023 The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -16,9 +16,9 @@
 #include "MUComboBox.h"
 #include "Mumble.pb.h"
 #include "MumbleProtocol.h"
+#include "QtUtils.h"
 #include "Usage.h"
 #include "UserLocalNicknameDialog.h"
-#include "UserLocalVolumeDialog.h"
 
 #include "ui_MainWindow.h"
 
@@ -38,11 +38,21 @@ class UserInformation;
 class VoiceRecorderDialog;
 class PositionalAudioViewer;
 class PTTButtonWidget;
+
 namespace Search {
 class SearchDialog;
 };
 
+class MenuLabel;
+class ListenerVolumeSlider;
+class UserLocalVolumeSlider;
+
 struct ShortcutTarget;
+
+struct ContextMenuTarget {
+	ClientUser *user = nullptr;
+	Channel *channel = nullptr;
+};
 
 class MessageBoxEvent : public QEvent {
 public:
@@ -73,8 +83,7 @@ public:
 	QIcon qiIcon, qiIconMutePushToMute, qiIconMuteSelf, qiIconMuteServer, qiIconDeafSelf, qiIconDeafServer,
 		qiIconMuteSuppressed;
 	QIcon qiTalkingOn, qiTalkingWhisper, qiTalkingShout, qiTalkingOff;
-	QMap< unsigned int, UserLocalVolumeDialog * > qmUserVolTracker;
-	std::unordered_map< unsigned int, NicknameDialogPtr > qmUserNicknameTracker;
+	std::unordered_map< unsigned int, qt_unique_ptr< UserLocalNicknameDialog > > qmUserNicknameTracker;
 
 	/// "Action" for when there are no actions available
 	QAction *qaEmpty;
@@ -84,7 +93,7 @@ public:
 #ifdef USE_OVERLAY
 	GlobalShortcut *gsToggleOverlay;
 #endif
-	GlobalShortcut *gsMinimal, *gsVolumeUp, *gsVolumeDown, *gsWhisper, *gsLinkChannel;
+	GlobalShortcut *gsMinimal, *gsVolumeUp, *gsVolumeDown, *gsWhisper, *gsLinkChannel, *gsListenChannel;
 	GlobalShortcut *gsCycleTransmitMode, *gsToggleMainWindowVisibility, *gsTransmitModePushToTalk,
 		*gsTransmitModeContinuous, *gsTransmitModeVAD;
 	GlobalShortcut *gsSendTextMessage, *gsSendClipboardTextMessage;
@@ -104,7 +113,7 @@ public:
 	bool bRetryServer;
 	QString qsDesiredChannel;
 
-	bool bSuppressAskOnQuit;
+	bool forceQuit;
 	/// Restart the client after shutdown
 	bool restartOnQuit;
 	bool bAutoUnmute;
@@ -131,7 +140,6 @@ public:
 	void updateChatBar();
 	void openTextMessageDialog(ClientUser *p);
 	void openUserLocalNicknameDialog(const ClientUser &p);
-	void openUserLocalVolumeDialog(ClientUser *p);
 
 #ifdef Q_OS_WIN
 	bool nativeEvent(const QByteArray &eventType, void *message, long *result) Q_DECL_OVERRIDE;
@@ -173,6 +181,10 @@ protected:
 
 	Search::SearchDialog *m_searchDialog = nullptr;
 
+	qt_unique_ptr< MenuLabel > m_localVolumeLabel;
+	qt_unique_ptr< UserLocalVolumeSlider > m_userLocalVolumeSlider;
+	qt_unique_ptr< ListenerVolumeSlider > m_listenerVolumeSlider;
+
 	void createActions();
 	void setupGui();
 	void updateWindowTitle();
@@ -196,6 +208,7 @@ protected:
 	bool handleSpecialContextMenu(const QUrl &url, const QPoint &pos_, bool focus = false);
 	Channel *getContextMenuChannel();
 	ClientUser *getContextMenuUser();
+	ContextMenuTarget getContextMenuTargets();
 
 public slots:
 	void on_qmServer_aboutToShow();
@@ -227,7 +240,6 @@ public slots:
 	void on_qaUserLocalIgnoreTTS_triggered();
 	void on_qaUserLocalMute_triggered();
 	void on_qaUserLocalNickname_triggered();
-	void on_qaUserLocalVolume_triggered();
 	void on_qaUserTextMessage_triggered();
 	void on_qaUserRegister_triggered();
 	void on_qaUserInformation_triggered();
@@ -245,9 +257,9 @@ public slots:
 	void on_qaChannelUnlink_triggered();
 	void on_qaChannelUnlinkAll_triggered();
 	void on_qaChannelSendMessage_triggered();
-	void on_qaChannelFilter_triggered();
+	void on_qaChannelHide_triggered();
+	void on_qaChannelPin_triggered();
 	void on_qaChannelCopyURL_triggered();
-	void on_qaListenerLocalVolume_triggered();
 	void on_qaAudioReset_triggered();
 	void on_qaAudioMute_triggered();
 	void on_qaAudioDeaf_triggered();
@@ -285,6 +297,7 @@ public slots:
 	void on_gsWhisper_triggered(bool, QVariant);
 	void addTarget(ShortcutTarget *);
 	void removeTarget(ShortcutTarget *);
+	void on_gsListenChannel_triggered(bool, QVariant);
 	void on_gsCycleTransmitMode_triggered(bool, QVariant);
 	void on_gsToggleMainWindowVisibility_triggered(bool, QVariant);
 	void on_gsTransmitModePushToTalk_triggered(bool, QVariant);
@@ -313,7 +326,7 @@ public slots:
 	void destroyUserInformation();
 	void trayAboutToShow();
 	void sendChatbarMessage(QString msg);
-	void sendChatbarText(QString msg);
+	void sendChatbarText(QString msg, bool plainText = false);
 	void pttReleased();
 	void whisperReleased(QVariant scdata);
 	void onResetAudio();

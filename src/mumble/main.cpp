@@ -1,4 +1,4 @@
-// Copyright 2007-2022 The Mumble Developers. All rights reserved.
+// Copyright 2007-2023 The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -243,7 +243,7 @@ int main(int argc, char **argv) {
 								   "\n"
 								   "Valid options are:\n"
 								   "  -h, --help    Show this help text and exit.\n"
-								   "  -V, --version Print version information and exit\n"
+								   "  --version     Print version information and exit\n"
 								   "  -m, --multiple\n"
 								   "                Allow multiple instances of the client to be started.\n"
 								   "  -c, --config\n"
@@ -276,9 +276,9 @@ int main(int argc, char **argv) {
 								   "                Print on stdout the echo cancellation queue state\n"
 								   "                (useful for debugging purposes)\n"
 								   "  --translation-dir <dir>\n"
-								   "                Specifies an additional translation fir <dir> in which\n"
-								   "                Mumble will search for translation files that overwrite\n"
-								   "                the bundled ones\n"
+								   "                Specifies an additional translation directory <dir>\n"
+								   "                in which Mumble will search for translation files that\n"
+								   "                overwrite the bundled ones\n"
 								   "                Directories added this way have higher priority than\n"
 								   "                the default locations used otherwise\n"
 								   "  --print-translation-dirs\n"
@@ -356,7 +356,8 @@ int main(int argc, char **argv) {
 				printf("%s\n", qPrintable(License::license()));
 				return 0;
 			} else if (args.at(i) == QLatin1String("-authors") || args.at(i) == QLatin1String("--authors")) {
-				printf("%s\n", qPrintable(License::authors()));
+				printf("%s\n",
+					   "For a list of authors, please see https://github.com/mumble-voip/mumble/graphs/contributors");
 				return 0;
 			} else if (args.at(i) == QLatin1String("-third-party-licenses")
 					   || args.at(i) == QLatin1String("--third-party-licenses")) {
@@ -416,10 +417,10 @@ int main(int argc, char **argv) {
 					qCritical("Missing argument for --locale!");
 					return 1;
 				}
-			} else if (args.at(i) == "--version" || args.at(i) == "-V") {
+			} else if (args.at(i) == "--version") {
 				// Print version and exit (print to regular std::cout to avoid adding any useless meta-information from
 				// using e.g. qWarning
-				std::cout << "Mumble version " << Version::toString(Version::getRaw()).toStdString() << std::endl;
+				std::cout << "Mumble version " << Version::getRelease().toStdString() << std::endl;
 				return 0;
 			} else {
 				if (PluginInstaller::canBePluginFile(args.at(i))) {
@@ -692,6 +693,13 @@ int main(int argc, char **argv) {
 	// By setting the TalkingUI's position **before** making it visible tends to more reliably include the
 	// window's frame to be included in the positioning calculation on X11 (at least using KDE Plasma)
 	Global::get().talkingUI->setVisible(Global::get().s.bShowTalkingUI);
+
+	QObject::connect(Global::get().mw, &MainWindow::userAddedChannelListener, Global::get().talkingUI,
+					 &TalkingUI::on_channelListenerAdded);
+	QObject::connect(Global::get().mw, &MainWindow::userRemovedChannelListener, Global::get().talkingUI,
+					 &TalkingUI::on_channelListenerRemoved);
+	QObject::connect(Global::get().channelListenerManager.get(), &ChannelListenerManager::localVolumeAdjustmentsChanged,
+					 Global::get().talkingUI, &TalkingUI::on_channelListenerLocalVolumeAdjustmentChanged);
 
 	QObject::connect(Global::get().mw, &MainWindow::userAddedChannelListener, Global::get().talkingUI,
 					 &TalkingUI::on_channelListenerAdded);

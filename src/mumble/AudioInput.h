@@ -1,4 +1,4 @@
-// Copyright 2007-2022 The Mumble Developers. All rights reserved.
+// Copyright 2007-2023 The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -7,30 +7,30 @@
 #define MUMBLE_MUMBLE_AUDIOINPUT_H_
 
 #include <QElapsedTimer>
-#include <QtCore/QObject>
-#include <QtCore/QThread>
+#include <QObject>
+#include <QThread>
+
 #include <boost/array.hpp>
 #include <boost/shared_ptr.hpp>
+
 #include <fstream>
 #include <list>
 #include <memory>
 #include <mutex>
-#include <speex/speex.h>
+#include <vector>
+
 #include <speex/speex_echo.h>
 #include <speex/speex_preprocess.h>
 #include <speex/speex_resampler.h>
-#include <vector>
 
 #include "Audio.h"
+#include "AudioOutputToken.h"
 #include "EchoCancelOption.h"
 #include "MumbleProtocol.h"
 #include "Settings.h"
 #include "Timer.h"
 
 class AudioInput;
-class CELTCodec;
-class OpusCodec;
-struct CELTEncoder;
 struct OpusEncoder;
 struct DenoiseState;
 typedef boost::shared_ptr< AudioInput > AudioInputPtr;
@@ -170,7 +170,6 @@ private:
 	Q_OBJECT
 	Q_DISABLE_COPY(AudioInput)
 protected:
-	typedef enum { CodecCELT, CodecSpeex } CodecFormat;
 	typedef enum { SampleShort, SampleFloat } SampleFormat;
 	typedef void (*inMixerFunc)(float *RESTRICT, const void *RESTRICT, unsigned int, unsigned int, quint64);
 
@@ -188,7 +187,6 @@ private:
 	inMixerFunc chooseMixer(const unsigned int nchan, SampleFormat sf, quint64 mask);
 	void resetAudioProcessor();
 
-	OpusCodec *oCodec;
 	OpusEncoder *opusState;
 	DenoiseState *denoiseState;
 	bool selectCodec();
@@ -197,9 +195,10 @@ private:
 	typedef boost::array< unsigned char, 960 > EncodingOutputBuffer;
 
 	int encodeOpusFrame(short *source, int size, EncodingOutputBuffer &buffer);
-	int encodeCELTFrame(short *pSource, EncodingOutputBuffer &buffer);
 
 	QElapsedTimer qetLastMuteCue;
+
+	AudioOutputToken m_activeAudioCue;
 
 protected:
 	Mumble::Protocol::AudioCodec m_codec;
@@ -224,9 +223,6 @@ protected:
 	QMutex qmSpeex;
 	SpeexPreprocessState *sppPreprocess;
 	SpeexEchoState *sesEcho;
-
-	CELTCodec *cCodec;
-	CELTEncoder *ceEncoder;
 
 	/// bResetEncoder is a flag that notifies
 	/// our encoder functions that the encoder
@@ -254,6 +250,7 @@ protected:
 
 	volatile bool bRunning;
 	volatile bool bPreviousVoice;
+	volatile bool previousPTT;
 
 	int iFrameCounter;
 	int iSilentFrames;

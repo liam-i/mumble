@@ -1,4 +1,4 @@
-// Copyright 2007-2022 The Mumble Developers. All rights reserved.
+// Copyright 2007-2023 The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -15,6 +15,9 @@ class AudioInputDialog : public ConfigWidget, public Ui::AudioInput {
 private:
 	Q_OBJECT
 	Q_DISABLE_COPY(AudioInputDialog)
+
+	void updateAudioCueEnabled();
+
 protected:
 	QTimer *qtTick;
 	void hideEvent(QHideEvent *event) Q_DECL_OVERRIDE;
@@ -38,7 +41,8 @@ public slots:
 	void continuePlayback();
 	void verifyMicrophonePermission();
 
-	void on_qcbPushClick_clicked(bool);
+	void on_qcbEnableCuePTT_clicked();
+	void on_qcbEnableCueVAD_clicked();
 	void on_qpbPushClickBrowseOn_clicked();
 	void on_qpbPushClickBrowseOff_clicked();
 	void on_qpbPushClickPreview_clicked();

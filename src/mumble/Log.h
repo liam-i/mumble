@@ -1,4 +1,4 @@
-// Copyright 2007-2022 The Mumble Developers. All rights reserved.
+// Copyright 2007-2023 The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -55,6 +55,13 @@ public slots:
 	void on_qtwMessages_itemClicked(QTreeWidgetItem *, int);
 	void on_qtwMessages_itemDoubleClicked(QTreeWidgetItem *, int);
 	void browseForAudioFile();
+
+	void on_qsNotificationVolume_valueChanged(int value);
+	void on_qsCueVolume_valueChanged(int value);
+	void on_qsTTSVolume_valueChanged(int value);
+	void on_qsbNotificationVolume_valueChanged(int value);
+	void on_qsbCueVolume_valueChanged(int value);
+	void on_qsbTTSVolume_valueChanged(int value);
 };
 
 class ClientUser;

@@ -1,4 +1,4 @@
-// Copyright 2007-2022 The Mumble Developers. All rights reserved.
+// Copyright 2007-2023 The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -7,9 +7,7 @@
 
 #include "AudioInput.h"
 #include "AudioOutput.h"
-#include "CELTCodec.h"
 #include "Log.h"
-#include "OpusCodec.h"
 #include "PacketDataStream.h"
 #include "PluginManager.h"
 #include "Global.h"
@@ -19,59 +17,9 @@
 #include <cstring>
 
 
-class CodecInit : public DeferInit {
-public:
-	void initialize();
-	void destroy();
-};
-
 #define DOUBLE_RAND (rand() / static_cast< double >(RAND_MAX))
 
 LoopUser LoopUser::lpLoopy;
-CodecInit ciInit;
-
-void CodecInit::initialize() {
-	OpusCodec *oCodec = new OpusCodec();
-	if (oCodec->isValid()) {
-		oCodec->report();
-		Global::get().oCodec = oCodec;
-	} else {
-		Log::logOrDefer(
-			Log::CriticalError,
-			QObject::tr("CodecInit: Failed to load Opus, it will not be available for encoding/decoding audio."));
-		delete oCodec;
-	}
-
-	if (Global::get().s.bDisableCELT) {
-		// Kill switch for CELT activated. Do not initialize it.
-		return;
-	}
-
-	CELTCodec *codec = nullptr;
-
-	codec = new CELTCodec070(QLatin1String("0.7.0"));
-	if (codec->isValid()) {
-		codec->report();
-		Global::get().qmCodecs.insert(codec->bitstreamVersion(), codec);
-	} else {
-		delete codec;
-		codec = new CELTCodec070(QLatin1String("0.0.0"));
-		if (codec->isValid()) {
-			codec->report();
-			Global::get().qmCodecs.insert(codec->bitstreamVersion(), codec);
-		} else {
-			delete codec;
-		}
-	}
-}
-
-void CodecInit::destroy() {
-	delete Global::get().oCodec;
-
-	foreach (CELTCodec *codec, Global::get().qmCodecs)
-		delete codec;
-	Global::get().qmCodecs.clear();
-}
 
 LoopUser::LoopUser() {
 	qsName    = QLatin1String("Loopy");
@@ -162,7 +110,7 @@ RecordUser::RecordUser() {
 RecordUser::~RecordUser() {
 	AudioOutputPtr ao = Global::get().ao;
 	if (ao)
-		ao->removeBuffer(this);
+		ao->removeUser(this);
 }
 
 void RecordUser::addFrame(const Mumble::Protocol::AudioData &audioData) {

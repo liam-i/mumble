@@ -1,4 +1,4 @@
-// Copyright 2020-2022 The Mumble Developers. All rights reserved.
+// Copyright 2020-2023 The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -105,7 +105,7 @@ bool processMarkdownLink(QString &str, int &offset) {
 		}
 
 		QString replacement =
-			QString::fromLatin1("<a href=\"%1\">%2</a>").arg(unescapeURL(url)).arg(match.captured(1).toHtmlEscaped());
+			QString::fromLatin1("<a href=\"%1\">%2</a>").arg(unescapeURL(url), match.captured(1).toHtmlEscaped());
 		str.replace(match.capturedStart(), match.capturedEnd() - match.capturedStart(), replacement);
 
 		offset += replacement.size();
@@ -326,8 +326,7 @@ bool processPlainLink(QString &str, int &offset) {
 			url = QStringLiteral("https://") + url;
 		}
 
-		QString replacement =
-			QString::fromLatin1("<a href=\"%1\">%2</a>").arg(unescapeURL(url)).arg(url.toHtmlEscaped());
+		QString replacement = QString::fromLatin1("<a href=\"%1\">%2</a>").arg(unescapeURL(url), url.toHtmlEscaped());
 		str.replace(match.capturedStart(), match.capturedEnd() - match.capturedStart(), replacement);
 
 		offset += replacement.size();

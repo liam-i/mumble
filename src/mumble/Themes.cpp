@@ -1,4 +1,4 @@
-// Copyright 2015-2022 The Mumble Developers. All rights reserved.
+// Copyright 2015-2023 The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -74,7 +74,7 @@ bool Themes::applyConfigured() {
 
 	QStringList skinPaths;
 	skinPaths << qssFile.path();
-	skinPaths << QLatin1String(":/themes/Mumble"); // Some skins might want to fall-back on our built-in resources
+	skinPaths << QLatin1String(":/themes/Default"); // Some skins might want to fall-back on our built-in resources
 
 	QString themeQss = QString::fromUtf8(file.readAll());
 	setTheme(themeQss, skinPaths);

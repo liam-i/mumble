@@ -1,4 +1,4 @@
-// Copyright 2020-2022 The Mumble Developers. All rights reserved.
+// Copyright 2020-2023 The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -86,10 +86,8 @@ public class ClientInstaller : MumbleInstall {
 			// 64 bit
 			this.Platform = WixSharp.Platform.x64;
 			binaries = new List<string>() {
-				"celt0.0.7.0.dll",
-				"opus.dll",
 				"rnnoise.dll",
-				"speex.dll",
+				"speexdsp.dll",
 				"mumble.exe",
 				"mumble_app.dll",
 			};
@@ -108,10 +106,8 @@ public class ClientInstaller : MumbleInstall {
 			// 32 bit
 			this.Platform = WixSharp.Platform.x86;
 			binaries = new List<string>() {
-				"celt0.0.7.0.dll",
-				"opus.dll",
 				"rnnoise.dll",
-				"speex.dll",
+				"speexdsp.dll",
 				"mumble.exe",
 				"mumble_app.dll",
 			};

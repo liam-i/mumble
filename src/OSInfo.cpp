@@ -1,4 +1,4 @@
-// Copyright 2009-2022 The Mumble Developers. All rights reserved.
+// Copyright 2009-2023 The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -388,12 +388,12 @@ void OSInfo::fillXml(QDomDocument &doc, QDomElement &root, const QList< QHostAdd
 
 	tag = doc.createElement(QLatin1String("version"));
 	root.appendChild(tag);
-	t = doc.createTextNode(QLatin1String(MUMTEXT(MUMBLE_VERSION)));
+	t = doc.createTextNode(Version::getRelease());
 	tag.appendChild(t);
 
 	tag = doc.createElement(QLatin1String("release"));
 	root.appendChild(tag);
-	t = doc.createTextNode(QLatin1String(MUMBLE_RELEASE));
+	t = doc.createTextNode(Version::getRelease());
 	tag.appendChild(t);
 
 	tag = doc.createElement(QLatin1String("os"));

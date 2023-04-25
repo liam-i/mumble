@@ -1,4 +1,4 @@
-// Copyright 2021-2022 The Mumble Developers. All rights reserved.
+// Copyright 2021-2023 The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -44,6 +44,9 @@ public:
 	}
 
 	procptr_t peekPtr(const procptr_t address) const;
+
+	/// Resolves x64's RIP (Relative Instruction Pointer).
+	procptr_t peekRIP(const procptr_t address) const { return address + peek< uint32_t >(address) + 4; }
 
 	/// Reads the specified amount of data at the specified address and returns it as std::string.
 	/// An empty std::string is returned in case of error.

@@ -1,4 +1,4 @@
-// Copyright 2021 The Mumble Developers. All rights reserved.
+// Copyright 2022-2023 The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -14,7 +14,7 @@
 #include <unordered_map>
 #include <vector>
 
-#include <Tracy.hpp>
+#include <tracy/Tracy.hpp>
 
 class AudioReceiver {
 public:
@@ -80,8 +80,8 @@ public:
 		// the exact same audio packet (thus: no re-encoding required between sending the packet to them).
 		range.end = std::lower_bound(begin, end, *begin, [](const AudioReceiver &lhs, const AudioReceiver &rhs) {
 			return lhs.getContext() == rhs.getContext()
-				   && Mumble::Protocol::protocolVersionsAreCompatible(lhs.getReceiver().uiVersion,
-																	  rhs.getReceiver().uiVersion)
+				   && Mumble::Protocol::protocolVersionsAreCompatible(lhs.getReceiver().m_version,
+																	  rhs.getReceiver().m_version)
 				   // Allow a little variance between volume adjustments
 				   && std::abs(lhs.getVolumeAdjustment().factor - rhs.getVolumeAdjustment().factor) < 0.05f;
 		});
