@@ -1,4 +1,4 @@
-// Copyright 2015-2023 The Mumble Developers. All rights reserved.
+// Copyright The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -10,9 +10,8 @@
 #include <QtCore/QFileInfo>
 #include <QtCore/QMap>
 #include <QtCore/QString>
-#ifndef Q_MOC_RUN
-#	include <boost/optional.hpp>
-#endif
+
+#include <optional>
 
 class QSettings;
 class QDir;
@@ -70,7 +69,7 @@ public:
 	///
 	/// @param themeDirectory
 	/// @return Theme if description was correctly loaded. boost::none if not.
-	static boost::optional< ThemeInfo > load(const QDir &themeDirectory);
+	static std::optional< ThemeInfo > load(const QDir &themeDirectory);
 
 	/// @return Style with given name or default
 	StyleInfo getStyle(QString name_) const;
@@ -83,7 +82,7 @@ public:
 	QString defaultStyle;
 };
 
-Q_DECLARE_METATYPE(ThemeInfo);
-Q_DECLARE_METATYPE(ThemeInfo::StyleInfo);
+Q_DECLARE_METATYPE(ThemeInfo)
+Q_DECLARE_METATYPE(ThemeInfo::StyleInfo)
 
 #endif // MUMBLE_MUMBLE_THEMEINFO_H_

@@ -5,19 +5,32 @@ on:
     types: ["labeled", "closed"]
 
 jobs:
-  backport:
-    name: Backport PR
+  label_checker:
+    name: Check labels
     runs-on: ubuntu-latest
-    if: |
-      github.event.pull_request.merged == true
-      && contains(github.event.pull_request.labels.*.name, 'backport-needed')
-      && (
-        (github.event.action == 'labeled' && github.event.label.name == 'backport-needed')
-        || (github.event.action == 'closed')
-      )
+    outputs:
+      state: ${{ steps.check.outputs.label_check }}
+    steps:
+      - id: check
+        uses: agilepathway/label-checker@v1.6.55
+        with:
+          prefix_mode: true
+          any_of: auto-backport-to-
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          allow_failure: true
+      - name: Print status
+        shell: bash
+        run: 'echo "Label detection status: ${{ steps.check.outputs.label_check }}"'
+
+
+  backport:
+    needs: [ label_checker ]
+    name: Backport PR
+    if: github.event.pull_request.merged == true && needs.label_checker.outputs.state == 'success'
+    runs-on: ubuntu-latest
     steps:
       - name: Backport Action
-        uses: sqren/backport-github-action@v8.9.3
+        uses: sorenlouv/backport-github-action@v9.5.1
         with:
           github_token: ${{ secrets.BACKPORT_TOKEN }}
           auto_backport_label_prefix: auto-backport-to-

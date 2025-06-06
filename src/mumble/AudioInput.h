@@ -1,4 +1,4 @@
-// Copyright 2007-2023 The Mumble Developers. All rights reserved.
+// Copyright The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -13,6 +13,7 @@
 #include <boost/array.hpp>
 #include <boost/shared_ptr.hpp>
 
+#include <cstdint>
 #include <fstream>
 #include <list>
 #include <memory>
@@ -20,11 +21,11 @@
 #include <vector>
 
 #include <speex/speex_echo.h>
-#include <speex/speex_preprocess.h>
 #include <speex/speex_resampler.h>
 
 #include "Audio.h"
 #include "AudioOutputToken.h"
+#include "AudioPreprocessor.h"
 #include "EchoCancelOption.h"
 #include "MumbleProtocol.h"
 #include "Settings.h"
@@ -188,7 +189,9 @@ private:
 	void resetAudioProcessor();
 
 	OpusEncoder *opusState;
+#ifdef USE_RNNOISE
 	DenoiseState *denoiseState;
+#endif
 	bool selectCodec();
 	void selectNoiseCancel();
 
@@ -208,7 +211,7 @@ protected:
 	unsigned int iMicFreq, iEchoFreq;
 	unsigned int iMicLength, iEchoLength;
 	unsigned int iMicSampleSize, iEchoSampleSize;
-	int iEchoMCLength, iEchoFrameSize;
+	unsigned int iEchoMCLength, iEchoFrameSize;
 	quint64 uiMicChannelMask, uiEchoChannelMask;
 
 	bool bEchoMulti;
@@ -221,7 +224,7 @@ protected:
 	static const int iFrameSize = SAMPLE_RATE / 100;
 
 	QMutex qmSpeex;
-	SpeexPreprocessState *sppPreprocess;
+	AudioPreprocessor m_preprocessor;
 	SpeexEchoState *sesEcho;
 
 	/// bResetEncoder is a flag that notifies
@@ -258,14 +261,18 @@ protected:
 	int iBufferedFrames;
 
 	QList< QByteArray > qlFrames;
-	void flushCheck(const QByteArray &, bool terminator, int voiceTargetID);
+	void flushCheck(const QByteArray &, bool terminator, std::int32_t voiceTargetID);
 
 	void initializeMixer();
 
 	static void adjustBandwidth(int bitspersec, int &bitrate, int &frames, bool &allowLowDelay);
+
+	bool bUserIsMuted;
+
 signals:
 	void doDeaf();
 	void doMute();
+	void doMuteCue();
 	/// A signal emitted if audio input is being encountered
 	///
 	/// @param inputPCM The encountered input PCM
@@ -306,6 +313,14 @@ public:
 	void run() Q_DECL_OVERRIDE = 0;
 	virtual bool isAlive() const;
 	bool isTransmitting() const;
+
+	void updateUserMuteDeafState(const ClientUser *user);
+
+protected:
+	virtual void onUserMutedChanged();
+
+public slots:
+	void onUserMuteDeafStateChanged();
 };
 
 #endif

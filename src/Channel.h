@@ -1,4 +1,4 @@
-// Copyright 2007-2023 The Mumble Developers. All rights reserved.
+// Copyright The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -32,9 +32,7 @@ private:
 	QSet< Channel * > qsUnseen;
 
 public:
-	static constexpr int ROOT_ID = 0;
-
-	int iId;
+	unsigned int iId;
 	int iPosition;
 	bool bTemporary;
 	Channel *cParent;
@@ -67,7 +65,7 @@ public:
 	/// setting.
 	unsigned int uiMaxUsers;
 
-	Channel(int id, const QString &name, QObject *p = nullptr);
+	Channel(unsigned int id, const QString &name, QObject *p = nullptr);
 	~Channel();
 
 #ifdef MUMBLE
@@ -79,11 +77,11 @@ public:
 	void clearFilterMode();
 	bool isFiltered() const;
 
-	static QHash< int, Channel * > c_qhChannels;
+	static QHash< unsigned int, Channel * > c_qhChannels;
 	static QReadWriteLock c_qrwlChannels;
 
-	static Channel *get(int);
-	static Channel *add(int, const QString &);
+	static Channel *get(unsigned int);
+	static Channel *add(unsigned int, const QString &);
 	static void remove(Channel *);
 
 	void addClientUser(ClientUser *p);

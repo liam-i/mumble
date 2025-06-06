@@ -1,4 +1,4 @@
-// Copyright 2022-2023 The Mumble Developers. All rights reserved.
+// Copyright The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -82,9 +82,11 @@
 	PROCESS(Settings::WindowLayout, LayoutHybrid, "Hybrid")   \
 	PROCESS(Settings::WindowLayout, LayoutCustom, "Custom")
 
-#define RECORDING_MODE_VALUES                                     \
-	PROCESS(Settings::RecordingMode, RecordingMixdown, "Mixdown") \
-	PROCESS(Settings::RecordingMode, RecordingMultichannel, "Multichannel")
+#define RECORDING_MODE_VALUES                                                                       \
+	PROCESS(Settings::RecordingMode, RecordingMixdown, "Mixdown")                                   \
+	PROCESS(Settings::RecordingMode, RecordingMultichannel, "Multichannel")                         \
+	PROCESS(Settings::RecordingMode, RecordingMultichannelAndTransport, "MultichannelAndTransport") \
+	PROCESS(Settings::RecordingMode, RecordingTransportStandalone, "TransportStandalone")
 
 #define SEARCH_USER_ACTION_VALUES                           \
 	PROCESS(Search::SearchDialog::UserAction, NONE, "None") \
@@ -247,7 +249,7 @@ namespace details {
 
 PROCESS_ALL_ENUMS
 
-};
+}
 
 #undef PROCESS
 #undef AFTER_CODE

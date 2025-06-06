@@ -49,6 +49,16 @@ Build the included version of nlohmann_json instead of looking for one on the sy
 Build the included version of RNNoise instead of looking for one on the system.
 (Default: ${rnnoise})
 
+### bundled-soci
+
+Build the included version of SOCI instead of looking for one on the system
+(Default: ON)
+
+### bundled-spdlog
+
+Use the bundled spdlog version instead of looking for one on the system
+(Default: ON)
+
 ### bundled-speex
 
 Build the included version of Speex instead of looking for one on the system.
@@ -69,15 +79,50 @@ Build support for CoreAudio.
 Include support for reporting crashes to the Mumble developers.
 (Default: ON)
 
+### database-mysql-tests
+
+Whether to include the MySQL database tests (requires special setup)
+(Default: OFF)
+
+### database-postgresql-tests
+
+Whether to include the PostgreSQL database tests (requires special setup)
+(Default: OFF)
+
+### database-sqlite-tests
+
+Whether to include the SQLite database tests
+(Default: ON)
+
 ### debug-dependency-search
 
 Prints extended information during the search for the needed dependencies
+(Default: OFF)
+
+### display-install-paths
+
+Print out base install paths during project configuration
 (Default: OFF)
 
 ### elevation
 
 Set \"uiAccess=true\", required for global shortcuts to work with privileged applications. Requires the client's executable to be signed with a trusted code signing certificate.
 (Default: OFF)
+
+### enable-mysql
+
+Whether or not to enable the MySQL database backend
+(Default: ${server})
+
+### enable-postgresql
+
+Whether or not to enable the PostgreSQL database backend
+(Default: ${server})
+
+### enable-sqlite
+
+Whether or not to enable the SQLite database backend
+(Default: ON)
 
 ### g15
 
@@ -214,6 +259,11 @@ Build static binaries.
 Build binaries in a way that allows easier debugging.
 (Default: OFF)
 
+### test-lto
+
+Whether to use LTO when building test cases
+(Default: ${lto})
+
 ### tests
 
 Build tests.
@@ -233,6 +283,11 @@ Include languages other than English.
 
 Check for updates by default.
 (Default: ON)
+
+### use-pkgconf-install-paths
+
+Try to query install paths from pkgconf - this is incompatible to using CMAKE_INSTALL_PREFIX
+(Default: OFF)
 
 ### warnings-as-errors
 

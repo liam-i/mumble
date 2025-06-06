@@ -1,4 +1,4 @@
-// Copyright 2017-2023 The Mumble Developers. All rights reserved.
+// Copyright The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -9,6 +9,8 @@
 #include <QtCore/QThread>
 
 #include <openssl/crypto.h>
+
+#include <cassert>
 
 static QMutex **locks = nullptr;
 
@@ -48,8 +50,9 @@ unsigned long id_callback() {
 
 void SSLLocks::initialize() {
 	int nlocks = CRYPTO_num_locks();
+	assert(nlocks >= 0);
 
-	locks = reinterpret_cast< QMutex ** >(calloc(nlocks, sizeof(QMutex *)));
+	locks = reinterpret_cast< QMutex ** >(calloc(static_cast< std::size_t >(nlocks), sizeof(void *)));
 	if (!locks) {
 		qFatal("SSLLocks: unable to allocate locks array");
 
@@ -60,7 +63,7 @@ void SSLLocks::initialize() {
 		exit(1);
 	}
 
-	for (int i = 0; i < nlocks; i++) {
+	for (unsigned int i = 0; i < static_cast< std::size_t >(nlocks); i++) {
 		locks[i] = new QMutex;
 	}
 

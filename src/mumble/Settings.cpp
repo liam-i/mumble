@@ -1,4 +1,4 @@
-// Copyright 2007-2023 The Mumble Developers. All rights reserved.
+// Copyright The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -10,6 +10,7 @@
 #include "EnvUtils.h"
 #include "JSONSerialization.h"
 #include "Log.h"
+#include "QtUtils.h"
 #include "SSL.h"
 #include "SettingsKeys.h"
 #include "SettingsMacros.h"
@@ -26,14 +27,12 @@
 #include <QFileInfo>
 #include <QImageReader>
 #include <QMessageBox>
+#include <QOperatingSystemVersion>
 #include <QProcessEnvironment>
 #include <QRegularExpression>
 #include <QSettings>
 #include <QStandardPaths>
 #include <QSystemTrayIcon>
-#if QT_VERSION >= QT_VERSION_CHECK(5, 9, 0)
-#	include <QOperatingSystemVersion>
-#endif
 
 #include <boost/typeof/typeof.hpp>
 
@@ -87,8 +86,8 @@ bool ShortcutTarget::operator==(const ShortcutTarget &o) const {
 		return (iChannel == o.iChannel) && (bLinks == o.bLinks) && (bChildren == o.bChildren) && (qsGroup == o.qsGroup);
 }
 
-quint32 qHash(const ShortcutTarget &t) {
-	quint32 h = t.bForceCenter ? 0x55555555 : 0xaaaaaaaa;
+std::size_t qHash(const ShortcutTarget &t) {
+	std::size_t h = t.bForceCenter ? 0x55555555 : 0xaaaaaaaa;
 
 	if (t.bCurrentSelection) {
 		h ^= 0x20000000;
@@ -98,7 +97,7 @@ quint32 qHash(const ShortcutTarget &t) {
 		foreach (unsigned int u, t.qlSessions)
 			h ^= u;
 	} else {
-		h ^= t.iChannel;
+		h ^= static_cast< unsigned int >(t.iChannel);
 		if (t.bLinks)
 			h ^= 0x80000000;
 		if (t.bChildren)
@@ -109,8 +108,8 @@ quint32 qHash(const ShortcutTarget &t) {
 	return h;
 }
 
-quint32 qHash(const QList< ShortcutTarget > &l) {
-	quint32 h = l.count();
+std::size_t qHash(const QList< ShortcutTarget > &l) {
+	auto h = static_cast< std::size_t >(l.count());
 	foreach (const ShortcutTarget &st, l)
 		h ^= qHash(st);
 	return h;
@@ -157,11 +156,12 @@ void Settings::save(const QString &path) const {
 	QFile tmpFile(QString::fromLatin1("%1/mumble_settings.json.tmp")
 					  .arg(QStandardPaths::writableLocation(QStandardPaths::TempLocation)));
 
-	{
-		// The separate scope makes sure, the stream is closed again after the write has finished
-		std::ofstream stream(tmpFile.fileName().toUtf8());
+	std::ofstream stream(Mumble::QtUtils::qstring_to_path(tmpFile.fileName()));
+	stream << settingsJSON.dump(4) << std::endl;
+	stream.close();
 
-		stream << settingsJSON.dump(4) << std::endl;
+	if (stream.fail()) {
+		qWarning("Failed at writing temporary settings file: %s", qUtf8Printable(tmpFile.fileName()));
 	}
 
 	QFile targetFile(path);
@@ -219,12 +219,12 @@ void Settings::save() const {
 void Settings::load(const QString &path) {
 	if (path.endsWith(QLatin1String(BACKUP_FILE_EXTENSION))) {
 		// Trim away the backup extension
-		settingsLocation = path.left(path.size() - std::strlen(BACKUP_FILE_EXTENSION));
+		settingsLocation = path.left(path.size() - static_cast< int >(std::strlen(BACKUP_FILE_EXTENSION)));
 	} else {
 		settingsLocation = path;
 	}
 
-	std::ifstream stream(path.toUtf8());
+	std::ifstream stream(Mumble::QtUtils::qstring_to_path(path));
 
 	nlohmann::json settingsJSON;
 	try {
@@ -268,7 +268,7 @@ void Settings::load(const QString &path) {
 						"If you experience repeated crashes with these settings, you might have to manually delete the "
 						"settings files at <pre>%1</pre> and <pre>%2</pre> in order to reset all settings to their "
 						"default value.")
-						.arg(path.left(path.size() - std::strlen(BACKUP_FILE_EXTENSION)))
+						.arg(path.left(path.size() - static_cast< int >(std::strlen(BACKUP_FILE_EXTENSION))))
 						.arg(path));
 				msgBox.setIcon(QMessageBox::Warning);
 				msgBox.exec();
@@ -351,9 +351,9 @@ QDataStream &operator>>(QDataStream &qds, ShortcutTarget &st) {
 			buf[i] = 0;
 		}
 
-		int read = device->peek(buf, sizeof(buf));
+		qint64 read = device->peek(buf, sizeof(buf));
 
-		for (int i = 0; i < read; i++) {
+		for (unsigned int i = 0; i < read; i++) {
 			if (buf[i] >= 31) {
 				if (buf[i] == 'v') {
 					qds >> versionString;
@@ -397,7 +397,7 @@ bool operator<(const ChannelTarget &lhs, const ChannelTarget &rhs) {
 	return lhs.channelID < rhs.channelID;
 }
 
-quint32 qHash(const ChannelTarget &target) {
+std::size_t qHash(const ChannelTarget &target) {
 	return qHash(target.channelID);
 }
 
@@ -514,16 +514,11 @@ Settings::Settings() {
 	GlobalShortcutWin::registerMetaTypes();
 #endif
 	qRegisterMetaType< ShortcutTarget >("ShortcutTarget");
-	qRegisterMetaTypeStreamOperators< ShortcutTarget >("ShortcutTarget");
 	qRegisterMetaType< ChannelTarget >("ChannelTarget");
-	qRegisterMetaTypeStreamOperators< ChannelTarget >("ChannelTarget");
 	qRegisterMetaType< QVariant >("QVariant");
 	qRegisterMetaType< PluginSetting >("PluginSetting");
-	qRegisterMetaTypeStreamOperators< PluginSetting >("PluginSetting");
 	qRegisterMetaType< Search::SearchDialog::UserAction >("SearchDialog::UserAction");
 	qRegisterMetaType< Search::SearchDialog::ChannelAction >("SearchDialog::ChannelAction");
-
-
 #ifdef Q_OS_MACOS
 	// The echo cancellation feature on macOS is experimental and known to be able to cause problems
 	// (e.g. muting the user instead of only cancelling echo - https://github.com/mumble-voip/mumble/issues/4912)
@@ -532,13 +527,7 @@ Settings::Settings() {
 #endif
 #ifdef Q_OS_WIN
 	// Don't enable minimize to tray by default on Windows >= 7
-#	if QT_VERSION >= QT_VERSION_CHECK(5, 9, 0)
-	// Since Qt 5.9 QOperatingSystemVersion is preferred over QSysInfo::WinVersion
 	bHideInTray = QOperatingSystemVersion::current() < QOperatingSystemVersion::Windows7;
-#	else
-	const QSysInfo::WinVersion winVer = QSysInfo::windowsVersion();
-	bHideInTray                       = (winVer < QSysInfo::WV_WINDOWS7);
-#	endif
 #else
 	const bool isUnityDesktop =
 		QProcessEnvironment::systemEnvironment().value(QLatin1String("XDG_CURRENT_DESKTOP")) == QLatin1String("Unity");
@@ -624,13 +613,13 @@ void OverlaySettings::savePresets(const QString &filename) {
 	settingsJSON.erase(SettingsKeys::OVERLAY_LAUNCHERS_KEY);
 	settingsJSON.erase(SettingsKeys::OVERLAY_LAUNCHERS_EXCLUDE_KEY);
 
-	std::ofstream stream(filename.toUtf8());
+	std::ofstream stream(Mumble::QtUtils::qstring_to_path(filename));
 
 	stream << settingsJSON.dump(4) << std::endl;
 }
 
 void OverlaySettings::load(const QString &filename) {
-	std::ifstream stream(filename.toUtf8());
+	std::ifstream stream(Mumble::QtUtils::qstring_to_path(filename));
 
 	nlohmann::json settingsJSON;
 	try {
@@ -713,8 +702,8 @@ void OverlaySettings::legacyLoad(QSettings *settings_ptr) {
 	LOAD(uiColumns, "columns");
 
 	settings_ptr->beginReadArray(QLatin1String("states"));
-	for (int i = 0; i < 4; ++i) {
-		settings_ptr->setArrayIndex(i);
+	for (unsigned int i = 0; i < 4; ++i) {
+		settings_ptr->setArrayIndex(static_cast< int >(i));
 		LOAD(qcUserName[i], "color");
 		LOAD(fUser[i], "opacity");
 	}
@@ -964,7 +953,6 @@ void Settings::legacyLoad(const QString &path) {
 	LOAD(qbaMinimalViewState, "ui/minimalviewstate");
 	LOAD(qbaConfigGeometry, "ui/ConfigGeometry");
 	LOADENUM(wlWindowLayout, "ui/WindowLayout");
-	LOAD(qbaHeaderState, "ui/header");
 	LOAD(qsUsername, "ui/username");
 	LOAD(qsLastServer, "ui/server");
 	LOADENUM(ssFilter, "ui/serverfilter");
@@ -1112,8 +1100,8 @@ void Settings::legacyLoad(const QString &path) {
 
 		if (pluginKey.contains(QLatin1String("_"))) {
 			// The key contains the filename as well as the hash
-			int index  = pluginKey.lastIndexOf(QLatin1String("_"));
-			pluginHash = pluginKey.right(pluginKey.size() - index - 1);
+			const auto index = pluginKey.lastIndexOf(QLatin1String("_"));
+			pluginHash       = pluginKey.right(pluginKey.size() - index - 1);
 		} else {
 			pluginHash = pluginKey;
 		}
@@ -1150,8 +1138,9 @@ void Settings::legacyLoad(const QString &path) {
 			if (iIdleTime == 5 * 60) { // New default
 				iaeIdleAction = Settings::Nothing;
 			} else {
-				iIdleTime     = 60 * qRound(Global::get().s.iIdleTime / 60.); // Round to minutes
-				iaeIdleAction = Settings::Deafen;                             // Old behavior
+				iIdleTime =
+					static_cast< unsigned int >(60 * qRound(Global::get().s.iIdleTime / 60.)); // Round to minutes
+				iaeIdleAction = Settings::Deafen;                                              // Old behavior
 			}
 			// Fallthrough
 #ifdef Q_OS_WIN
@@ -1277,7 +1266,7 @@ QString Settings::findSettingsLocation(bool legacy, bool *foundExistingFile) con
 	// this path instead of creating a new one (in the location that we currently think is best to use).
 	QStringList paths;
 	paths << QCoreApplication::instance()->applicationDirPath();
-	paths << QStandardPaths::writableLocation(QStandardPaths::DataLocation);
+	paths << QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation);
 	paths << QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation);
 	paths << QStandardPaths::writableLocation(QStandardPaths::ConfigLocation);
 	paths << QFileInfo(QSettings().fileName()).dir().absolutePath();

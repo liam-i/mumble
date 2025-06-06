@@ -1,4 +1,4 @@
-// Copyright 2015-2023 The Mumble Developers. All rights reserved.
+// Copyright The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -51,8 +51,8 @@ void OverlayPositionableItem::onMove() {
 	const QRectF &sr = scene()->sceneRect();
 	const QPointF &p = m_qgeiHandle->pos();
 
-	m_position->setX(qBound< qreal >(0.0f, p.x() / sr.width(), 1.0f));
-	m_position->setY(qBound< qreal >(0.0f, p.y() / sr.height(), 1.0f));
+	m_position->setX(qBound< qreal >(0.0, p.x() / sr.width(), 1.0f));
+	m_position->setY(qBound< qreal >(0.0, p.y() / sr.height(), 1.0f));
 
 	m_qgeiHandle->setPos(m_position->x() * sr.width(), m_position->y() * sr.height());
 
@@ -62,7 +62,8 @@ void OverlayPositionableItem::onMove() {
 void OverlayPositionableItem::updateRender() {
 	const QRectF &sr = scene()->sceneRect();
 	// Translate the 0..1 float position to the real scene coordinates (relative to absolute position)
-	QPoint absPos(iroundf(sr.width() * m_position->x() + 0.5f), iroundf(sr.height() * m_position->y() + 0.5f));
+	QPoint absPos(static_cast< int >(sr.width() * m_position->x() + 0.5f),
+				  static_cast< int >(sr.height() * m_position->y() + 0.5f));
 
 	if (m_isPositionEditable) {
 		if (!m_qgeiHandle) {
@@ -73,7 +74,8 @@ void OverlayPositionableItem::updateRender() {
 
 	QRectF br = boundingRect();
 	// Limit the position by the elements width (to make sure it is right-/bottom-bound rather than outside of the scene
-	QPoint maxPos(iroundf(sr.width() - br.width() + 0.5f), iroundf(sr.height() - br.height() + 0.5f));
+	QPoint maxPos(static_cast< int >(sr.width() - br.width() + 0.5f),
+				  static_cast< int >(sr.height() - br.height() + 0.5f));
 	int basex = qBound< int >(0, absPos.x(), maxPos.x());
 	int basey = qBound< int >(0, absPos.y(), maxPos.y());
 	setPos(basex, basey);

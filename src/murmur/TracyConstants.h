@@ -1,4 +1,4 @@
-// Copyright 2021-2023 The Mumble Developers. All rights reserved.
+// Copyright The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -20,6 +20,6 @@ static constexpr const char *AUDIO_ENCODE               = "audio_encode";
 static constexpr const char *AUDIO_UPDATE               = "audio_update";
 static constexpr const char *AUDIO_WHISPER_CACHE_STORE  = "audio_whisper_cache_restore";
 static constexpr const char *AUDIO_WHISPER_CACHE_CREATE = "audio_whisper_cache_create";
-}; // namespace TracyConstants
+} // namespace TracyConstants
 
 #endif // MUMBLE_MURMUR_TRACYCONSTANTS_H_

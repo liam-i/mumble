@@ -1,10 +1,18 @@
-// Copyright 2007-2023 The Mumble Developers. All rights reserved.
+// Copyright The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
 
 // For detailed info about RAWKEYBOARD handling:
 // https://blog.molecular-matters.com/2011/09/05/properly-handling-keyboard-input
+
+#ifdef _MSVC_LANG
+#	pragma warning(push)
+// SPSCQueue does some funky alignment tricks which trigger the C4316
+// warning about potential misalignment on the heap.
+// We just have to trust the SPSCQueue implementation here.
+#	pragma warning(disable : 4316)
+#endif
 
 #include "GlobalShortcut_win.h"
 
@@ -14,7 +22,8 @@
 #	include "GKey.h"
 #endif
 
-#include <codecvt>
+#include "win.h"
+
 #include <iomanip>
 #include <mutex>
 #include <sstream>
@@ -28,6 +37,8 @@ extern "C" {
 #include <hidpi.h>
 // clang-format on
 }
+
+#include <utf8/cpp11.h>
 
 // From os_win.cpp
 extern HWND mumble_mw_hwnd;
@@ -185,25 +196,13 @@ void GlobalShortcutWin::registerMetaTypes() {
 		registered = true;
 
 		qRegisterMetaType< InputHid >();
-		qRegisterMetaTypeStreamOperators< InputHid >();
-		QMetaType::registerComparators< InputHid >();
-
 		qRegisterMetaType< InputKeyboard >();
-		qRegisterMetaTypeStreamOperators< InputKeyboard >();
-		QMetaType::registerComparators< InputKeyboard >();
-
 		qRegisterMetaType< InputMouse >();
-		qRegisterMetaTypeStreamOperators< InputMouse >();
-		QMetaType::registerComparators< InputMouse >();
 #ifdef USE_XBOXINPUT
 		qRegisterMetaType< InputXinput >();
-		qRegisterMetaTypeStreamOperators< InputXinput >();
-		QMetaType::registerComparators< InputXinput >();
 #endif
 #ifdef USE_GKEY
 		qRegisterMetaType< InputGkey >();
-		qRegisterMetaTypeStreamOperators< InputGkey >();
-		QMetaType::registerComparators< InputGkey >();
 #endif
 	}
 }
@@ -212,7 +211,7 @@ QList< Shortcut > GlobalShortcutWin::migrateSettings(const QList< Shortcut > &ol
 	constexpr QUuid KEYBOARD_UUID(0x6F1D2B61, 0xD5A0, 0x11CF, 0xBF, 0xC7, 0x44, 0x45, 0x53, 0x54, 0x00, 0x00);
 	constexpr QUuid MOUSE_UUID(0x6F1D2B60, 0xD5A0, 0x11CF, 0xBF, 0xC7, 0x44, 0x45, 0x53, 0x54, 0x00, 0x00);
 	constexpr QUuid XINPUT_UUID(0xCA3937E3, 0x640C, 0x4D9E, 0x9E, 0xF3, 0x90, 0x3F, 0x8B, 0x4F, 0xBC, 0xAB);
-	constexpr QUuid GKEY_KEYBOARD_UUID(0x153E64E6, 0x98C8, 0x4E, 0x03, 0x80EF, 0x5F, 0xFD, 0x33, 0xD2, 0x5B, 0x8A);
+	constexpr QUuid GKEY_KEYBOARD_UUID(0x153E64E6, 0x98C8, 0x4E03, 0x80, 0xEF, 0x5F, 0xFD, 0x33, 0xD2, 0x5B, 0x8A);
 	constexpr QUuid GKEY_MOUSE_UUID(0xC41E60AF, 0x9022, 0x46CF, 0xBC, 0x39, 0x37, 0x98, 0x10, 0x82, 0xD7, 0x16);
 
 	QList< Shortcut > newShortcuts;
@@ -489,7 +488,7 @@ void GlobalShortcutWin::processMsgHid(MsgHid &msg) {
 #endif
 	auto data = reinterpret_cast< PHIDP_PREPARSED_DATA >(&device.data[0]);
 
-	ULONG nUsages = device.buttons.size();
+	ULONG nUsages = static_cast< ULONG >(device.buttons.size());
 	std::vector< USAGE > usages(nUsages);
 	if (HidP_GetUsages(HidP_Input, HID_USAGE_PAGE_BUTTON, 0, &usages[0], &nUsages, data, &msg.reports[0],
 					   msg.reportSize)
@@ -621,15 +620,13 @@ GlobalShortcutWin::DeviceMap::iterator GlobalShortcutWin::addDevice(const HANDLE
 				name.clear();
 				name.resize(127);
 
-				std::wstring_convert< std::codecvt_utf8_utf16< wchar_t > > conv;
-
-				if (HidD_GetManufacturerString(handle, &name[0], sizeof(wchar_t) * name.size())) {
-					nameStream << ' ' << conv.to_bytes(name);
+				if (HidD_GetManufacturerString(handle, &name[0], static_cast< ULONG >(sizeof(wchar_t) * name.size()))) {
+					nameStream << ' ' << utf16To8(name);
 					name.clear();
 				}
 
-				if (HidD_GetProductString(handle, &name[0], sizeof(wchar_t) * name.size())) {
-					nameStream << ' ' << conv.to_bytes(name);
+				if (HidD_GetProductString(handle, &name[0], static_cast< ULONG >(sizeof(wchar_t) * name.size()))) {
+					nameStream << ' ' << utf16To8(name);
 				}
 
 				CloseHandle(handle);
@@ -880,4 +877,22 @@ GlobalShortcutWin::ButtonInfo GlobalShortcutWin::buttonInfo(const QVariant &butt
 #endif
 
 	return info;
+}
+
+#ifdef _MSVC_LANG
+#	pragma warning(pop)
+#endif
+
+std::string GlobalShortcutWin::utf16To8(const std::wstring &wstr) {
+	if (wstr.empty()) {
+		return {};
+	}
+
+	const std::u16string str16{ wstr.cbegin(), wstr.cend() };
+
+	try {
+		return utf8::utf16to8(str16);
+	} catch (const utf8::invalid_utf16 &) {
+		return {};
+	}
 }

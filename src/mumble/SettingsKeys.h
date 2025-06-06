@@ -1,4 +1,4 @@
-// Copyright 2022-2023 The Mumble Developers. All rights reserved.
+// Copyright The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -35,6 +35,7 @@ namespace SettingsKeys {
  */
 
 // Audio settings
+const SettingsKey UNMUTE_ON_UNDEAF_KEY                        = { "unmute_on_undeaf" };
 const SettingsKey MUTE_KEY                                    = { "mute" };
 const SettingsKey DEAF_KEY                                    = { "deaf" };
 const SettingsKey TRANSMIT_MODE_KEY                           = { "transmit_mode" };
@@ -46,6 +47,7 @@ const SettingsKey TRANSMIT_CUE_START_KEY                      = { "transmit_cue_
 const SettingsKey TRANSMIT_CUE_STOP_KEY                       = { "transmit_cue_stop" };
 const SettingsKey PLAY_MUTE_CUE_KEY                           = { "play_mute_cue" };
 const SettingsKey MUTE_CUE_KEY                                = { "mute_cue" };
+const SettingsKey MUTE_CUE_POPUP_SHOWN                        = { "mute_cue_popup_shown" };
 const SettingsKey AUDIO_QUALITY_KEY                           = { "audio_quality" };
 const SettingsKey LOUDNESS_KEY                                = { "loudness" };
 const SettingsKey VOLUME_KEY                                  = { "volume" };
@@ -223,6 +225,7 @@ const SettingsKey CRASH_EMAIL_ADDRESS_KEY                = { "crash_report_email
 // TalkingUI
 const SettingsKey TALKINGUI_POSITION_KEY                   = { "talkingui_position" };
 const SettingsKey SHOW_TALKINGUI_KEY                       = { "display_talkingui" };
+const SettingsKey TALKINGUI_USERS_ALWAYS_VISIBLE_KEY       = { "users_always_visible" };
 const SettingsKey TALKINGUI_LOCAL_USER_STAYS_VISIBLE_KEY   = { "local_user_stays_visible" };
 const SettingsKey TALKINGUI_ABBREVIATE_CHANNEL_NAMES_KEY   = { "abbreviate_channel_names" };
 const SettingsKey TALKINGUI_ABBREVIATE_CURRENT_CHANNEL_KEY = { "abbreviate_current_channel_name" };
@@ -234,6 +237,7 @@ const SettingsKey TALKINGUI_MAX_CHANNEL_NAME_LENGTH_KEY    = { "max_channel_name
 const SettingsKey TALKINGUI_NAME_PREFIX_COUNT_KEY          = { "name_prefix_count" };
 const SettingsKey TALKINGUI_NAME_POSTFIX_COUNT_KEY         = { "name_postfix_count" };
 const SettingsKey TALKINGUI_ABBREVIATION_REPLACEMENT_KEY   = { "abbreviation_replacement" };
+const SettingsKey TALKINGUI_BACKGROUND_COLOR_KEY           = { "background_color" };
 
 // Channel hierarchy
 const SettingsKey CHANNEL_NAME_SEPARATOR_KEY = { "channel_name_separator" };
@@ -341,6 +345,6 @@ const SettingsKey SETTINGS_VERSION_KEY     = { "settings_version" };
 const SettingsKey CERTIFICATE_KEY          = { "certificate" };
 const SettingsKey MUMBLE_QUIT_NORMALLY_KEY = { "mumble_has_quit_normally" };
 
-}; // namespace SettingsKeys
+} // namespace SettingsKeys
 
 #endif // MUMBLE_MUMBLE_SETTINGSKEYS_H_

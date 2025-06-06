@@ -1,4 +1,4 @@
-// Copyright 2007-2023 The Mumble Developers. All rights reserved.
+// Copyright The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -198,8 +198,8 @@ void GlobalShortcutX::run() {
 				}
 			}
 			for (int i = 8; i <= 12; ++i) {
-				bool oldstate = (mask[idx] & (1 << i)) != 0;
-				bool newstate = (mask[next] & (1 << i)) != 0;
+				bool oldstate = (mask[idx] & static_cast< unsigned int >(1 << i)) != 0;
+				bool newstate = (mask[next] & static_cast< unsigned int >(1 << i)) != 0;
 				if (oldstate != newstate) {
 					handleButton(0x110 + i, newstate);
 				}
@@ -351,7 +351,7 @@ void GlobalShortcutX::directoryChanged(const QString &dir) {
 		return;
 	}
 
-	QDir d(dir, QLatin1String("event*"), 0, QDir::System);
+	QDir d(dir, QLatin1String("event*"), {}, QDir::System);
 	foreach (QFileInfo fi, d.entryInfoList()) {
 		QString path = fi.absoluteFilePath();
 		if (!qmInputDevices.contains(path)) {

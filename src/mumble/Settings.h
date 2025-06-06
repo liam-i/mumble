@@ -1,4 +1,4 @@
-// Copyright 2007-2023 The Mumble Developers. All rights reserved.
+// Copyright The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -22,9 +22,11 @@
 #include <QStringList>
 #include <QVariant>
 #include <Qt>
+#include <optional>
 
 #include "Channel.h"
 #include "EchoCancelOption.h"
+#include "MumbleConstants.h"
 #include "QuitBehavior.h"
 #include "SSL.h"
 #include "SearchDialog.h"
@@ -55,10 +57,10 @@ struct Shortcut {
 };
 
 struct ChannelTarget {
-	int channelID = Channel::ROOT_ID;
+	unsigned int channelID = Mumble::ROOT_CHANNEL_ID;
 
 	ChannelTarget() = default;
-	ChannelTarget(int id) : channelID(id) {}
+	ChannelTarget(unsigned int id) : channelID(id) {}
 
 	friend bool operator==(const ChannelTarget &lhs, const ChannelTarget &rhs);
 	friend bool operator<(const ChannelTarget &lhs, const ChannelTarget &rhs);
@@ -66,7 +68,7 @@ struct ChannelTarget {
 
 Q_DECLARE_METATYPE(ChannelTarget)
 
-quint32 qHash(const ChannelTarget &);
+std::size_t qHash(const ChannelTarget &);
 
 struct ShortcutTarget {
 	bool bCurrentSelection           = false;
@@ -81,14 +83,13 @@ struct ShortcutTarget {
 
 	ShortcutTarget() = default;
 	bool isServerSpecific() const;
-	bool operator<(const ShortcutTarget &) const;
 	bool operator==(const ShortcutTarget &) const;
 };
 
 Q_DECLARE_METATYPE(ShortcutTarget)
 
-quint32 qHash(const ShortcutTarget &);
-quint32 qHash(const QList< ShortcutTarget > &);
+std::size_t qHash(const ShortcutTarget &);
+std::size_t qHash(const QList< ShortcutTarget > &);
 
 struct PluginSetting {
 	QString path                 = {};
@@ -207,7 +208,12 @@ struct Settings {
 	enum WindowLayout { LayoutClassic, LayoutStacked, LayoutHybrid, LayoutCustom };
 	enum AlwaysOnTopBehaviour { OnTopNever, OnTopAlways, OnTopInMinimal, OnTopInNormal };
 	enum ProxyType { NoProxy, HttpProxy, Socks5Proxy };
-	enum RecordingMode { RecordingMixdown, RecordingMultichannel };
+	enum RecordingMode {
+		RecordingMixdown,
+		RecordingMultichannel,
+		RecordingMultichannelAndTransport,
+		RecordingTransportStandalone
+	};
 
 	typedef QPair< QList< QSslCertificate >, QSslKey > KeyPair;
 
@@ -223,12 +229,14 @@ struct Settings {
 	bool audioCueEnabledPTT = true;
 	bool audioCueEnabledVAD = false;
 	QString qsTxAudioCueOn  = cqsDefaultPushClickOn;
-	QString qsTxAudioCueOff = cqsDefaultPushClickOn;
+	QString qsTxAudioCueOff = cqsDefaultPushClickOff;
 
 	bool bTxMuteCue     = true;
+	bool muteCueShown   = false;
 	QString qsTxMuteCue = cqsDefaultMuteCue;
 
 	bool bTransmitPosition         = false;
+	bool unmuteOnUndeaf            = false;
 	bool bMute                     = false;
 	bool bDeaf                     = false;
 	bool bTTS                      = false;
@@ -336,7 +344,7 @@ struct Settings {
 	bool bPositionalHeadphone     = false;
 	float fAudioMinDistance       = 1.0f;
 	float fAudioMaxDistance       = 15.0f;
-	float fAudioMaxDistVolume     = 0.25f;
+	float fAudioMaxDistVolume     = 0.0f;
 	float fAudioBloom             = 0.5f;
 	/// Contains the settings for each individual plugin. The key in this map is the Hex-represented SHA-1
 	/// hash of the plugin's UTF-8 encoded absolute file-path on the hard-drive.
@@ -369,18 +377,20 @@ struct Settings {
 
 	QPoint qpTalkingUI_Position              = UNSPECIFIED_POSITION;
 	bool bShowTalkingUI                      = false;
+	bool talkingUI_UsersAlwaysVisible        = false;
 	bool bTalkingUI_LocalUserStaysVisible    = false;
 	bool bTalkingUI_AbbreviateChannelNames   = true;
 	bool bTalkingUI_AbbreviateCurrentChannel = false;
 	bool bTalkingUI_ShowLocalListeners       = false;
 	/// relative font size in %
-	int iTalkingUI_RelativeFontSize             = 100;
-	int iTalkingUI_SilentUserLifeTime           = 10;
-	int iTalkingUI_ChannelHierarchyDepth        = 1;
-	int iTalkingUI_MaxChannelNameLength         = 20;
-	int iTalkingUI_PrefixCharCount              = 3;
-	int iTalkingUI_PostfixCharCount             = 2;
-	QString qsTalkingUI_AbbreviationReplacement = QStringLiteral("...");
+	int iTalkingUI_RelativeFontSize                   = 100;
+	int iTalkingUI_SilentUserLifeTime                 = 10;
+	int iTalkingUI_ChannelHierarchyDepth              = 1;
+	int iTalkingUI_MaxChannelNameLength               = 20;
+	int iTalkingUI_PrefixCharCount                    = 3;
+	int iTalkingUI_PostfixCharCount                   = 2;
+	QString qsTalkingUI_AbbreviationReplacement       = QStringLiteral("...");
+	std::optional< QColor > talkingUI_BackgroundColor = std::nullopt;
 
 	QString qsHierarchyChannelSeparator = QStringLiteral("/");
 
@@ -400,7 +410,6 @@ struct Settings {
 	QByteArray qbaMainWindowState        = {};
 	QByteArray qbaMinimalViewGeometry    = {};
 	QByteArray qbaMinimalViewState       = {};
-	QByteArray qbaHeaderState            = {};
 	QByteArray qbaConfigGeometry         = {};
 	WindowLayout wlWindowLayout          = LayoutClassic;
 	ChannelExpand ceExpand               = ChannelsWithUsers;
@@ -576,5 +585,11 @@ private:
 	void verifySettingsKeys() const;
 	QString findSettingsLocation(bool legacy = false, bool *foundExistingFile = nullptr) const;
 };
+
+QDataStream &operator<<(QDataStream &qds, const ChannelTarget &target);
+QDataStream &operator>>(QDataStream &qds, ChannelTarget &target);
+
+QDataStream &operator<<(QDataStream &qds, const ShortcutTarget &st);
+QDataStream &operator>>(QDataStream &qds, ShortcutTarget &st);
 
 #endif // MUMBLE_MUMBLE_SETTINGS_H_

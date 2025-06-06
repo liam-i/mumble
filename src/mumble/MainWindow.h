@@ -1,4 +1,4 @@
-// Copyright 2007-2023 The Mumble Developers. All rights reserved.
+// Copyright The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -10,7 +10,6 @@
 #include <QtCore/QtGlobal>
 #include <QtNetwork/QAbstractSocket>
 #include <QtWidgets/QMainWindow>
-#include <QtWidgets/QSystemTrayIcon>
 
 #include "CustomElements.h"
 #include "MUComboBox.h"
@@ -19,6 +18,9 @@
 #include "QtUtils.h"
 #include "Usage.h"
 #include "UserLocalNicknameDialog.h"
+
+#include <optional>
+#include <stack>
 
 #include "ui_MainWindow.h"
 
@@ -41,7 +43,7 @@ class PTTButtonWidget;
 
 namespace Search {
 class SearchDialog;
-};
+}
 
 class MenuLabel;
 class ListenerVolumeSlider;
@@ -74,15 +76,14 @@ private:
 	Q_DISABLE_COPY(MainWindow)
 public:
 	UserModel *pmModel;
-	QSystemTrayIcon *qstiIcon;
 	QMenu *qmUser;
 	QMenu *qmChannel;
 	QMenu *qmListener;
 	QMenu *qmDeveloper;
-	QMenu *qmTray;
 	QIcon qiIcon, qiIconMutePushToMute, qiIconMuteSelf, qiIconMuteServer, qiIconDeafSelf, qiIconDeafServer,
 		qiIconMuteSuppressed;
 	QIcon qiTalkingOn, qiTalkingWhisper, qiTalkingShout, qiTalkingOff;
+	QIcon m_iconInformation;
 	std::unordered_map< unsigned int, qt_unique_ptr< UserLocalNicknameDialog > > qmUserNicknameTracker;
 
 	/// "Action" for when there are no actions available
@@ -99,6 +100,17 @@ public:
 	GlobalShortcut *gsSendTextMessage, *gsSendClipboardTextMessage;
 	GlobalShortcut *gsToggleTalkingUI;
 	GlobalShortcut *gsToggleSearch;
+	GlobalShortcut *gsServerConnect, *gsServerDisconnect, *gsServerInformation, *gsServerTokens;
+	GlobalShortcut *gsServerUserList, *gsServerBanList;
+	GlobalShortcut *gsSelfPrioritySpeaker;
+	GlobalShortcut *gsRecording;
+	GlobalShortcut *gsSelfComment, *gsServerTexture, *gsServerTextureRemove;
+	GlobalShortcut *gsSelfRegister, *gsAudioStats;
+	GlobalShortcut *gsConfigDialog, *gsAudioWizard, *gsConfigCert;
+	GlobalShortcut *gsAudioTTS;
+	GlobalShortcut *gsHelpAbout, *gsHelpAboutQt, *gsHelpVersionCheck;
+	GlobalShortcut *gsTogglePositionalAudio;
+	GlobalShortcut *gsMoveBack;
 
 	DockTitleBar *dtbLogDockTitle, *dtbChatDockTitle;
 
@@ -116,7 +128,6 @@ public:
 	bool forceQuit;
 	/// Restart the client after shutdown
 	bool restartOnQuit;
-	bool bAutoUnmute;
 
 	/// Contains the cursor whose position is immediately before the image to
 	/// save when activating the "Save Image As..." context menu item.
@@ -132,17 +143,19 @@ public:
 	void setOnTop(bool top);
 	void setShowDockTitleBars(bool doShow);
 	void updateAudioToolTips();
-	void updateTrayIcon();
 	void updateUserModel();
 	void focusNextMainWidget();
 	QPair< QByteArray, QImage > openImageFile();
+
+	void loadState(bool minimalView);
+	void storeState(bool minimalView);
 
 	void updateChatBar();
 	void openTextMessageDialog(ClientUser *p);
 	void openUserLocalNicknameDialog(const ClientUser &p);
 
 #ifdef Q_OS_WIN
-	bool nativeEvent(const QByteArray &eventType, void *message, long *result) Q_DECL_OVERRIDE;
+	bool nativeEvent(const QByteArray &eventType, void *message, qintptr *result) Q_DECL_OVERRIDE;
 	unsigned int uiNewHardware;
 #endif
 protected:
@@ -185,6 +198,11 @@ protected:
 	qt_unique_ptr< UserLocalVolumeSlider > m_userLocalVolumeSlider;
 	qt_unique_ptr< ListenerVolumeSlider > m_listenerVolumeSlider;
 
+	std::stack< unsigned int > m_previousChannels;
+	std::optional< unsigned int > m_movedBackFromChannel;
+
+	static constexpr int stateVersion();
+
 	void createActions();
 	void setupGui();
 	void updateWindowTitle();
@@ -209,6 +227,8 @@ protected:
 	Channel *getContextMenuChannel();
 	ClientUser *getContextMenuUser();
 	ContextMenuTarget getContextMenuTargets();
+
+	void autocompleteUsername();
 
 public slots:
 	void on_qmServer_aboutToShow();
@@ -249,6 +269,7 @@ public slots:
 	void qmChannel_aboutToShow();
 	void on_qaChannelJoin_triggered();
 	void on_qaUserJoin_triggered();
+	void on_qaUserMove_triggered();
 	void on_qaChannelListen_triggered();
 	void on_qaChannelAdd_triggered();
 	void on_qaChannelRemove_triggered();
@@ -280,7 +301,6 @@ public slots:
 	void on_qaHelpAboutQt_triggered();
 	void on_qaHelpVersionCheck_triggered();
 	void on_qaQuit_triggered();
-	void on_qaHide_triggered();
 	void on_qteChat_tabPressed();
 	void on_qteChat_backtabPressed();
 	void on_qteChat_ctrlSpacePressed();
@@ -307,8 +327,30 @@ public slots:
 	void on_gsSendClipboardTextMessage_triggered(bool, QVariant);
 	void on_gsToggleTalkingUI_triggered(bool, QVariant);
 	void on_gsToggleSearch_triggered(bool, QVariant);
+	void on_gsServerConnect_triggered(bool, QVariant);
+	void on_gsServerDisconnect_triggered(bool, QVariant);
+	void on_gsServerInformation_triggered(bool, QVariant);
+	void on_gsServerTokens_triggered(bool, QVariant);
+	void on_gsServerUserList_triggered(bool, QVariant);
+	void on_gsServerBanList_triggered(bool, QVariant);
+	void on_gsSelfPrioritySpeaker_triggered(bool, QVariant);
+	void on_gsRecording_triggered(bool, QVariant);
+	void on_gsSelfComment_triggered(bool, QVariant);
+	void on_gsServerTexture_triggered(bool, QVariant);
+	void on_gsServerTextureRemove_triggered(bool, QVariant);
+	void on_gsSelfRegister_triggered(bool, QVariant);
+	void on_gsAudioStats_triggered(bool, QVariant);
+	void on_gsConfigDialog_triggered(bool, QVariant);
+	void on_gsAudioWizard_triggered(bool, QVariant);
+	void on_gsConfigCert_triggered(bool, QVariant);
+	void on_gsAudioTTS_triggered(bool, QVariant);
+	void on_gsHelpAbout_triggered(bool, QVariant);
+	void on_gsHelpAboutQt_triggered(bool, QVariant);
+	void on_gsHelpVersionCheck_triggered(bool, QVariant);
+	void on_gsTogglePositionalAudio_triggered(bool, QVariant);
+	void on_gsMoveBack_triggered(bool, QVariant);
+
 	void on_Reconnect_timeout();
-	void on_Icon_activated(QSystemTrayIcon::ActivationReason);
 	void on_qaTalkingUIToggle_triggered();
 	void voiceRecorderDialog_finished(int);
 	void qtvUserCurrentChanged(const QModelIndex &, const QModelIndex &);
@@ -320,11 +362,12 @@ public slots:
 	void context_triggered();
 	void updateTarget();
 	void updateMenuPermissions();
+	void on_muteCuePopup_triggered();
 	/// Handles state changes like talking mode changes and mute/unmute
 	/// or priority speaker flag changes for the gui user
 	void userStateChanged();
+	void on_channelStateChanged(Channel *channel, bool forceUpdateTree);
 	void destroyUserInformation();
-	void trayAboutToShow();
 	void sendChatbarMessage(QString msg);
 	void sendChatbarText(QString msg, bool plainText = false);
 	void pttReleased();
@@ -354,6 +397,11 @@ public slots:
 	void toggleSearchDialogVisibility();
 	/// Enables or disables the recording feature
 	void enableRecording(bool recordingAllowed);
+	/// Invokes OS native window highlighting
+	void highlightWindow();
+	void on_user_moved(unsigned int sessionID, const std::optional< unsigned int > &prevChannelID,
+					   unsigned int newChannelID);
+	void on_qaMoveBack_triggered();
 signals:
 	/// Signal emitted when the server and the client have finished
 	/// synchronizing (after a new connection).
@@ -363,6 +411,22 @@ signals:
 	/// Signal emitted whenever a user removes a ChannelListener
 	void userRemovedChannelListener(ClientUser *user, Channel *channel);
 	void transmissionModeChanged(Settings::AudioTransmit newMode);
+
+	/// Signal emitted when the local user changes their talking status either actively or passively
+	void talkingStatusChanged();
+
+	/// Signal when channel state has been changed
+	void channelStateChanged(Channel *channel, bool forceUpdateTree);
+
+	/// Signal emitted when the connection was terminated and all cleanup code has been run
+	void disconnectedFromServer();
+
+	/// Signal emitted when the window manager notifies the Mumble MainWindow that the application was just minimized
+	void windowMinimized();
+	/// Signal emitted when the user requested to toggle the MainWindow visibility
+	void windowVisibilityToggled();
+	/// Signal emitted whenever the Mumble MainWindow regains the active state from the window manager
+	void windowActivated();
 
 public:
 	MainWindow(QWidget *parent);
@@ -379,6 +443,28 @@ public:
 	/// @param actionName  The name of the action that has been executed.
 	/// @param p  The user on which the action was performed.
 	void logChangeNotPermanent(const QString &actionName, ClientUser *const p) const;
+
+	void openServerConnectDialog(bool autoconnect = false);
+	void disconnectFromServer();
+	void openServerInformationDialog();
+	void openServerTokensDialog();
+	void openServerUserListDialog();
+	void openServerBanListDialog();
+	void toggleSelfPrioritySpeaker();
+	void recording();
+	void openSelfCommentDialog();
+	void changeServerTexture();
+	void removeServerTexture();
+	void selfRegister();
+	void openAudioStatsDialog();
+	void openConfigDialog();
+	void openAudioWizardDialog();
+	void openCertWizardDialog();
+	void enableAudioTTS(bool enable);
+	void openAboutDialog();
+	void openAboutQtDialog();
+	void versionCheck();
+	void enablePositionalAudio(bool enable);
 };
 
 #endif

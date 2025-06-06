@@ -1,4 +1,4 @@
-// Copyright 2007-2023 The Mumble Developers. All rights reserved.
+// Copyright The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -12,9 +12,13 @@
 #include "SearchDialog.h"
 #include "Global.h"
 
+#include <QColorDialog>
+#include <QSystemTrayIcon>
 #include <QtCore/QFileSystemWatcher>
 #include <QtCore/QStack>
 #include <QtCore/QTimer>
+
+#include <optional>
 
 const QString LookConfig::name = QLatin1String("LookConfig");
 
@@ -26,25 +30,15 @@ static ConfigRegistrar registrar(1100, LookConfigNew);
 
 LookConfig::LookConfig(Settings &st) : ConfigWidget(st) {
 	setupUi(this);
-	qsbSilentUserLifetime->setAccessibleName(tr("Silent user lifetime"));
-	qsbPrefixCharCount->setAccessibleName(tr("Prefix character count"));
-	qsbChannelHierarchyDepth->setAccessibleName(tr("Channel hierarchy depth"));
-	qleChannelSeparator->setAccessibleName(tr("Channel separator"));
-	qsbPostfixCharCount->setAccessibleName(tr("Postfix character count"));
-	qleAbbreviationReplacement->setAccessibleName(tr("Abbreviation replacement"));
-	qsbMaxNameLength->setAccessibleName(tr("Maximum name length"));
-	qsbRelFontSize->setAccessibleName(tr("Relative font size"));
-	qcbLanguage->setAccessibleName(tr("Language"));
-	qcbTheme->setAccessibleName(tr("Theme"));
-	qcbAlwaysOnTop->setAccessibleName(tr("Always on top"));
-	qcbChannelDrag->setAccessibleName(tr("Channel dragging"));
-	qcbExpand->setAccessibleName(tr("Automatically expand channels when"));
-	qcbUserDrag->setAccessibleName(tr("User dragging behavior"));
 
-#ifndef Q_OS_MAC
-	if (!QSystemTrayIcon::isSystemTrayAvailable())
-#endif
+	if (!QSystemTrayIcon::isSystemTrayAvailable()) {
 		qgbTray->hide();
+	}
+
+#ifdef Q_OS_MAC
+	// Qt can not hide the window via the native macOS hide function. This should be re-evaluated with new Qt versions.
+	qcbHideTray->hide();
+#endif
 
 	qcbLanguage->addItem(tr("System default"));
 	QDir d(QLatin1String(":"), QLatin1String("mumble_*.qm"), QDir::Name, QDir::Files);
@@ -78,6 +72,8 @@ LookConfig::LookConfig(Settings &st) : ConfigWidget(st) {
 	qcbUserDrag->insertItem(Settings::Move, tr("Move"), Settings::Move);
 
 	connect(qrbLCustom, SIGNAL(toggled(bool)), qcbLockLayout, SLOT(setEnabled(bool)));
+	connect(qbClearBackgroundColor, &QPushButton::clicked, this, &LookConfig::talkinguiBackgroundCleared);
+	connect(qbBackgroundColor, &QPushButton::clicked, this, &LookConfig::qbBackgroundColor_clicked);
 
 	QDir userThemeDirectory = Themes::getUserThemesDirectory();
 	if (userThemeDirectory.exists()) {
@@ -118,6 +114,27 @@ QString LookConfig::title() const {
 	return tr("User Interface");
 }
 
+void LookConfig::qbBackgroundColor_clicked() {
+	QColor color = QColorDialog::getColor(Qt::white, this, tr("Choose a Color"));
+	if (color.isValid()) {
+		talkinguiBackgroundSet(color);
+	}
+}
+
+void LookConfig::talkinguiBackgroundSet(QColor color) {
+	selectedBackgroundColor = color;
+	QString style           = QString("background-color: %1;").arg(color.name());
+	qccolorPreview->setStyleSheet(style);
+	swBackgroundColor->setCurrentIndex(0);
+	qlBackgroundColor->setBuddy(qbClearBackgroundColor);
+}
+
+void LookConfig::talkinguiBackgroundCleared() {
+	selectedBackgroundColor = std::nullopt;
+	swBackgroundColor->setCurrentIndex(1);
+	qlBackgroundColor->setBuddy(qbBackgroundColor);
+}
+
 const QString &LookConfig::getName() const {
 	return LookConfig::name;
 }
@@ -126,7 +143,7 @@ QIcon LookConfig::icon() const {
 	return QIcon(QLatin1String("skin:config_ui.png"));
 }
 
-void LookConfig::reloadThemes(const boost::optional< ThemeInfo::StyleInfo > configuredStyle) {
+void LookConfig::reloadThemes(const std::optional< ThemeInfo::StyleInfo > configuredStyle) {
 	const ThemeMap themes = Themes::getThemes();
 
 	int selectedThemeEntry = 0;
@@ -202,9 +219,10 @@ void LookConfig::load(const Settings &r) {
 	loadCheckBox(qcbChatBarUseSelection, r.bChatBarUseSelection);
 	loadCheckBox(qcbFilterHidesEmptyChannels, r.bFilterHidesEmptyChannels);
 
-	const boost::optional< ThemeInfo::StyleInfo > configuredStyle = Themes::getConfiguredStyle(r);
+	const std::optional< ThemeInfo::StyleInfo > configuredStyle = Themes::getConfiguredStyle(r);
 	reloadThemes(configuredStyle);
 
+	loadCheckBox(qcbUsersAlwaysVisible, r.talkingUI_UsersAlwaysVisible);
 	loadCheckBox(qcbLocalUserVisible, r.bTalkingUI_LocalUserStaysVisible);
 	loadCheckBox(qcbAbbreviateChannelNames, r.bTalkingUI_AbbreviateChannelNames);
 	loadCheckBox(qcbAbbreviateCurrentChannel, r.bTalkingUI_AbbreviateCurrentChannel);
@@ -216,6 +234,11 @@ void LookConfig::load(const Settings &r) {
 	qsbPrefixCharCount->setValue(r.iTalkingUI_PrefixCharCount);
 	qsbPostfixCharCount->setValue(r.iTalkingUI_PostfixCharCount);
 	qleAbbreviationReplacement->setText(r.qsTalkingUI_AbbreviationReplacement);
+	if (r.talkingUI_BackgroundColor.has_value()) {
+		talkinguiBackgroundSet(*r.talkingUI_BackgroundColor);
+	} else {
+		talkinguiBackgroundCleared();
+	}
 
 	qleChannelSeparator->setText(r.qsHierarchyChannelSeparator);
 
@@ -271,11 +294,12 @@ void LookConfig::save() const {
 
 	QVariant themeData = qcbTheme->itemData(qcbTheme->currentIndex());
 	if (themeData.isNull()) {
-		Themes::setConfiguredStyle(s, boost::none, s.requireRestartToApply);
+		Themes::setConfiguredStyle(s, std::nullopt, s.requireRestartToApply);
 	} else {
 		Themes::setConfiguredStyle(s, themeData.value< ThemeInfo::StyleInfo >(), s.requireRestartToApply);
 	}
 
+	s.talkingUI_UsersAlwaysVisible        = qcbUsersAlwaysVisible->isChecked();
 	s.bTalkingUI_LocalUserStaysVisible    = qcbLocalUserVisible->isChecked();
 	s.bTalkingUI_AbbreviateChannelNames   = qcbAbbreviateChannelNames->isChecked();
 	s.bTalkingUI_AbbreviateCurrentChannel = qcbAbbreviateCurrentChannel->isChecked();
@@ -287,6 +311,7 @@ void LookConfig::save() const {
 	s.iTalkingUI_PrefixCharCount          = qsbPrefixCharCount->value();
 	s.iTalkingUI_PostfixCharCount         = qsbPostfixCharCount->value();
 	s.qsTalkingUI_AbbreviationReplacement = qleAbbreviationReplacement->text();
+	s.talkingUI_BackgroundColor           = selectedBackgroundColor;
 
 	s.qsHierarchyChannelSeparator = qleChannelSeparator->text();
 
@@ -304,14 +329,14 @@ void LookConfig::themeDirectoryChanged() {
 	qWarning() << "Theme directory changed";
 	QVariant themeData = qcbTheme->itemData(qcbTheme->currentIndex());
 	if (themeData.isNull()) {
-		reloadThemes(boost::none);
+		reloadThemes(std::nullopt);
 	} else {
 		reloadThemes(themeData.value< ThemeInfo::StyleInfo >());
 	}
 }
 
 void LookConfig::on_qcbAbbreviateChannelNames_stateChanged(int state) {
-	bool abbreviateNames = state == Qt::Checked;
+	bool abbreviateNames = (state == Qt::Checked) || (state == Qt::PartiallyChecked);
 
 	// Only enable the abbreviation related settings if abbreviation is actually enabled
 	qcbAbbreviateCurrentChannel->setEnabled(abbreviateNames);
@@ -320,4 +345,13 @@ void LookConfig::on_qcbAbbreviateChannelNames_stateChanged(int state) {
 	qsbPrefixCharCount->setEnabled(abbreviateNames);
 	qsbPostfixCharCount->setEnabled(abbreviateNames);
 	qleAbbreviationReplacement->setEnabled(abbreviateNames);
+}
+
+void LookConfig::on_qcbUsersAlwaysVisible_stateChanged(int state) {
+	bool usersAlwaysVisible = state == Qt::Checked;
+
+	// Only enable the local user visibility setting when all users are not always visible
+	qcbLocalUserVisible->setEnabled(!usersAlwaysVisible);
+	// Only enable the user visibility timeout settings when all users are not always visible
+	qsbSilentUserLifetime->setEnabled(!usersAlwaysVisible);
 }

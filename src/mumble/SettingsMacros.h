@@ -1,4 +1,4 @@
-// Copyright 2022-2023 The Mumble Developers. All rights reserved.
+// Copyright The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -19,6 +19,7 @@
 	PROCESS(misc, CRASH_EMAIL_ADDRESS_KEY, crashReportEmail)
 
 #define AUDIO_SETTINGS                                                                      \
+	PROCESS(audio, UNMUTE_ON_UNDEAF_KEY, unmuteOnUndeaf)                                    \
 	PROCESS(audio, MUTE_KEY, bMute)                                                         \
 	PROCESS(audio, DEAF_KEY, bDeaf)                                                         \
 	PROCESS(audio, TRANSMIT_MODE_KEY, atTransmit)                                           \
@@ -30,6 +31,7 @@
 	PROCESS(audio, TRANSMIT_CUE_STOP_KEY, qsTxAudioCueOff)                                  \
 	PROCESS(audio, PLAY_MUTE_CUE_KEY, bTxMuteCue)                                           \
 	PROCESS(audio, MUTE_CUE_KEY, qsTxMuteCue)                                               \
+	PROCESS(audio, MUTE_CUE_POPUP_SHOWN, muteCueShown)                                      \
 	PROCESS(audio, AUDIO_QUALITY_KEY, iQuality)                                             \
 	PROCESS(audio, LOUDNESS_KEY, iMinLoudness)                                              \
 	PROCESS(audio, VOLUME_KEY, fVolume)                                                     \
@@ -156,7 +158,6 @@
 	PROCESS(ui, WINDOW_STATE_MINIMAL_VIEW_KEY, qbaMinimalViewState)              \
 	PROCESS(ui, CONFIG_GEOMETRY_KEY, qbaConfigGeometry)                          \
 	PROCESS(ui, WINDOW_LAYOUT_KEY, wlWindowLayout)                               \
-	PROCESS(ui, OVERLAY_HEADER_STATE, qbaHeaderState)                            \
 	PROCESS(ui, SERVER_FILTER_MODE_KEY, ssFilter)                                \
 	PROCESS(ui, HIDE_IN_TRAY_KEY, bHideInTray)                                   \
 	PROCESS(ui, DISPLAY_TALKING_STATE_IN_TRAY_KEY, bStateInTray)                 \
@@ -192,6 +193,7 @@
 #define TALKINGUI_SETTINGS                                                                            \
 	PROCESS(talkingui, TALKINGUI_POSITION_KEY, qpTalkingUI_Position)                                  \
 	PROCESS(talkingui, SHOW_TALKINGUI_KEY, bShowTalkingUI)                                            \
+	PROCESS(talkingui, TALKINGUI_USERS_ALWAYS_VISIBLE_KEY, talkingUI_UsersAlwaysVisible)              \
 	PROCESS(talkingui, TALKINGUI_LOCAL_USER_STAYS_VISIBLE_KEY, bTalkingUI_LocalUserStaysVisible)      \
 	PROCESS(talkingui, TALKINGUI_ABBREVIATE_CHANNEL_NAMES_KEY, bTalkingUI_AbbreviateChannelNames)     \
 	PROCESS(talkingui, TALKINGUI_ABBREVIATE_CURRENT_CHANNEL_KEY, bTalkingUI_AbbreviateCurrentChannel) \
@@ -202,7 +204,8 @@
 	PROCESS(talkingui, TALKINGUI_MAX_CHANNEL_NAME_LENGTH_KEY, iTalkingUI_MaxChannelNameLength)        \
 	PROCESS(talkingui, TALKINGUI_NAME_PREFIX_COUNT_KEY, iTalkingUI_PrefixCharCount)                   \
 	PROCESS(talkingui, TALKINGUI_NAME_POSTFIX_COUNT_KEY, iTalkingUI_PostfixCharCount)                 \
-	PROCESS(talkingui, TALKINGUI_ABBREVIATION_REPLACEMENT_KEY, qsTalkingUI_AbbreviationReplacement)
+	PROCESS(talkingui, TALKINGUI_ABBREVIATION_REPLACEMENT_KEY, qsTalkingUI_AbbreviationReplacement)   \
+	PROCESS(talkingui, TALKINGUI_BACKGROUND_COLOR_KEY, talkingUI_BackgroundColor)
 
 
 #define CHANNEL_HIERARCHY_SETTINGS PROCESS(channel_hierarchy, CHANNEL_NAME_SEPARATOR_KEY, qsHierarchyChannelSeparator)

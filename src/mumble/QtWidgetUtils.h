@@ -1,4 +1,4 @@
-// Copyright 2021-2023 The Mumble Developers. All rights reserved.
+// Copyright The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -28,7 +28,7 @@ namespace QtUtils {
 
 	void elideText(QTextDocument &doc, uint32_t width);
 
-}; // namespace QtUtils
-}; // namespace Mumble
+} // namespace QtUtils
+} // namespace Mumble
 
 #endif // MUMBLE_MUMBLE_QTWIDGETUTILS_H_

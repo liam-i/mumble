@@ -1,10 +1,11 @@
-// Copyright 2007-2023 The Mumble Developers. All rights reserved.
+// Copyright The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
 
 #include "AudioWizard.h"
 
+#include "Accessibility.h"
 #include "AudioInput.h"
 #include "AudioOutputToken.h"
 #include "Log.h"
@@ -29,38 +30,22 @@ AudioWizard::AudioWizard(QWidget *p) : QWizard(p) {
 
 	setupUi(this);
 
-	qcbInput->setAccessibleName(tr("Input system"));
-	qcbInputDevice->setAccessibleName(tr("Input device"));
-	qcbOutput->setAccessibleName(tr("Output system"));
-	qcbOutputDevice->setAccessibleName(tr("Output device"));
-	qsOutputDelay->setAccessibleName(tr("Output delay"));
-	qsMaxAmp->setAccessibleName(tr("Maximum amplification"));
-	qsVAD->setAccessibleName(tr("VAD level"));
+	Mumble::Accessibility::fixWizardButtonLabels(this);
+
+	Mumble::Accessibility::setDescriptionFromLabel(qgbInput, qliInputText);
+	Mumble::Accessibility::setDescriptionFromLabel(qgbOutput, qliOutputText);
+
+	Mumble::Accessibility::setDescriptionFromLabel(qrbQualityLow, qlQualityLow);
+	Mumble::Accessibility::setDescriptionFromLabel(qrbQualityBalanced, qlQualityBalanced);
+	Mumble::Accessibility::setDescriptionFromLabel(qrbQualityUltra, qlQualityUltra);
+	Mumble::Accessibility::setDescriptionFromLabel(qrbQualityCustom, qlQualityCustom);
 
 	// Done
 	qcbUsage->setChecked(Global::get().s.bUsage);
 
 	// Device
-	if (AudioInputRegistrar::qmNew) {
-		foreach (AudioInputRegistrar *air, *AudioInputRegistrar::qmNew) {
-			qcbInput->addItem(air->name);
-			if (air->name == AudioInputRegistrar::current) {
-				qcbInput->setCurrentIndex(qcbInput->count() - 1);
-				EchoCancelOptionID echoCancelOptionId = firstUsableEchoCancellation(air, qcbOutput->currentText());
-				if (echoCancelOptionId != EchoCancelOptionID::DISABLED) {
-					qcbEcho->setEnabled(true);
-					qcbEcho->setChecked(Global::get().s.echoOption != EchoCancelOptionID::DISABLED);
-				}
-			}
-			QList< audioDevice > ql = air->getDeviceChoices();
-		}
-	}
-	if (qcbInput->count() < 2) {
-		qcbInput->setEnabled(false);
-	}
-
 	if (AudioOutputRegistrar::qmNew) {
-		foreach (AudioOutputRegistrar *aor, *AudioOutputRegistrar::qmNew) {
+		for (AudioOutputRegistrar *aor : *AudioOutputRegistrar::qmNew) {
 			qcbOutput->addItem(aor->name);
 			if (aor->name == AudioOutputRegistrar::current) {
 				qcbOutput->setCurrentIndex(qcbOutput->count() - 1);
@@ -70,9 +55,22 @@ AudioWizard::AudioWizard(QWidget *p) : QWizard(p) {
 			QList< audioDevice > ql = aor->getDeviceChoices();
 		}
 	}
-
 	if (qcbOutput->count() < 2) {
 		qcbOutput->setEnabled(false);
+	}
+
+	if (AudioInputRegistrar::qmNew) {
+		for (AudioInputRegistrar *air : *AudioInputRegistrar::qmNew) {
+			qcbInput->addItem(air->name);
+			if (air->name == AudioInputRegistrar::current) {
+				qcbInput->setCurrentIndex(qcbInput->count() - 1);
+				updateEchoCheckbox(air);
+			}
+			QList< audioDevice > ql = air->getDeviceChoices();
+		}
+	}
+	if (qcbInput->count() < 2) {
+		qcbInput->setEnabled(false);
 	}
 
 	qcbHighContrast->setChecked(Global::get().s.bHighContrast);
@@ -144,7 +142,7 @@ AudioWizard::AudioWizard(QWidget *p) : QWizard(p) {
 	abVAD->qcInside = Qt::yellow;
 	abVAD->qcAbove  = Qt::green;
 
-	qsVAD->setValue(iroundf(Global::get().s.fVADmax * 32767.f + 0.5f));
+	qsVAD->setValue(static_cast< int >(Global::get().s.fVADmax * 32767.f + 0.5f));
 
 	// Positional
 	qcbHeadphone->setChecked(Global::get().s.bPositionalHeadphone);
@@ -190,6 +188,9 @@ AudioWizard::AudioWizard(QWidget *p) : QWizard(p) {
 
 	ticker->setSingleShot(false);
 	ticker->start(20);
+
+	m_overrideFilter = new OverrideTabOrderFilter(this, this);
+	installEventFilter(m_overrideFilter);
 }
 
 bool AudioWizard::eventFilter(QObject *obj, QEvent *evt) {
@@ -237,8 +238,7 @@ void AudioWizard::on_qcbInputDevice_activated(int) {
 		air->setDeviceChoice(qcbInputDevice->itemData(idx), Global::get().s);
 	}
 
-	EchoCancelOptionID echoCancelOptionId = firstUsableEchoCancellation(air, qcbOutput->currentText());
-	qcbEcho->setEnabled(echoCancelOptionId != EchoCancelOptionID::DISABLED);
+	updateEchoCheckbox(air);
 
 	Global::get().ai = AudioInputPtr(air->create());
 	Global::get().ai->start(QThread::HighestPriority);
@@ -278,9 +278,7 @@ void AudioWizard::on_qcbOutputDevice_activated(int) {
 		bDelay = aor->usesOutputDelay();
 	}
 
-	AudioInputRegistrar *air              = AudioInputRegistrar::qmNew->value(qcbInput->currentText());
-	EchoCancelOptionID echoCancelOptionId = firstUsableEchoCancellation(air, qcbOutput->currentText());
-	qcbEcho->setEnabled(echoCancelOptionId != EchoCancelOptionID::DISABLED);
+	updateEchoCheckbox(AudioInputRegistrar::qmNew->value(qcbInput->currentText()));
 
 	Global::get().ao = AudioOutputPtr(aor->create());
 	Global::get().ao->start(QThread::HighPriority);
@@ -290,10 +288,14 @@ void AudioWizard::on_qsOutputDelay_valueChanged(int v) {
 	qlOutputDelay->setText(tr("%1 ms").arg(v * 10));
 	Global::get().s.iOutputDelay = v;
 	restartAudio(true);
+
+	Mumble::Accessibility::setSliderSemanticValue(qsOutputDelay, QString("%1 %2").arg(v * 10).arg("milliseconds"));
 }
 
 void AudioWizard::on_qsMaxAmp_valueChanged(int v) {
 	Global::get().s.iMinLoudness = qMin(v, 30000);
+
+	Mumble::Accessibility::setSliderSemanticValue(qsMaxAmp, Mumble::Accessibility::SliderMode::READ_PERCENT, "%");
 }
 
 void AudioWizard::showPage(int pageid) {
@@ -339,6 +341,16 @@ void AudioWizard::showPage(int pageid) {
 			Global::get().s.atTransmit = Settings::VAD;
 	} else {
 		Global::get().s.atTransmit = Settings::Continuous;
+	}
+
+	setFocus(Qt::ActiveWindowFocusReason);
+
+	QWidget *selectedWidget = Mumble::Accessibility::getFirstFocusableChild(currentPage());
+
+	if (selectedWidget) {
+		m_overrideFilter->focusTarget = selectedWidget;
+	} else {
+		m_overrideFilter->focusTarget = button(QWizard::NextButton);
 	}
 }
 
@@ -423,7 +435,7 @@ void AudioWizard::accept() {
 		Settings::MessageLog mlReplace = qrbNotificationTTS->isChecked() ? Settings::LogSoundfile : Settings::LogTTS;
 
 		for (int i = Log::firstMsgType; i <= Log::lastMsgType; ++i) {
-			if (Global::get().s.qmMessages[i] & mlReplace)
+			if (Global::get().s.qmMessages[i] & static_cast< unsigned int >(mlReplace))
 				Global::get().s.qmMessages[i] ^= Settings::LogSoundfile | Settings::LogTTS;
 		}
 
@@ -468,13 +480,13 @@ void AudioWizard::on_Ticker_timeout() {
 	abAmplify->iPeak  = iMaxPeak;
 	abAmplify->update();
 
-	abVAD->iBelow = iroundf(Global::get().s.fVADmin * 32767.0f + 0.5f);
-	abVAD->iAbove = iroundf(Global::get().s.fVADmax * 32767.0f + 0.5f);
+	abVAD->iBelow = static_cast< int >(Global::get().s.fVADmin * 32767.0f + 0.5f);
+	abVAD->iAbove = static_cast< int >(Global::get().s.fVADmax * 32767.0f + 0.5f);
 
 	if (Global::get().s.vsVAD == Settings::Amplitude) {
-		abVAD->iValue = iroundf((32767.f / 96.0f) * (96.0f + ai->dPeakCleanMic) + 0.5f);
+		abVAD->iValue = static_cast< int >((32767.f / 96.0f) * (96.0f + ai->dPeakCleanMic) + 0.5f);
 	} else {
-		abVAD->iValue = iroundf(ai->fSpeechProb * 32767.0f + 0.5f);
+		abVAD->iValue = static_cast< int >(ai->fSpeechProb * 32767.0f + 0.5f);
 	}
 	abVAD->update();
 
@@ -513,7 +525,7 @@ void AudioWizard::on_Ticker_timeout() {
 			// qgsScene->addLine(QLineF(0,-1,0,1), pen);
 			// qgsScene->addLine(QLineF(-1,0,1,0), pen);
 
-			const float speakerScale  = 0.9;
+			const float speakerScale  = 0.9f;
 			const float speakerRadius = baseRadius * speakerScale;
 
 			// nspeaker is in format [x1,y1,z1, x2,y2,z2, ...]
@@ -540,7 +552,7 @@ void AudioWizard::on_Ticker_timeout() {
 				}
 			}
 
-			const float sourceScale  = 0.9;
+			const float sourceScale  = 0.9f;
 			const float sourceRadius = baseRadius * sourceScale;
 
 			qgiSource = qgsScene->addEllipse(QRectF(-sourceRadius, -sourceRadius, 2 * sourceRadius, 2 * sourceRadius),
@@ -581,6 +593,10 @@ void AudioWizard::on_qsVAD_valueChanged(int v) {
 		Global::get().s.fVADmax = static_cast< float >(v) / 32767.0f;
 		Global::get().s.fVADmin = Global::get().s.fVADmax * 0.9f;
 	}
+
+	Mumble::Accessibility::setSliderSemanticValue(qsVAD, QString("%2 - %3")
+															 .arg(QString::number(Global::get().s.fVADmin, 'f', 2))
+															 .arg(QString::number(Global::get().s.fVADmax, 'f', 2)));
 }
 
 void AudioWizard::on_qrSNR_clicked(bool on) {
@@ -741,6 +757,18 @@ void AudioWizard::on_qrbQualityCustom_clicked() {
 	Global::get().s.iQuality         = sOldSettings.iQuality;
 	Global::get().s.iFramesPerPacket = sOldSettings.iFramesPerPacket;
 	restartAudio(true);
+}
+
+void AudioWizard::updateEchoCheckbox(AudioInputRegistrar *air) {
+	bool echoCancelPossible =
+		firstUsableEchoCancellation(air, qcbOutput->currentText()) != EchoCancelOptionID::DISABLED;
+
+	qcbEcho->setEnabled(echoCancelPossible);
+	if (echoCancelPossible) {
+		qcbEcho->setChecked(Global::get().s.echoOption != EchoCancelOptionID::DISABLED);
+	} else {
+		qcbEcho->setChecked(false);
+	}
 }
 
 EchoCancelOptionID AudioWizard::firstUsableEchoCancellation(AudioInputRegistrar *air, const QString outputSys) {

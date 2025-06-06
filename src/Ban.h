@@ -1,4 +1,4 @@
-// Copyright 2017-2023 The Mumble Developers. All rights reserved.
+// Copyright The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -29,6 +29,14 @@ struct Ban {
 	QString toString() const;
 };
 
-quint32 qHash(const Ban &);
+namespace std {
+template<> struct hash< Ban > {
+	std::size_t operator()(const Ban &ban) const {
+		return qHash(ban.qsHash) ^ qHash(ban.haAddress) ^ qHash(ban.qsUsername) ^ qHash(ban.iMask);
+	}
+};
+} // namespace std
+
+std::size_t qHash(const Ban &);
 
 #endif

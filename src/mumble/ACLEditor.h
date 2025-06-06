@@ -1,4 +1,4 @@
-// Copyright 2007-2023 The Mumble Developers. All rights reserved.
+// Copyright The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -46,7 +46,7 @@ protected:
 	ChanACL *pcaPassword;
 
 	int numInheritACL;
-	int iChannel;
+	unsigned int iChannel;
 	bool bAddChannelMode;
 
 	const QString userName(int id);
@@ -62,8 +62,8 @@ protected:
 	void fillWidgetFromSet(QListWidget *, const QSet< int > &);
 
 public:
-	ACLEditor(int parentchannelid, QWidget *p = nullptr);
-	ACLEditor(int channelid, const MumbleProto::ACL &mea, QWidget *p = nullptr);
+	ACLEditor(unsigned int parentchannelid, QWidget *p = nullptr);
+	ACLEditor(unsigned int channelid, const MumbleProto::ACL &mea, QWidget *p = nullptr);
 	~ACLEditor();
 	void returnQuery(const MumbleProto::QueryUsers &mqu);
 public slots:
@@ -87,11 +87,15 @@ public slots:
 	void on_qcbACLInherit_clicked(bool checked);
 	void on_qcbACLApplyHere_clicked(bool checked);
 	void on_qcbACLApplySubs_clicked(bool checked);
-	void on_qcbACLGroup_activated(const QString &text);
-	void on_qcbACLUser_activated();
+	void on_qcbACLGroup_textActivated(const QString &text);
+	void on_qcbACLUser_textActivated(const QString &text);
 	void ACLPermissions_clicked();
+	void qcbACLGroup_focusLost();
+	void qcbACLUser_focusLost();
+	void qcbACLGroup_spacePressed();
+	void qcbACLUser_spacePressed();
 
-	void on_qcbGroupList_activated(const QString &text);
+	void on_qcbGroupList_textActivated(const QString &text);
 	void on_qcbGroupList_editTextChanged(const QString &text);
 	void on_qpbGroupAdd_clicked();
 	void on_qpbGroupRemove_clicked();

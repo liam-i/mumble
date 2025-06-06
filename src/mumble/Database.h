@@ -1,4 +1,4 @@
-// Copyright 2007-2023 The Mumble Developers. All rights reserved.
+// Copyright The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -48,6 +48,7 @@ public:
 
 	bool isLocalMuted(const QString &hash);
 	void setLocalMuted(const QString &hash, bool muted);
+	void clearLocalMuted();
 
 	float getUserLocalVolume(const QString &hash);
 	void setUserLocalVolume(const QString &hash, float volume);
@@ -55,8 +56,9 @@ public:
 	QString getUserLocalNickname(const QString &hash);
 	void setUserLocalNickname(const QString &hash, const QString &nickname);
 
-	ChannelFilterMode getChannelFilterMode(const QByteArray &server_cert_digest, int channel_id);
-	void setChannelFilterMode(const QByteArray &server_cert_digest, int channel_id, ChannelFilterMode filterMode);
+	ChannelFilterMode getChannelFilterMode(const QByteArray &server_cert_digest, unsigned int channel_id);
+	void setChannelFilterMode(const QByteArray &server_cert_digest, unsigned int channel_id,
+							  ChannelFilterMode filterMode);
 
 	QMap< UnresolvedServerAddress, unsigned int > getPingCache();
 	void setPingCache(const QMap< UnresolvedServerAddress, unsigned int > &cache);

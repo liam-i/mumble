@@ -1,4 +1,4 @@
-// Copyright 2021-2023 The Mumble Developers. All rights reserved.
+// Copyright The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -6,10 +6,11 @@
 #ifndef MUMBLE_MUMBLE_PLUGIN_H_
 #define MUMBLE_MUMBLE_PLUGIN_H_
 
-#include "MumbleAPI_structs.h"
 #define MUMBLE_PLUGIN_NO_DEFAULT_FUNCTION_DEFINITIONS
-#include "MumblePlugin_v_1_1_x.h"
-#include "PluginComponents_v_1_0_x.h"
+#include "MumblePlugin.h"
+#undef MUMBLE_PLUGIN_NO_DEFAULT_FUNCTION_DEFINITIONS
+
+#include "MumbleAPI_structs.h"
 #include "PositionalData.h"
 
 #include <QLibrary>

@@ -1,4 +1,4 @@
-// Copyright 2009-2023 The Mumble Developers. All rights reserved.
+// Copyright The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -13,10 +13,13 @@
 
 #include "Cert.h"
 
+#include "Accessibility.h"
 #include "SelfSignedCertificate.h"
 #include "Utils.h"
 #include "Global.h"
 
+#include <QRegularExpression>
+#include <QTimer>
 #include <QtCore/QUrl>
 #include <QtGui/QDesktopServices>
 #include <QtWidgets/QFileDialog>
@@ -28,7 +31,7 @@
 
 #define SSL_STRING(x) QString::fromLatin1(x).toUtf8().data()
 
-CertView::CertView(QWidget *p) : QGroupBox(p) {
+CertView::CertView(QWidget *p) : AccessibleQGroupBox(p) {
 	QGridLayout *grid = new QGridLayout(this);
 	QLabel *l;
 
@@ -64,6 +67,8 @@ CertView::CertView(QWidget *p) : QGroupBox(p) {
 	grid->addWidget(qlExpiry, 3, 1, 1, 1);
 
 	grid->setColumnStretch(1, 1);
+
+	updateAccessibleText();
 }
 
 void CertView::setCert(const QList< QSslCertificate > &cert) {
@@ -96,11 +101,13 @@ void CertView::setCert(const QList< QSslCertificate > &cert) {
 		else
 			qlSubjectEmail->setText(tr("(none)"));
 
+		const auto expiryDateStr = QLocale::system().toString(qscCert.expiryDate(), QLocale::ShortFormat);
+
 		if (qscCert.expiryDate() <= QDateTime::currentDateTime())
-			qlExpiry->setText(QString::fromLatin1("<font color=\"red\"><b>%1</b></font>")
-								  .arg(qscCert.expiryDate().toString(Qt::SystemLocaleDate).toHtmlEscaped()));
+			qlExpiry->setText(
+				QString::fromLatin1("<font color=\"red\"><b>%1</b></font>").arg(expiryDateStr.toHtmlEscaped()));
 		else
-			qlExpiry->setText(qscCert.expiryDate().toString(Qt::SystemLocaleDate));
+			qlExpiry->setText(expiryDateStr);
 
 		if (qlCert.count() > 1)
 			qscCert = qlCert.last();
@@ -113,27 +120,27 @@ void CertView::setCert(const QList< QSslCertificate > &cert) {
 
 		qlIssuerName->setText((issuerName == name) ? tr("Self-signed") : issuerName);
 	}
+
+	updateAccessibleText();
 }
 
 CertWizard::CertWizard(QWidget *p) : QWizard(p) {
 	setupUi(this);
 
-	cvWelcome->setAccessibleName(tr("Current certificate"));
-	qleImportFile->setAccessibleName(tr("Certificate file to import"));
-	qlePassword->setAccessibleName(tr("Certificate password"));
-	cvImport->setAccessibleName(tr("Certificate to import"));
-	cvCurrent->setAccessibleName(tr("Current certificate"));
-	cvNew->setAccessibleName(tr("New certificate"));
-	qleExportFile->setAccessibleName(tr("File to export certificate to"));
-	cvExport->setAccessibleName(tr("Current certificate"));
-	qleEmail->setAccessibleName(tr("Email address"));
-	qleName->setAccessibleName(tr("Your name"));
+	Mumble::Accessibility::fixWizardButtonLabels(this);
 
 	setOption(QWizard::NoCancelButton, false);
 
 	qwpExport->setCommitPage(true);
 	qwpExport->setComplete(false);
 	qlPasswordNotice->setVisible(false);
+
+	m_overrideFilter = new OverrideTabOrderFilter(this, this);
+	installEventFilter(m_overrideFilter);
+
+	connect(this, &CertWizard::currentIdChanged, this, &CertWizard::showPage);
+
+	QTimer::singleShot(0, [this] { this->showPage(0); });
 }
 
 int CertWizard::nextId() const {
@@ -174,6 +181,22 @@ int CertWizard::nextId() const {
 	return -1;
 }
 
+void CertWizard::showPage(int pageid) {
+	if (pageid == -1) {
+		return;
+	}
+
+	setFocus(Qt::ActiveWindowFocusReason);
+
+	QWidget *selectedWidget = Mumble::Accessibility::getFirstFocusableChild(currentPage());
+
+	if (selectedWidget) {
+		m_overrideFilter->focusTarget = selectedWidget;
+	} else {
+		m_overrideFilter->focusTarget = button(QWizard::NextButton);
+	}
+}
+
 void CertWizard::initializePage(int id) {
 	if (id == 0) {
 		kpCurrent = kpNew = Global::get().s.kpCertificate;
@@ -206,8 +229,9 @@ void CertWizard::initializePage(int id) {
 
 bool CertWizard::validateCurrentPage() {
 	if (currentPage() == qwpNew) {
-		QRegExp ereg(QLatin1String("(^$)|((.+)@(.+))"), Qt::CaseInsensitive, QRegExp::RegExp2);
-		if (!ereg.exactMatch(qleEmail->text())) {
+		const QRegularExpression ereg(QRegularExpression::anchoredPattern(QLatin1String("(^$)|((.+)@(.+))")),
+									  QRegularExpression::CaseInsensitiveOption);
+		if (!ereg.match(qleEmail->text()).hasMatch()) {
 			qlError->setText(tr("Unable to validate email.<br />Enter a valid (or blank) email to continue."));
 			qwpNew->setComplete(false);
 			return false;
@@ -412,8 +436,7 @@ Settings::KeyPair CertWizard::importCert(QByteArray data, const QString &pw) {
 	Settings::KeyPair kp;
 	int ret = 0;
 
-	mem = BIO_new_mem_buf(data.data(), data.size());
-	Q_UNUSED(BIO_set_close(mem, BIO_NOCLOSE));
+	mem  = BIO_new_mem_buf(data.data(), static_cast< int >(data.size()));
 	pkcs = d2i_PKCS12_bio(mem, nullptr);
 	if (pkcs) {
 		ret = PKCS12_parse(pkcs, nullptr, &pkey, &x509, &certs);

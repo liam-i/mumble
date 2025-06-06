@@ -1,4 +1,4 @@
-// Copyright 2007-2023 The Mumble Developers. All rights reserved.
+// Copyright The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -305,7 +305,6 @@ ALSAAudioInput::~ALSAAudioInput() {
 
 void ALSAAudioInput::run() {
 	QMutexLocker qml(&qmALSA);
-	snd_pcm_sframes_t readblapp;
 
 	QByteArray device_name         = Global::get().s.qsALSAInput.toLatin1();
 	snd_pcm_hw_params_t *hw_params = nullptr;
@@ -367,7 +366,8 @@ void ALSAAudioInput::run() {
 	eMicFormat = SampleShort;
 	initializeMixer();
 
-	char inbuff[wantPeriod * iChannels * sizeof(short)];
+	static std::vector< char > inbuff;
+	inbuff.resize(wantPeriod * iChannels * sizeof(short));
 
 	qml.unlock();
 
@@ -378,21 +378,27 @@ void ALSAAudioInput::run() {
 		snd_pcm_status_dump(status, log);
 		snd_pcm_status_free(status);
 #endif
-		readblapp = snd_pcm_readi(capture_handle, inbuff, static_cast< int >(wantPeriod));
-		if (readblapp == -ESTRPIPE) {
-			qWarning("ALSAAudioInput: PCM suspended, trying to resume");
-			while (bRunning && snd_pcm_resume(capture_handle) == -EAGAIN)
-				msleep(1000);
-			if ((err = snd_pcm_prepare(capture_handle)) < 0)
-				qWarning("ALSAAudioInput: %s: %s", snd_strerror(static_cast< int >(readblapp)), snd_strerror(err));
-		} else if (readblapp == -EPIPE) {
-			err = snd_pcm_prepare(capture_handle);
-			qWarning("ALSAAudioInput: %s: %s", snd_strerror(static_cast< int >(readblapp)), snd_strerror(err));
-		} else if (readblapp < 0) {
-			err = snd_pcm_prepare(capture_handle);
-			qWarning("ALSAAudioInput: %s: %s", snd_strerror(static_cast< int >(readblapp)), snd_strerror(err));
-		} else if (wantPeriod == static_cast< unsigned int >(readblapp)) {
-			addMic(inbuff, static_cast< int >(readblapp));
+		const snd_pcm_sframes_t ret = snd_pcm_readi(capture_handle, inbuff.data(), wantPeriod);
+		if (ret >= 0) {
+			if (static_cast< snd_pcm_uframes_t >(ret) == wantPeriod) {
+				addMic(inbuff.data(), static_cast< unsigned int >(ret));
+			}
+		} else {
+			err = static_cast< decltype(err) >(ret);
+			switch (err) {
+				case -EINTR:
+				case -EPIPE:
+				case -ESTRPIPE:
+					qWarning("ALSAAudioInput encountered unrecoverable error: %s -> exiting...", snd_strerror(err));
+					while (bRunning && snd_pcm_recover(capture_handle, err, 1) == -EAGAIN) {
+						msleep(1000);
+					}
+
+					break;
+				default:
+					qWarning("ALSAAudioInput: %s, breaking the loop...", snd_strerror(err));
+					bRunning = false;
+			}
 		}
 	}
 
@@ -452,7 +458,7 @@ void ALSAAudioOutput::run() {
 	unsigned int iOutputSize = (iFrameSize * rrate) / SAMPLE_RATE;
 
 	snd_pcm_uframes_t period_size = iOutputSize;
-	snd_pcm_uframes_t buffer_size = iOutputSize * (Global::get().s.iOutputDelay + 1);
+	snd_pcm_uframes_t buffer_size = iOutputSize * static_cast< unsigned int >(Global::get().s.iOutputDelay + 1);
 
 	int dir = 1;
 	ALSA_ERRBAIL(snd_pcm_hw_params_set_period_size_near(pcm_handle, hw_params, &period_size, &dir));
@@ -483,8 +489,10 @@ void ALSAAudioOutput::run() {
 
 	const unsigned int buffsize = static_cast< unsigned int >(period_size * iChannels);
 
-	float zerobuff[buffsize];
-	float outbuff[buffsize];
+	static std::vector< float > zerobuff;
+	zerobuff.resize(buffsize);
+	static std::vector< float > outbuff;
+	outbuff.resize(buffsize);
 
 	for (unsigned int i = 0; i < buffsize; i++)
 		zerobuff[i] = 0;
@@ -492,7 +500,7 @@ void ALSAAudioOutput::run() {
 	// Fill buffer
 	if (bOk && pcm_handle)
 		for (unsigned int i = 0; i < buffer_size / period_size; i++)
-			snd_pcm_writei(pcm_handle, zerobuff, period_size);
+			snd_pcm_writei(pcm_handle, zerobuff.data(), period_size);
 
 	if (!bOk) {
 		Global::get().mw->msgBox(
@@ -518,25 +526,25 @@ void ALSAAudioOutput::run() {
 	initializeMixer(chanmasks);
 
 	count = snd_pcm_poll_descriptors_count(pcm_handle);
-	snd_pcm_poll_descriptors(pcm_handle, fds, count);
+	snd_pcm_poll_descriptors(pcm_handle, fds, static_cast< unsigned int >(count));
 
 	qml.unlock();
 
 	while (bRunning && bOk) {
-		poll(fds, count, 20);
+		poll(fds, static_cast< nfds_t >(count), 20);
 		unsigned short revents;
 
-		snd_pcm_poll_descriptors_revents(pcm_handle, fds, count, &revents);
+		snd_pcm_poll_descriptors_revents(pcm_handle, fds, static_cast< unsigned int >(count), &revents);
 		if (revents & POLLERR) {
 			snd_pcm_prepare(pcm_handle);
 		} else if (revents & POLLOUT) {
 			snd_pcm_sframes_t avail{};
 			ALSA_ERRCHECK(avail = snd_pcm_avail_update(pcm_handle));
 			while (avail >= static_cast< int >(period_size)) {
-				stillRun = mix(outbuff, static_cast< int >(period_size));
+				stillRun = mix(outbuff.data(), static_cast< unsigned int >(period_size));
 				if (stillRun) {
 					snd_pcm_sframes_t w = 0;
-					ALSA_ERRCHECK(w = snd_pcm_writei(pcm_handle, outbuff, period_size));
+					ALSA_ERRCHECK(w = snd_pcm_writei(pcm_handle, outbuff.data(), period_size));
 					if (w < 0) {
 						avail = w;
 						break;
@@ -550,13 +558,13 @@ void ALSAAudioOutput::run() {
 				snd_pcm_drain(pcm_handle);
 				ALSA_ERRCHECK(snd_pcm_prepare(pcm_handle));
 				for (unsigned int i = 0; i < buffer_size / period_size; ++i)
-					ALSA_ERRCHECK(snd_pcm_writei(pcm_handle, zerobuff, period_size));
+					ALSA_ERRCHECK(snd_pcm_writei(pcm_handle, zerobuff.data(), period_size));
 			}
 
 			if (!stillRun) {
 				snd_pcm_drain(pcm_handle);
 
-				while (bRunning && !mix(outbuff, static_cast< unsigned int >(period_size))) {
+				while (bRunning && !mix(outbuff.data(), static_cast< unsigned int >(period_size))) {
 					this->msleep(10);
 				}
 
@@ -567,9 +575,9 @@ void ALSAAudioOutput::run() {
 
 				// Fill one frame
 				for (unsigned int i = 0; i < (buffer_size / period_size) - 1; i++)
-					snd_pcm_writei(pcm_handle, zerobuff, period_size);
+					snd_pcm_writei(pcm_handle, zerobuff.data(), period_size);
 
-				snd_pcm_writei(pcm_handle, outbuff, period_size);
+				snd_pcm_writei(pcm_handle, outbuff.data(), period_size);
 			}
 		}
 	}

@@ -1,4 +1,4 @@
-// Copyright 2021-2023 The Mumble Developers. All rights reserved.
+// Copyright The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -37,7 +37,8 @@ Plugin::Plugin(QString path, bool isBuiltIn, QObject *p)
 
 	if (!m_pluginIsValid) {
 		// throw an exception to indicate that the plugin isn't valid
-		throw PluginError("Unable to load the specified library");
+		throw PluginError(
+			QString::fromLatin1("Unable to load the specified library (%1)").arg(m_lib.errorString()).toStdString());
 	}
 
 	// acquire id-lock in order to assign an ID to this plugin
@@ -56,7 +57,7 @@ Plugin::~Plugin() {
 }
 
 QString Plugin::extractWrappedString(MumbleStringWrapper wrapper) const {
-	QString wrappedString = QString::fromUtf8(wrapper.data, wrapper.size);
+	QString wrappedString = QString::fromUtf8(wrapper.data, static_cast< int >(wrapper.size));
 
 	if (wrapper.needsReleasing) {
 		releaseResource(static_cast< const void * >(wrapper.data));
@@ -693,7 +694,7 @@ void Plugin::onKeyEvent(mumble_keycode_t keyCode, bool wasPress) const {
 	}
 
 	if (m_pluginFnc.onKeyEvent) {
-		m_pluginFnc.onKeyEvent(keyCode, wasPress);
+		m_pluginFnc.onKeyEvent(static_cast< std::uint32_t >(keyCode), wasPress);
 	}
 }
 

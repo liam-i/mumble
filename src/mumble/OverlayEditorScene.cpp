@@ -1,4 +1,4 @@
-// Copyright 2010-2023 The Mumble Developers. All rights reserved.
+// Copyright The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -18,6 +18,7 @@
 #include "Global.h"
 #include "GlobalShortcut.h"
 
+#include <QActionGroup>
 #include <QtGui/QImageReader>
 #include <QtWidgets/QColorDialog>
 #include <QtWidgets/QFontDialog>
@@ -29,7 +30,7 @@ OverlayEditorScene::OverlayEditorScene(const OverlaySettings &srcos, QObject *p)
 	uiZoom  = 2;
 
 	if (Global::get().ocIntercept)
-		uiSize = Global::get().ocIntercept->uiHeight;
+		uiSize = static_cast< unsigned int >(Global::get().ocIntercept->iHeight);
 	else
 		uiSize = 1080.f;
 
@@ -75,13 +76,12 @@ OverlayEditorScene::OverlayEditorScene(const OverlaySettings &srcos, QObject *p)
 	resync();
 }
 
-#define SCALESIZE(var) \
-	iroundf(uiSize *uiZoom *os.qrf##var.width() + 0.5f), iroundf(uiSize *uiZoom *os.qrf##var.height() + 0.5f)
-
 void OverlayEditorScene::updateMuted() {
+	const unsigned int scaleFactor = uiSize * uiZoom;
 	QImageReader qir(QLatin1String("skin:muted_self.svg"));
 	QSize sz = qir.size();
-	sz.scale(SCALESIZE(MutedDeafened), Qt::KeepAspectRatio);
+	sz.scale(static_cast< int >(scaleFactor * os.qrfMutedDeafened.width() + 0.5f),
+			 static_cast< int >(scaleFactor * os.qrfMutedDeafened.height() + 0.5f), Qt::KeepAspectRatio);
 	qir.setScaledSize(sz);
 	qgpiMuted->setPixmap(QPixmap::fromImage(qir.read()));
 
@@ -116,8 +116,11 @@ void OverlayEditorScene::updateUserName() {
 			break;
 	}
 
-	const QPixmap &pm =
-		OverlayTextLine(qsName, os.qfUserName).createPixmap(SCALESIZE(UserName), os.qcUserName[tsColor]);
+	const unsigned int scaleFactor = uiSize * uiZoom;
+	const QPixmap &pm              = OverlayTextLine(qsName, os.qfUserName)
+							.createPixmap(static_cast< unsigned int >(scaleFactor * os.qrfUserName.width() + 0.5f),
+										  static_cast< unsigned int >(scaleFactor * os.qrfUserName.height() + 0.5f),
+										  os.qcUserName[tsColor]);
 	qgpiName->setPixmap(pm);
 
 	moveUserName();
@@ -131,8 +134,11 @@ void OverlayEditorScene::moveUserName() {
 }
 
 void OverlayEditorScene::updateChannel() {
+	const unsigned int scaleFactor = uiSize * uiZoom;
 	const QPixmap &pm =
-		OverlayTextLine(Overlay::tr("Channel"), os.qfChannel).createPixmap(SCALESIZE(Channel), os.qcChannel);
+		OverlayTextLine(Overlay::tr("Channel"), os.qfChannel)
+			.createPixmap(static_cast< unsigned int >(scaleFactor * os.qrfChannel.width() + 0.5f),
+						  static_cast< unsigned int >(scaleFactor * os.qrfChannel.height() + 0.5f), os.qcChannel);
 	qgpiChannel->setPixmap(pm);
 
 	moveChannel();
@@ -146,10 +152,13 @@ void OverlayEditorScene::moveChannel() {
 }
 
 void OverlayEditorScene::updateAvatar() {
+	const unsigned int scaleFactor = uiSize * uiZoom;
+
 	QImage img;
 	QImageReader qir(QLatin1String("skin:default_avatar.svg"));
 	QSize sz = qir.size();
-	sz.scale(SCALESIZE(Avatar), Qt::KeepAspectRatio);
+	sz.scale(static_cast< int >(scaleFactor * os.qrfAvatar.width() + 0.5f),
+			 static_cast< int >(scaleFactor * os.qrfAvatar.height() + 0.5f), Qt::KeepAspectRatio);
 	qir.setScaledSize(sz);
 	img = qir.read();
 	qgpiAvatar->setPixmap(QPixmap::fromImage(img));
@@ -165,11 +174,12 @@ void OverlayEditorScene::moveAvatar() {
 }
 
 void OverlayEditorScene::moveBox() {
-	QRectF childrenBounds = os.qrfAvatar | os.qrfChannel | os.qrfMutedDeafened | os.qrfUserName;
+	const QRectF childrenBounds = os.qrfAvatar | os.qrfChannel | os.qrfMutedDeafened | os.qrfUserName;
 
-	bool haspen = (os.qcBoxPen != os.qcBoxFill) && (!qFuzzyCompare(os.qcBoxPen.alphaF(), static_cast< qreal >(0.0f)));
-	qreal pw    = haspen ? qMax< qreal >(1.0f, os.fBoxPenWidth * uiSize * uiZoom) : 0.0f;
-	qreal pad   = os.fBoxPad * uiSize * uiZoom;
+	const bool haspen =
+		(os.qcBoxPen != os.qcBoxFill) && (!qFuzzyCompare(static_cast< float >(os.qcBoxPen.alphaF()), 0.0f));
+	const qreal pw  = haspen ? qMax< qreal >(1.0f, os.fBoxPenWidth * uiSize * uiZoom) : 0.0f;
+	const qreal pad = os.fBoxPad * uiSize * uiZoom;
 
 	QPainterPath pp;
 	pp.addRoundedRect(childrenBounds.x() * uiSize * uiZoom + -pw / 2.0f - pad,
@@ -179,7 +189,7 @@ void OverlayEditorScene::moveBox() {
 	qgpiBox->setPath(pp);
 	qgpiBox->setPos(0.0f, 0.0f);
 	qgpiBox->setPen(haspen ? QPen(os.qcBoxPen, pw) : Qt::NoPen);
-	qgpiBox->setBrush(qFuzzyCompare(os.qcBoxFill.alphaF(), static_cast< qreal >(0.0f)) ? Qt::NoBrush : os.qcBoxFill);
+	qgpiBox->setBrush(qFuzzyCompare(static_cast< float >(os.qcBoxFill.alphaF()), 0.0f) ? Qt::NoBrush : os.qcBoxFill);
 	qgpiBox->setOpacity(1.0f);
 
 	qgpiBox->setVisible(os.bBox);
@@ -230,11 +240,11 @@ void OverlayEditorScene::drawBackground(QPainter *p, const QRectF &rect) {
 	QRectF upscaled = OverlayUser::scaledRect(rect, 128.f / static_cast< float >(uiSize * uiZoom));
 
 	{
-		int min = iroundf(upscaled.left());
-		int max = iroundf(ceil(upscaled.right()));
+		int min = static_cast< int >(upscaled.left());
+		int max = static_cast< int >(ceil(upscaled.right()));
 
 		for (int i = min; i <= max; ++i) {
-			qreal v = (i / 128) * static_cast< qreal >(uiSize * uiZoom);
+			qreal v = (static_cast< qreal >(i) / 128) * static_cast< qreal >(uiSize * uiZoom);
 
 			if (i != 0)
 				p->setPen(QPen(QColor(128, 128, 128, 255), 0.0f));
@@ -246,11 +256,11 @@ void OverlayEditorScene::drawBackground(QPainter *p, const QRectF &rect) {
 	}
 
 	{
-		int min = iroundf(upscaled.top());
-		int max = iroundf(ceil(upscaled.bottom()));
+		int min = static_cast< int >(upscaled.top());
+		int max = static_cast< int >(ceil(upscaled.bottom()));
 
 		for (int i = min; i <= max; ++i) {
-			qreal v = (i / 128) * static_cast< qreal >(uiSize * uiZoom);
+			qreal v = (static_cast< qreal >(i) / 128) * static_cast< qreal >(uiSize * uiZoom);
 
 			if (i != 0)
 				p->setPen(QPen(QColor(128, 128, 128, 255), 0.0f));
@@ -865,5 +875,3 @@ Qt::WindowFrameSection OverlayEditorScene::rectSection(const QRectF &qrf, const 
 
 	return Qt::NoSection;
 }
-
-#undef SCALESIZE

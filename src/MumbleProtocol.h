@@ -1,4 +1,4 @@
-// Copyright 2022-2023 The Mumble Developers. All rights reserved.
+// Copyright The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -11,6 +11,7 @@
 #include "VolumeAdjustment.h"
 
 #include <cstdint>
+#include <string>
 #include <vector>
 
 #include <gsl/span>
@@ -72,6 +73,9 @@ namespace Protocol {
 	 */
 	enum class TCPMessageType : byte { MUMBLE_ALL_TCP_MESSAGES };
 #undef PROCESS_MUMBLE_TCP_MESSAGE
+
+	std::string messageTypeName(TCPMessageType type);
+
 #define PROCESS_MUMBLE_UDP_MESSAGE(name, value) name = value,
 	/**
 	 * Enum holding all possible UDP message types
@@ -79,7 +83,11 @@ namespace Protocol {
 	enum class UDPMessageType : byte { MUMBLE_ALL_UDP_MESSAGES };
 #undef PROCESS_MUMBLE_UDP_MESSAGE
 
+	std::string messageTypeName(UDPMessageType type);
+
 	enum class LegacyUDPMessageType : byte { VoiceCELTAlpha, Ping, VoiceSpeex, VoiceCELTBeta, VoiceOpus };
+
+	std::string messageTypeName(LegacyUDPMessageType type);
 
 	enum class AudioCodec {
 		Opus,
@@ -91,7 +99,7 @@ namespace Protocol {
 	namespace ReservedTargetIDs {
 		constexpr unsigned int REGULAR_SPEECH  = 0;
 		constexpr unsigned int SERVER_LOOPBACK = 31;
-	}; // namespace ReservedTargetIDs
+	} // namespace ReservedTargetIDs
 
 	using audio_context_t = byte;
 	namespace AudioContext {
@@ -103,7 +111,7 @@ namespace Protocol {
 
 		constexpr audio_context_t BEGIN = NORMAL;
 		constexpr audio_context_t END   = LISTEN + 1;
-	}; // namespace AudioContext
+	} // namespace AudioContext
 
 	enum class Role { Server, Client };
 
@@ -273,8 +281,8 @@ namespace Protocol {
 		bool decodeAudio_protobuf(const gsl::span< const byte > data);
 	};
 
-}; // namespace Protocol
-}; // namespace Mumble
+} // namespace Protocol
+} // namespace Mumble
 
 /**
  * This is merely a dummy-function (never used) that is required as a scope for dummy-switch statements on our message

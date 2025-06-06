@@ -1,4 +1,4 @@
-// Copyright 2021-2023 The Mumble Developers. All rights reserved.
+// Copyright The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -16,4 +16,17 @@ void SearchDialogTree::resizeEvent(QResizeEvent *event) {
 	QTreeWidget::resizeEvent(event);
 
 	scheduleDelayedItemsLayout();
+}
+
+QModelIndex SearchDialogTree::moveCursor(QAbstractItemView::CursorAction cursorAction,
+										 Qt::KeyboardModifiers modifiers) {
+	// Hack to make screen readers read search results...
+
+	QModelIndex mi = QTreeWidget::moveCursor(cursorAction, modifiers);
+
+	if (cursorAction == QAbstractItemView::MoveUp || cursorAction == QAbstractItemView::MoveDown) {
+		mi = model()->index(mi.row(), 1);
+	}
+
+	return mi;
 }

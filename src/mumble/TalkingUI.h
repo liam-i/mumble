@@ -1,4 +1,4 @@
-// Copyright 2020-2023 The Mumble Developers. All rights reserved.
+// Copyright The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -6,10 +6,11 @@
 #ifndef MUMBLE_MUMBLE_TALKINGUI_H_
 #define MUMBLE_MUMBLE_TALKINGUI_H_
 
+#include <QColor>
+#include <QHash>
+#include <QIcon>
+#include <QSet>
 #include <QWidget>
-#include <QtCore/QHash>
-#include <QtCore/QSet>
-#include <QtGui/QIcon>
 
 #include <memory>
 #include <vector>
@@ -36,7 +37,7 @@ class TalkingUI : public QWidget {
 
 private:
 	Q_OBJECT
-	Q_DISABLE_COPY(TalkingUI);
+	Q_DISABLE_COPY(TalkingUI)
 
 	std::vector< std::unique_ptr< TalkingUIContainer > > m_containers;
 	/// The Entry corresponding to the currently selected user
@@ -56,8 +57,8 @@ private:
 	void removeUser(unsigned int userSession);
 
 	void addListener(const ClientUser *user, const Channel *channel);
-	TalkingUIChannelListener *findListener(unsigned int userSession, int channelID);
-	void removeListener(unsigned int userSession, int channelID);
+	TalkingUIChannelListener *findListener(unsigned int userSession, unsigned int channelID);
+	void removeListener(unsigned int userSession, unsigned int channelID);
 	void removeAllListeners();
 
 	/// Sets up the UI components
@@ -70,7 +71,6 @@ private:
 	///
 	/// @param channel A pointer to the channel that shall be added
 	void addChannel(const Channel *channel);
-	;
 	/// Adds an UI entry for the given User, if none exists yet.
 	///
 	/// @param channel A pointer to the user that shall be added
@@ -81,7 +81,7 @@ private:
 	///
 	/// @paam userSession The session ID of the user
 	/// @param channelID The channel ID of the channel
-	void moveUserToChannel(unsigned int userSession, int channelID);
+	void moveUserToChannel(unsigned int userSession, unsigned int channelID);
 
 	/// Update (resize) the UI to its content
 	void updateUI();
@@ -91,6 +91,14 @@ private:
 	/// @param widgetWrapper An instance of MultiStyleWidgetWrapper that wraps the widget whose font size
 	/// 	shall be set
 	void setFontSize(MultiStyleWidgetWrapper &widgetWrapper);
+
+	/// Sets the background color to to a color
+	///
+	/// @param backgroundColor An instance of QColor that will be set as the background color
+	void setBackgroundColor(QColor backgroundColor);
+
+	/// Clears the stylesheet of the TalkingUI window
+	void clearBackgroundColor();
 
 	/// Updates the user's status icons (reflecting e.g. its mut-state)
 	///
@@ -125,7 +133,8 @@ public slots:
 	void on_userLocalVolumeAdjustmentsChanged(float newAdjustment, float oldAdjustment);
 	void on_channelListenerAdded(const ClientUser *user, const Channel *channel);
 	void on_channelListenerRemoved(const ClientUser *user, const Channel *channel);
-	void on_channelListenerLocalVolumeAdjustmentChanged(int channelID, float newAdjustment, float oldAdjustment);
+	void on_channelListenerLocalVolumeAdjustmentChanged(unsigned int channelID, float newAdjustment,
+														float oldAdjustment);
 };
 
 #endif // MUMBLE_MUMBLE_TALKINGUI_H_

@@ -1,4 +1,4 @@
-// Copyright 2021-2023 The Mumble Developers. All rights reserved.
+// Copyright The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -16,8 +16,8 @@
 namespace Poco {
 namespace XML {
 	class Document;
-}; // namespace XML
-}; // namespace Poco
+} // namespace XML
+} // namespace Poco
 
 struct PluginManifestException : std::runtime_error {
 	PluginManifestException(const std::string &msg = "") : std::runtime_error(msg) {}
@@ -39,7 +39,7 @@ template<> struct hash< PluginRuntimeSpec > {
 		return std::hash< std::string >()(spec.os) ^ (std::hash< std::string >()(spec.architecture) << 1);
 	}
 };
-}; // namespace std
+} // namespace std
 
 class PluginManifest {
 public:

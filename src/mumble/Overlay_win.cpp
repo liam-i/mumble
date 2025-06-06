@@ -1,4 +1,4 @@
-// Copyright 2007-2023 The Mumble Developers. All rights reserved.
+// Copyright The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -17,10 +17,6 @@
 #include "../../overlay/overlay_exe/overlay_exe.h"
 
 // Used by the overlay to detect whether we injected into ourselves.
-//
-// A similar declaration can be found in mumble_exe's Overlay.cpp,
-// for the overlay's self-detection checks to continue working in a
-// mumble_app.dll world.
 extern "C" __declspec(dllexport) void mumbleSelfDetection(){};
 
 // Determine if the current Mumble client is able to host
@@ -221,9 +217,8 @@ void OverlayPrivateWin::onHelperProcessStarted() {
 		qFatal("OverlayPrivateWin: unknown QProcess found in onHelperProcessStarted().");
 	}
 
-	PROCESS_INFORMATION *pi = helper->pid();
-	qWarning("OverlayPrivateWin: overlay helper process '%s' started with PID %llu.", qPrintable(path),
-			 static_cast< unsigned long long >(pi->dwProcessId));
+	std::uint64_t processID = helper->processId();
+	qWarning("OverlayPrivateWin: overlay helper process '%s' started with PID %llu.", qPrintable(path), processID);
 }
 
 void OverlayPrivateWin::onHelperProcessError(QProcess::ProcessError processError) {

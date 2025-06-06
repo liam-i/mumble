@@ -1,4 +1,4 @@
-// Copyright 2007-2023 The Mumble Developers. All rights reserved.
+// Copyright The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -17,6 +17,9 @@ class ConfigDialog : public QDialog, public Ui::ConfigDialog {
 private:
 	Q_OBJECT
 	Q_DISABLE_COPY(ConfigDialog)
+
+	void updateTabOrder();
+
 protected:
 	static QMutex s_existingWidgetsMutex;
 	static QHash< QString, ConfigWidget * > s_existingWidgets;

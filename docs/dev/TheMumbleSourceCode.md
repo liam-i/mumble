@@ -41,7 +41,6 @@ When cloning the repo, the source tree should look something like this:
 ├── src
 │   ├── crypto
 │   ├── mumble
-│   ├── mumble_exe
 │   ├── murmur
 │   └── tests
 └── themes
@@ -57,8 +56,7 @@ The `cmake` directory contains a few cmake scripts that are needed to make the b
 issue (or extend the build system), you can probably ignore this directory.
 
 Obviously you are already aware of the `docs` directory (you are reading this file, which lives in there). It contains mostly development related
-documentation. The more extended user documentation is available on our website or (depending on how far we have gotten to migrate it yet) on our
-wiki. The most relevant documentation for you is probably within the `dev` (development) subdirectory.
+documentation. The more extended user documentation is available on our website. The most relevant documentation for you is probably within the `dev` (development) subdirectory.
 
 `g15helper` and `helper` will generally not concern you. We could probably find a better place for these, but at the moment they are where they are…
 
@@ -81,11 +79,8 @@ mainly occupied by various scripts used throughout various tasks surrounding Mum
 default configuration file for the Mumble server.
 
 Your main focus should lie on the `src` directory as this is where the bulk of Mumble's source code is living. Directly in `src/` are shared sources
-that are used by the Mumble client as well as by the server that live in `src/mumble` and `src/murmur` respectively. The `src/mumble_exe` direcrtory
-contains code for the Windows-specific executable. In order to make sense of that you have to know that on Windows we are currently using a bit of an
-odd system: The main application is packaged inside a DLL that is loaded by the main executable. This is a historic artifact and currently only
-serves to create problems every now and then. In any case though, the mentioned "main executable" whose sole job is loading of that DLL lives in
-`mumble_exe`. Generally you don't have to worry about it. The remaining directories within `src` should be somewhat self-explanatory.
+that are used by the Mumble client as well as by the server that live in `src/mumble` and `src/murmur` respectively. The remaining directories within
+`src` should be somewhat self-explanatory.
 
 The `themes` directory contains all built-in themes that are currently shipped with Mumble. At this point there is only one theme available: the
 `Default` theme (note that it contains the Lite and the Dark theme variant). If you want to customize any kind of icons within Mumble, this is the
@@ -139,6 +134,7 @@ open the element in Qt Designer, check the button's name and search for that in 
 implicit signal-connecting which is based on a special naming scheme of slots in a given UI class (e.g. `on_xy_actived` where `xy` is the name of the
 corresponding UI element).
 
+When creating or changing existing UI elements, always consider the [accessibility checklist](/docs/dev/Accessibility.md).
 
 ### Server
 

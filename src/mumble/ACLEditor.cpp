@@ -1,4 +1,4 @@
-// Copyright 2007-2023 The Mumble Developers. All rights reserved.
+// Copyright The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -13,41 +13,24 @@
 #include "QtUtils.h"
 #include "ServerHandler.h"
 #include "User.h"
+#include "widgets/EventFilters.h"
 
-#if QT_VERSION >= 0x050000
-#	include <QtWidgets/QMessageBox>
-#else
-#	include <QtGui/QMessageBox>
-#endif
+#include <QtWidgets/QMessageBox>
 
 #include "Global.h"
+
+#include <cassert>
 
 ACLGroup::ACLGroup(const QString &name) : Group(nullptr, name) {
 	bInherited = false;
 }
 
-ACLEditor::ACLEditor(int channelparentid, QWidget *p) : QDialog(p) {
+ACLEditor::ACLEditor(unsigned int channelparentid, QWidget *p) : QDialog(p) {
 	// Simple constructor for add channel menu
 	bAddChannelMode = true;
 	iChannel        = channelparentid;
 
 	setupUi(this);
-
-	qwChannel->setAccessibleName(tr("Properties"));
-	rteChannelDescription->setAccessibleName(tr("Description"));
-	qleChannelPassword->setAccessibleName(tr("Channel password"));
-	qsbChannelPosition->setAccessibleName(tr("Position"));
-	qsbChannelMaxUsers->setAccessibleName(tr("Maximum users"));
-	qleChannelName->setAccessibleName(tr("Channel name"));
-	qcbGroupList->setAccessibleName(tr("List of groups"));
-	qlwGroupAdd->setAccessibleName(tr("Inherited group members"));
-	qlwGroupRemove->setAccessibleName(tr("Foreign group members"));
-	qlwGroupInherit->setAccessibleName(tr("Inherited channel members"));
-	qcbGroupAdd->setAccessibleName(tr("Add members to group"));
-	qcbGroupRemove->setAccessibleName(tr("Remove member from group"));
-	qlwACLs->setAccessibleName(tr("List of ACL entries"));
-	qcbACLGroup->setAccessibleName(tr("Group this entry applies to"));
-	qcbACLUser->setAccessibleName(tr("User this entry applies to"));
 
 	qsbChannelPosition->setRange(INT_MIN, INT_MAX);
 
@@ -76,7 +59,7 @@ ACLEditor::ACLEditor(int channelparentid, QWidget *p) : QDialog(p) {
 	adjustSize();
 }
 
-ACLEditor::ACLEditor(int channelid, const MumbleProto::ACL &mea, QWidget *p) : QDialog(p) {
+ACLEditor::ACLEditor(unsigned int channelid, const MumbleProto::ACL &mea, QWidget *p) : QDialog(p) {
 	QLabel *l;
 
 	bAddChannelMode = false;
@@ -93,26 +76,10 @@ ACLEditor::ACLEditor(int channelid, const MumbleProto::ACL &mea, QWidget *p) : Q
 
 	setupUi(this);
 
-	qwChannel->setAccessibleName(tr("Properties"));
-	rteChannelDescription->setAccessibleName(tr("Description"));
-	qleChannelPassword->setAccessibleName(tr("Channel password"));
-	qsbChannelPosition->setAccessibleName(tr("Position"));
-	qsbChannelMaxUsers->setAccessibleName(tr("Maximum users"));
-	qleChannelName->setAccessibleName(tr("Channel name"));
-	qcbGroupList->setAccessibleName(tr("List of groups"));
-	qlwGroupAdd->setAccessibleName(tr("Inherited group members"));
-	qlwGroupRemove->setAccessibleName(tr("Foreign group members"));
-	qlwGroupInherit->setAccessibleName(tr("Inherited channel members"));
-	qcbGroupAdd->setAccessibleName(tr("Add members to group"));
-	qcbGroupRemove->setAccessibleName(tr("Remove member from group"));
-	qlwACLs->setAccessibleName(tr("List of ACL entries"));
-	qcbACLGroup->setAccessibleName(tr("Group this entry applies to"));
-	qcbACLUser->setAccessibleName(tr("User this entry applies to"));
-
 	qcbChannelTemporary->hide();
 
-	iId = mea.channel_id();
-	setWindowTitle(tr("Mumble - Edit %1").arg(Channel::get(iId)->qsName));
+	iId = static_cast< int >(mea.channel_id());
+	setWindowTitle(tr("Mumble - Edit %1").arg(Channel::get(static_cast< unsigned int >(iId))->qsName));
 
 	qlChannelID->setText(tr("ID: %1").arg(iId));
 
@@ -127,7 +94,7 @@ ACLEditor::ACLEditor(int channelid, const MumbleProto::ACL &mea, QWidget *p) : Q
 
 	if (Global::get().sh->m_version >= Version::fromComponents(1, 3, 0)) {
 		qsbChannelMaxUsers->setRange(0, INT_MAX);
-		qsbChannelMaxUsers->setValue(pChannel->uiMaxUsers);
+		qsbChannelMaxUsers->setValue(static_cast< int >(pChannel->uiMaxUsers));
 		qsbChannelMaxUsers->setSpecialValueText(tr("Default server value"));
 	} else {
 		qlChannelMaxUsers->hide();
@@ -190,6 +157,22 @@ ACLEditor::ACLEditor(int channelid, const MumbleProto::ACL &mea, QWidget *p) : Q
 	connect(qcbGroupAdd->lineEdit(), SIGNAL(returnPressed()), qpbGroupAddAdd, SLOT(animateClick()));
 	connect(qcbGroupRemove->lineEdit(), SIGNAL(returnPressed()), qpbGroupRemoveAdd, SLOT(animateClick()));
 
+	FocusEventObserver *focusEventObserver = new FocusEventObserver(this, false);
+	qcbACLGroup->installEventFilter(focusEventObserver);
+	connect(focusEventObserver, &FocusEventObserver::focusOutObserved, this, &ACLEditor::qcbACLGroup_focusLost);
+
+	focusEventObserver = new FocusEventObserver(this, false);
+	qcbACLUser->installEventFilter(focusEventObserver);
+	connect(focusEventObserver, &FocusEventObserver::focusOutObserved, this, &ACLEditor::qcbACLUser_focusLost);
+
+	KeyEventObserver *keyEventObserver = new KeyEventObserver(this, QEvent::KeyPress, false, { Qt::Key_Space });
+	qcbACLGroup->installEventFilter(keyEventObserver);
+	connect(keyEventObserver, &KeyEventObserver::keyEventObserved, this, &ACLEditor::qcbACLGroup_spacePressed);
+
+	keyEventObserver = new KeyEventObserver(this, QEvent::KeyPress, false, { Qt::Key_Space });
+	qcbACLUser->installEventFilter(keyEventObserver);
+	connect(keyEventObserver, &KeyEventObserver::keyEventObserved, this, &ACLEditor::qcbACLUser_spacePressed);
+
 	foreach (User *u, ClientUser::c_qmUsers) {
 		if (u->iId >= 0) {
 			qhNameCache.insert(u->iId, u->qsName);
@@ -219,7 +202,7 @@ ACLEditor::ACLEditor(int channelid, const MumbleProto::ACL &mea, QWidget *p) : Q
 		acl->bInherited = as.inherited();
 		acl->iUserId    = -1;
 		if (as.has_user_id())
-			acl->iUserId = as.user_id();
+			acl->iUserId = static_cast< int >(as.user_id());
 		else
 			acl->qsGroup = u8(as.group());
 		acl->pAllow = static_cast< ChanACL::Permissions >(as.grant());
@@ -236,11 +219,11 @@ ACLEditor::ACLEditor(int channelid, const MumbleProto::ACL &mea, QWidget *p) : Q
 		gp->bInherited   = gs.inherited();
 		gp->bInheritable = gs.inheritable();
 		for (int j = 0; j < gs.add_size(); ++j)
-			gp->qsAdd.insert(gs.add(j));
+			gp->qsAdd.insert(static_cast< int >(gs.add(j)));
 		for (int j = 0; j < gs.remove_size(); ++j)
-			gp->qsRemove.insert(gs.remove(j));
+			gp->qsRemove.insert(static_cast< int >(gs.remove(j)));
 		for (int j = 0; j < gs.inherited_members_size(); ++j)
-			gp->qsTemporary.insert(gs.inherited_members(j));
+			gp->qsTemporary.insert(static_cast< int >(gs.inherited_members(j)));
 
 		qlGroups << gp;
 	}
@@ -301,8 +284,9 @@ void ACLEditor::accept() {
 	// Update channel state
 	if (bAddChannelMode) {
 		Global::get().sh->createChannel(iChannel, qleChannelName->text(), rteChannelDescription->text(),
-										qsbChannelPosition->value(), qcbChannelTemporary->isChecked(),
-										qsbChannelMaxUsers->value());
+										static_cast< unsigned int >(qsbChannelPosition->value()),
+										qcbChannelTemporary->isChecked(),
+										static_cast< unsigned int >(qsbChannelMaxUsers->value()));
 	} else {
 		bool needs_update = false;
 
@@ -325,7 +309,8 @@ void ACLEditor::accept() {
 			needs_update = true;
 		}
 		if (pChannel->uiMaxUsers != static_cast< unsigned int >(qsbChannelMaxUsers->value())) {
-			mpcs.set_max_users(qsbChannelMaxUsers->value());
+			assert(qsbChannelMaxUsers->value() >= 0);
+			mpcs.set_max_users(static_cast< unsigned int >(qsbChannelMaxUsers->value()));
 			needs_update = true;
 		}
 		if (needs_update)
@@ -342,8 +327,8 @@ void ACLEditor::accept() {
 			MumbleProto::ACL_ChanACL *mpa = msg.add_acls();
 			mpa->set_apply_here(acl->bApplyHere);
 			mpa->set_apply_subs(acl->bApplySubs);
-			if (acl->iUserId != -1)
-				mpa->set_user_id(acl->iUserId);
+			if (acl->iUserId >= 0)
+				mpa->set_user_id(static_cast< unsigned int >(acl->iUserId));
 			else
 				mpa->set_group(u8(acl->qsGroup));
 			mpa->set_grant(acl->pAllow);
@@ -360,10 +345,10 @@ void ACLEditor::accept() {
 			mpg->set_inheritable(gp->bInheritable);
 			foreach (int pid, gp->qsAdd)
 				if (pid >= 0)
-					mpg->add_add(pid);
+					mpg->add_add(static_cast< unsigned int >(pid));
 			foreach (int pid, gp->qsRemove)
 				if (pid >= 0)
-					mpg->add_remove(pid);
+					mpg->add_remove(static_cast< unsigned int >(pid));
 		}
 		Global::get().sh->sendMessage(msg);
 	}
@@ -401,7 +386,7 @@ void ACLEditor::returnQuery(const MumbleProto::QueryUsers &mqu) {
 		return;
 
 	for (int i = 0; i < mqu.names_size(); ++i) {
-		int pid       = mqu.ids(i);
+		int pid       = static_cast< int >(mqu.ids(i));
 		QString name  = u8(mqu.names(i));
 		QString lname = name.toLower();
 		qhIDCache.insert(lname, pid);
@@ -663,7 +648,18 @@ void ACLEditor::ACLEnableCheck() {
 
 		if (as->iUserId == -1) {
 			qcbACLUser->clearEditText();
-			qcbACLGroup->addItem(as->qsGroup);
+
+			bool found = false;
+			for (int i = 0; i < qcbACLGroup->count(); i++) {
+				if (qcbACLGroup->itemText(i) == as->qsGroup) {
+					found = true;
+					break;
+				}
+			}
+			if (!found) {
+				qcbACLGroup->addItem(as->qsGroup);
+			}
+
 			qcbACLGroup->setCurrentIndex(qcbACLGroup->findText(as->qsGroup, Qt::MatchExactly));
 		} else {
 			qcbACLUser->setEditText(userName(as->iUserId));
@@ -790,15 +786,11 @@ void ACLEditor::on_qpbACLUp_clicked() {
 	if (!as || as->bInherited)
 		return;
 
-	int idx = qlACLs.indexOf(as);
+	const auto idx = qlACLs.indexOf(as);
 	if (idx <= numInheritACL + 1)
 		return;
 
-#if QT_VERSION >= QT_VERSION_CHECK(5, 13, 0)
 	qlACLs.swapItemsAt(idx - 1, idx);
-#else
-	qlACLs.swap(idx - 1, idx);
-#endif
 	qlwACLs->setCurrentRow(qlwACLs->currentRow() - 1);
 	refillACL();
 }
@@ -808,15 +800,11 @@ void ACLEditor::on_qpbACLDown_clicked() {
 	if (!as || as->bInherited)
 		return;
 
-	int idx = qlACLs.indexOf(as) + 1;
+	const auto idx = qlACLs.indexOf(as) + 1;
 	if (idx >= qlACLs.count())
 		return;
 
-#if QT_VERSION >= QT_VERSION_CHECK(5, 13, 0)
 	qlACLs.swapItemsAt(idx - 1, idx);
-#else
-	qlACLs.swap(idx - 1, idx);
-#endif
 	qlwACLs->setCurrentRow(qlwACLs->currentRow() + 1);
 	refillACL();
 }
@@ -827,21 +815,80 @@ void ACLEditor::on_qcbACLInherit_clicked(bool) {
 
 void ACLEditor::on_qcbACLApplyHere_clicked(bool checked) {
 	ChanACL *as = currentACL();
-	if (!as || as->bInherited)
+	if (!as || as->bInherited) {
 		return;
+	}
 
 	as->bApplyHere = checked;
+	if (!checked && !qcbACLApplySubs->isChecked()) {
+		qcbACLApplySubs->setCheckState(Qt::Checked);
+	}
 }
 
 void ACLEditor::on_qcbACLApplySubs_clicked(bool checked) {
 	ChanACL *as = currentACL();
-	if (!as || as->bInherited)
+	if (!as || as->bInherited) {
 		return;
+	}
 
 	as->bApplySubs = checked;
+	if (!checked && !qcbACLApplyHere->isChecked()) {
+		qcbACLApplyHere->setCheckState(Qt::Checked);
+	}
 }
 
-void ACLEditor::on_qcbACLGroup_activated(const QString &text) {
+void ACLEditor::qcbACLGroup_focusLost() {
+	ChanACL *as = currentACL();
+
+	if (!as || as->bInherited) {
+		return;
+	}
+
+	if (qcbACLGroup->currentText().isEmpty()) {
+		return;
+	}
+
+	if (as->qsGroup == qcbACLGroup->currentText()) {
+		return;
+	}
+
+	on_qcbACLGroup_textActivated(qcbACLGroup->currentText());
+}
+
+void ACLEditor::qcbACLUser_focusLost() {
+	ChanACL *as = currentACL();
+
+	if (!as || as->bInherited) {
+		return;
+	}
+
+	if (qcbACLUser->currentText().isEmpty()) {
+		return;
+	}
+
+	int userId = id(qcbACLUser->currentText());
+	if (userId == -1 || as->iUserId == userId) {
+		return;
+	}
+
+	on_qcbACLUser_textActivated(qcbACLUser->currentText());
+}
+
+void ACLEditor::qcbACLGroup_spacePressed() {
+	if (!qcbACLGroup->currentText().isEmpty()) {
+		return;
+	}
+	qcbACLGroup->showPopup();
+}
+
+void ACLEditor::qcbACLUser_spacePressed() {
+	if (!qcbACLUser->currentText().isEmpty()) {
+		return;
+	}
+	qcbACLUser->showPopup();
+}
+
+void ACLEditor::on_qcbACLGroup_textActivated(const QString &text) {
 	ChanACL *as = currentACL();
 	if (!as || as->bInherited)
 		return;
@@ -858,9 +905,7 @@ void ACLEditor::on_qcbACLGroup_activated(const QString &text) {
 	refillACL();
 }
 
-void ACLEditor::on_qcbACLUser_activated() {
-	QString text = qcbACLUser->currentText();
-
+void ACLEditor::on_qcbACLUser_textActivated(const QString &text) {
 	ChanACL *as = currentACL();
 	if (!as || as->bInherited)
 		return;
@@ -941,7 +986,7 @@ void ACLEditor::ACLPermissions_clicked() {
 	as->pDeny  = static_cast< ChanACL::Permissions >(denied);
 }
 
-void ACLEditor::on_qcbGroupList_activated(const QString &text) {
+void ACLEditor::on_qcbGroupList_textActivated(const QString &text) {
 	ACLGroup *gs = currentGroup();
 	if (text.isEmpty())
 		return;
@@ -968,7 +1013,7 @@ void ACLEditor::on_qcbGroupList_editTextChanged(const QString &text) {
 }
 
 void ACLEditor::on_qpbGroupAdd_clicked() {
-	on_qcbGroupList_activated(qcbGroupList->currentText());
+	on_qcbGroupList_textActivated(qcbGroupList->currentText());
 }
 
 void ACLEditor::on_qpbGroupRemove_clicked() {

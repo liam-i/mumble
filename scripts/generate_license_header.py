@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 #
-# Copyright 2022-2023 The Mumble Developers. All rights reserved.
+# Copyright The Mumble Developers. All rights reserved.
 # Use of this source code is governed by a BSD-style license
 # that can be found in the LICENSE file at the root of the
 # Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -32,7 +32,7 @@ licenses = [
     ["licenseMinHook", "3rdparty/minhook/LICENSE.txt", "MinHook", "https://github.com/TsudaKageyu/minhook", "Q_OS_WIN64"],
     ["licenseQtTranslations", "src/mumble/qttranslations/LICENSE",
         "Additional Qt translations", "https://www.virtualbox.org/ticket/2018", "USING_BUNDLED_QT_TRANSLATIONS"],
-    ["licenseEmojiOne", "3rdPartyLicenses/cc_by_sa_40_legalcode.txt", "Emoji One artwork", "http://emojione.com/"],
+    ["licenseFlagIcons", "3rdparty/flag-icons/LICENSE", "flag-icons", "https://flagicons.lipis.dev/" ],
     ["licenseXInputCheck", "3rdparty/xinputcheck-src/COPYING.txt", "XInputCheck (SDL_IsXInput function)", "https://www.libsdl.org/"],
     ["licenseQQBonjour", "3rdparty/qqbonjour/LICENSE", "QQBonjour", "https://doc.qt.io/archives/qq/qq23-bonjour.html"],
     ["licenseSmallFT", "3rdparty/smallft/LICENSE", "smallft", "https://www.xiph.org"],
@@ -57,7 +57,6 @@ licenses = [
     ["licenseSQLite3", "3rdPartyLicenses/sqlite3_license.txt", "SQLite3", "http://sqlite.org", "USE_BUILDENV"],
     ["licenseXar", "3rdPartyLicenses/xar_license.txt", "XAR", "https://opensource.apple.com/source/xar/", "USE_BUILDENV"], # macOS only
     ["licenseAvahi", "3rdPartyLicenses/avahi_license.txt", "Avahi", "https://www.avahi.org/", "USE_BUILDENV"], # Linux only
-    ["licenseDBus", "3rdPartyLicenses/dbus_license.txt", "D-Bus", "https://www.freedesktop.org/wiki/Software/dbus", "USE_BUILDENV"], # Linux only
     ["licenseAppImageRuntime", "3rdPartyLicenses/appimage_runtime_license.txt", "AppImage Runtime", "http://www.appimage.org", "USE_BUILDENV"], # Linux only
     ["licenseSquashfuse", "3rdPartyLicenses/squashfuse_license.txt", "squashfuse", "https://github.com/vasi/squashfuse", "USE_BUILDENV"], # Linux only
     ["licenseLibfuse", "3rdPartyLicenses/libfuse_license.txt", "libfuse", "https://github.com/libfuse/libfuse/", "USE_BUILDENV"], # Linux only

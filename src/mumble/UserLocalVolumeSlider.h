@@ -1,4 +1,4 @@
-// Copyright 2022-2023 The Mumble Developers. All rights reserved.
+// Copyright The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -13,7 +13,7 @@ class ClientUser;
 class UserLocalVolumeSlider : public VolumeSliderWidgetAction {
 	Q_OBJECT
 
-	/// The session ID for the user that the dialog is changing the volume for.
+	/// The session ID for the user that the widget is changing the volume for.
 	unsigned int m_clientSession;
 
 public:
@@ -23,7 +23,8 @@ public:
 	void setUser(unsigned int sessionId);
 
 private slots:
-	void on_VolumeSlider_valueChanged(int value);
+	void on_VolumeSlider_valueChanged(int value) override;
+	void on_VolumeSlider_changeCompleted() override;
 	void on_VolumeSlider_sliderReleased();
 };
 

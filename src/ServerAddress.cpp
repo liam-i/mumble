@@ -1,12 +1,9 @@
-// Copyright 2017-2023 The Mumble Developers. All rights reserved.
+// Copyright The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
 
 #include "ServerAddress.h"
-
-ServerAddress::ServerAddress() : port(0) {
-}
 
 ServerAddress::ServerAddress(HostAddress host_, unsigned short port_) : host(host_), port(port_) {
 }
@@ -34,6 +31,6 @@ bool operator<(const ServerAddress &lhs, const ServerAddress &rhs) {
 	return false;
 }
 
-uint qHash(const ServerAddress &key) {
-	return qHash(key.host) ^ uint(key.port);
+std::size_t qHash(const ServerAddress &key) {
+	return qHash(key.host) ^ static_cast< std::size_t >(key.port);
 }

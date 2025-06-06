@@ -1,4 +1,4 @@
-// Copyright 2020-2023 The Mumble Developers. All rights reserved.
+// Copyright The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -36,7 +36,10 @@ uint32_t CryptographicRandom::uint32() {
 	unsigned char buf[4];
 	CryptographicRandom::fillBuffer(buf, sizeof(buf));
 
-	ret = (buf[0]) | (buf[1] << 8) | (buf[2] << 16) | (buf[3] << 24);
+	ret = buf[0];
+	ret |= static_cast< decltype(ret) >(buf[1] << 8);
+	ret |= static_cast< decltype(ret) >(buf[2] << 16);
+	ret |= static_cast< decltype(ret) >(buf[3] << 24);
 	return ret;
 }
 

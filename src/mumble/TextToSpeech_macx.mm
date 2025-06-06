@@ -1,4 +1,4 @@
-// Copyright 2014-2023 The Mumble Developers. All rights reserved.
+// Copyright The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -118,7 +118,7 @@ TextToSpeechPrivate::~TextToSpeechPrivate() {
 
 void TextToSpeechPrivate::say(const QString &text) {
 	QByteArray byteArray = text.toUtf8();
-	NSString *message = [[NSString alloc] initWithBytes:byteArray.constData() length:byteArray.size() encoding:NSUTF8StringEncoding];
+	NSString *message = [[NSString alloc] initWithBytes:byteArray.constData() length:((NSUInteger) byteArray.size()) encoding:NSUTF8StringEncoding];
 
 	if (message == nil) {
 		return;
@@ -135,7 +135,7 @@ void TextToSpeechPrivate::say(const QString &text) {
 void TextToSpeechPrivate::setVolume(int volume) {
 	// Check for setVolume: availability. It's only available on 10.5+.
 	if ([[m_synthesizerHelper synthesizer] respondsToSelector:@selector(setVolume:)]) {
-		[[m_synthesizerHelper synthesizer] setVolume:volume / 100.0];
+		[[m_synthesizerHelper synthesizer] setVolume:volume / 100.0f];
 	}
 }
 

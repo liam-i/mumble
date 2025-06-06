@@ -1,4 +1,4 @@
-// Copyright 2015-2023 The Mumble Developers. All rights reserved.
+// Copyright The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -8,29 +8,31 @@
 #include "MumbleApplication.h"
 #include "Global.h"
 
-boost::optional< ThemeInfo::StyleInfo > Themes::getConfiguredStyle(const Settings &settings) {
+#include <optional>
+
+std::optional< ThemeInfo::StyleInfo > Themes::getConfiguredStyle(const Settings &settings) {
 	if (settings.themeName.isEmpty() && settings.themeStyleName.isEmpty()) {
-		return boost::none;
+		return std::nullopt;
 	}
 
 	const ThemeMap themes            = getThemes();
 	ThemeMap::const_iterator themeIt = themes.find(settings.themeName);
 	if (themeIt == themes.end()) {
 		qWarning() << "Could not find configured theme" << settings.themeName;
-		return boost::none;
+		return std::nullopt;
 	}
 
 	ThemeInfo::StylesMap::const_iterator styleIt = themeIt->styles.find(settings.themeStyleName);
 	if (styleIt == themeIt->styles.end()) {
 		qWarning() << "Configured theme" << settings.themeName << "does not have configured style"
 				   << settings.themeStyleName;
-		return boost::none;
+		return std::nullopt;
 	}
 
 	return *styleIt;
 }
 
-void Themes::setConfiguredStyle(Settings &settings, boost::optional< ThemeInfo::StyleInfo > style, bool &outChanged) {
+void Themes::setConfiguredStyle(Settings &settings, std::optional< ThemeInfo::StyleInfo > style, bool &outChanged) {
 	if (style) {
 		if (settings.themeName != style->themeName || settings.themeStyleName != style->name) {
 			settings.themeName      = style->themeName;
@@ -55,7 +57,7 @@ void Themes::applyFallback() {
 }
 
 bool Themes::applyConfigured() {
-	boost::optional< ThemeInfo::StyleInfo > style = Themes::getConfiguredStyle(Global::get().s);
+	std::optional< ThemeInfo::StyleInfo > style = Themes::getConfiguredStyle(Global::get().s);
 	if (!style) {
 		return false;
 	}
@@ -144,5 +146,6 @@ bool Themes::readStylesheet(const QString &stylesheetFn, QString &stylesheetCont
 
 QString Themes::getDefaultStylesheet() {
 	return QLatin1String(".log-channel{text-decoration:none;}.log-user{text-decoration:none;}p{margin:0;}#qwMacWarning,"
-						 "#qwInlineNotice{background-color:#FFFEDC;border-radius:5px;border:1px solid #B5B59E;}");
+						 "#qwInlineNotice{background-color:#FFFEDC;border-radius:5px;border:1px solid #B5B59E;}"
+						 "#qwMacWarning > QLabel,#qwInlineNotice > QLabel{color:#333;}");
 }

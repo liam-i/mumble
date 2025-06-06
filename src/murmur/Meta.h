@@ -1,4 +1,4 @@
-// Copyright 2007-2023 The Mumble Developers. All rights reserved.
+// Copyright The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -6,9 +6,12 @@
 #ifndef MUMBLE_MURMUR_META_H_
 #define MUMBLE_MURMUR_META_H_
 
+#include "DBState.h"
+#include "DBWrapper.h"
 #include "Timer.h"
-
 #include "Version.h"
+
+#include "database/ConnectionParameter.h"
 
 #ifdef Q_OS_WIN
 #	include "win.h"
@@ -16,6 +19,7 @@
 
 #include <QtCore/QDir>
 #include <QtCore/QList>
+#include <QtCore/QRegularExpression>
 #include <QtCore/QUrl>
 #include <QtCore/QVariant>
 #include <QtNetwork/QHostAddress>
@@ -23,22 +27,26 @@
 #include <QtNetwork/QSslCipher>
 #include <QtNetwork/QSslKey>
 
+#include <memory>
+#include <optional>
+
 class Server;
 class QSettings;
 
 class MetaParams {
 public:
+	/// This is the path to the directory in which the loaded server ini file is located
 	QDir qdBasePath;
 
 	QList< QHostAddress > qlBind;
 	unsigned short usPort;
 	int iTimeout;
 	int iMaxBandwidth;
-	int iMaxUsers;
-	int iMaxUsersPerChannel;
+	unsigned int iMaxUsers;
+	unsigned int iMaxUsersPerChannel;
 	int iMaxListenersPerChannel;
 	int iMaxListenerProxiesPerUser;
-	int iDefaultChan;
+	unsigned int iDefaultChan;
 	bool bRememberChan;
 	int iRememberChanDuration;
 	int iMaxTextMessageLength;
@@ -81,8 +89,6 @@ public:
 	bool bSendVersion;
 	bool bAllowPing;
 
-	QString qsDBus;
-	QString qsDBusService;
 	QString qsLogfile;
 	QString qsPid;
 	QString qsIceEndpoint;
@@ -95,8 +101,8 @@ public:
 	QUrl qurlRegWeb;
 	bool bBonjour;
 
-	QRegExp qrUserName;
-	QRegExp qrChannelName;
+	QRegularExpression qrUserName;
+	QRegularExpression qrChannelName;
 
 	unsigned int iMessageLimit;
 	unsigned int iMessageBurst;
@@ -141,8 +147,8 @@ public:
 #endif
 
 	Version::full_t m_suggestVersion;
-	QVariant qvSuggestPositional;
-	QVariant qvSuggestPushToTalk;
+	std::optional< bool > suggestPositional;
+	std::optional< bool > suggestPushToTalk;
 
 	/// A flag indicating whether changes in groups should be logged
 	bool bLogGroupChanges;
@@ -151,6 +157,9 @@ public:
 
 	/// A flag indicating whether recording is allowed on this server
 	bool allowRecording;
+
+	/// The number of seconds to keep rolling stats for per client
+	unsigned int rollingStatsWindow;
 
 	/// qsAbsSettingsFilePath is the absolute path to
 	/// the murmur.ini used by this Meta instance.
@@ -168,29 +177,35 @@ public:
 	bool loadSSLSettings();
 
 private:
-	template< class T >
-	T typeCheckedFromSettings(const QString &name, const T &variable, QSettings *settings = nullptr);
+	template< class ValueType, class ReturnType = ValueType >
+	ReturnType typeCheckedFromSettings(const QString &name, const ValueType &variable, QSettings *settings = nullptr);
 };
 
 class Meta : public QObject {
 private:
-	Q_OBJECT;
-	Q_DISABLE_COPY(Meta);
+	Q_OBJECT
+	Q_DISABLE_COPY(Meta)
 
 public:
-	static MetaParams mp;
-	QHash< int, Server * > qhServers;
+	static std::unique_ptr< MetaParams > mp;
+	QHash< unsigned int, Server * > qhServers;
 	QHash< QHostAddress, QList< Timer > > qhAttempts;
 	QHash< QHostAddress, Timer > qhBans;
 	QString qsOS, qsOSVersion;
 	Timer tUptime;
 
+	DBWrapper dbWrapper;
+
+	DBState assumedDBState = DBState::Normal;
+
 #ifdef Q_OS_WIN
 	static HANDLE hQoS;
 #endif
 
-	Meta();
+	Meta(const ::mumble::db::ConnectionParameter &connectParam);
 	~Meta();
+
+	static const ::mumble::db::ConnectionParameter &getConnectionParameter();
 
 	/// reloadSSLSettings reloads Murmur's MetaParams's
 	/// SSL settings, and updates the certificate and
@@ -198,14 +213,16 @@ public:
 	/// Meta server's certificate and private key.
 	bool reloadSSLSettings();
 
-	void bootAll();
-	bool boot(int);
+	void initPBKDF2IterationCount();
+
+	void bootAll(const ::mumble::db::ConnectionParameter &connectionParam, bool createDefaultInstance);
+	bool boot(const ::mumble::db::ConnectionParameter &connectionParam, unsigned int);
 	bool banCheck(const QHostAddress &);
 
 	/// Called whenever we get a successful connection from a client.
 	/// Used to reset autoban tracking for the address.
 	void successfulConnectionFrom(const QHostAddress &);
-	void kill(int);
+	void kill(unsigned int);
 	void killAll();
 	void getOSInfo();
 	void connectListener(QObject *);

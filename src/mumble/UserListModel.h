@@ -1,4 +1,4 @@
-// Copyright 2013-2023 The Mumble Developers. All rights reserved.
+// Copyright The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -61,7 +61,7 @@ private:
 	/// @return QVariant() is returned for invalid strings.
 	QVariant lastSeenToTodayDayCount(const std::string &lastSeenDate) const;
 	/// Returns a textual representation of the channel hierarchy of the given channel
-	QString pathForChannelId(const int channelId) const;
+	QString pathForChannelId(unsigned int channelId) const;
 	/// Converts a ISO formatted UTC time string to a QDateTime object.
 	QDateTime isoUTCToDateTime(const std::string &isoTime) const;
 
@@ -79,7 +79,7 @@ private:
 	/// Cache for lastSeenToTodayDayCount
 	mutable QHash< QString, QVariant > m_stringToLastSeenToTodayCount;
 	/// Cache for pathForChannelId conversions
-	mutable QHash< int, QString > m_channelIdToPathMap;
+	mutable QHash< unsigned int, QString > m_channelIdToPathMap;
 };
 
 #endif // MUMBLE_MUMBLE_USERLISTMODEL_H_

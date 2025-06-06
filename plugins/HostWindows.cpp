@@ -1,11 +1,9 @@
-// Copyright 2020-2023 The Mumble Developers. All rights reserved.
+// Copyright The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
 
 #include "HostWindows.h"
-
-#include "mumble_positional_audio_utils.h"
 
 #include <windows.h>
 #include <tlhelp32.h>
@@ -34,6 +32,7 @@ Modules HostWindows::modules() const {
 
 	const auto snapshotHandle = CreateToolhelp32Snapshot(TH32CS_SNAPMODULE | TH32CS_SNAPMODULE32, m_pid);
 	if (snapshotHandle == INVALID_HANDLE_VALUE) {
+		CloseHandle(processHandle);
 		return {};
 	}
 
@@ -42,7 +41,7 @@ Modules HostWindows::modules() const {
 	MODULEENTRY32 me;
 	me.dwSize = sizeof(me);
 	for (auto ok = Module32First(snapshotHandle, &me); ok; ok = Module32Next(snapshotHandle, &me)) {
-		const auto name = utf16ToUtf8(reinterpret_cast< char16_t * >(me.szModule));
+		std::string name = utf16To8(me.szModule);
 		if (modules.find(name) != modules.cend()) {
 			continue;
 		}
@@ -51,7 +50,11 @@ Modules HostWindows::modules() const {
 		MEMORY_BASIC_INFORMATION64 mbi;
 		auto address = reinterpret_cast< procptr_t >(me.modBaseAddr);
 		while (VirtualQueryEx(processHandle, reinterpret_cast< LPCVOID >(address),
-							  reinterpret_cast< PMEMORY_BASIC_INFORMATION >(&mbi), sizeof(mbi))) {
+							  reinterpret_cast< PMEMORY_BASIC_INFORMATION >(&mbi), sizeof(mbi))
+			   /* Only enumerate pages that belong to the allocation for this module.
+				* This stops if it sees a page for a different allocation, belonging
+				* to another module or dynamic memory, or gap between pages. */
+			   && (mbi.AllocationBase == reinterpret_cast< procptr_t >(me.modBaseAddr))) {
 			MemoryRegion region{};
 			region.address = address;
 			region.size    = mbi.RegionSize;
@@ -76,11 +79,31 @@ Modules HostWindows::modules() const {
 			address += region.size;
 		}
 
-		modules.insert(std::make_pair(name, module));
+		modules.insert({ std::move(name), std::move(module) });
 	}
 
 	CloseHandle(processHandle);
 	CloseHandle(snapshotHandle);
 
 	return modules;
+}
+
+std::string HostWindows::utf16To8(const std::wstring &wstr) {
+	if (wstr.empty()) {
+		return {};
+	}
+
+	const int length =
+		WideCharToMultiByte(CP_UTF8, 0, &wstr[0], static_cast< int >(wstr.length()), nullptr, 0, nullptr, nullptr);
+	if (!length) {
+		return {};
+	}
+
+	std::string str(length, '\0');
+	if (!WideCharToMultiByte(CP_UTF8, 0, &wstr[0], static_cast< int >(wstr.length()), &str[0], length, nullptr,
+							 nullptr)) {
+		return {};
+	}
+
+	return str;
 }

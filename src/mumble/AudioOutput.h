@@ -1,4 +1,4 @@
-// Copyright 2007-2023 The Mumble Developers. All rights reserved.
+// Copyright The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -79,11 +79,11 @@ private:
 	bool *bSpeakerPositional = nullptr;
 	/// Used when panning stereo stream w.r.t. each speaker.
 	float *fStereoPanningFactor = nullptr;
-	void removeBuffer(AudioOutputBuffer *);
+	void invalidateBuffer(const void *);
 
 private slots:
-	void handleInvalidatedBuffer(AudioOutputBuffer *);
-	void handlePositionedBuffer(AudioOutputBuffer *, float x, float y, float z);
+	void removeBuffer(const void *, bool acquireWriteLock = true);
+	void handlePositionedBuffer(const void *, float x, float y, float z);
 
 protected:
 	enum { SampleShort, SampleFloat } eSampleFormat = SampleFloat;
@@ -102,6 +102,9 @@ protected:
 
 	void initializeMixer(const unsigned int *chanmasks, bool forceheadphone = false);
 	bool mix(void *output, unsigned int frameCount);
+
+	virtual void prepareOutputBuffers(unsigned int frameCount, QList< AudioOutputBuffer * > &qlMix,
+									  QList< AudioOutputBuffer * > &qlDel);
 
 public:
 	void wipe();
@@ -127,8 +130,10 @@ public:
 	unsigned int getMixerFreq() const;
 	void setBufferSize(unsigned int bufferSize);
 	void setBufferPosition(const AudioOutputToken &, float x, float y, float z);
-	void removeToken(AudioOutputToken &);
+	void invalidateToken(const AudioOutputToken &);
 	void removeUser(const ClientUser *);
+
+	virtual bool supportsTransportRecording() const;
 
 signals:
 	/// Signal emitted whenever an audio source has been fetched
@@ -151,8 +156,8 @@ signals:
 	void audioOutputAboutToPlay(float *outputPCM, unsigned int sampleCount, unsigned int channelCount,
 								unsigned int sampleRate, bool *modifiedAudio);
 
-	void bufferInvalidated(AudioOutputBuffer *);
-	void bufferPositionChanged(AudioOutputBuffer *, float x, float y, float z);
+	void bufferInvalidated(const void *);
+	void bufferPositionChanged(const void *, float x, float y, float z);
 };
 
 #endif

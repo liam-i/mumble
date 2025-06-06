@@ -1,4 +1,4 @@
-// Copyright 2022-2023 The Mumble Developers. All rights reserved.
+// Copyright The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -199,6 +199,13 @@ public:
 	virtual void getUptime_async(const ::MumbleServer::AMD_Meta_getUptimePtr &, const Ice::Current &);
 
 	virtual void getSlice_async(const ::MumbleServer::AMD_Meta_getSlicePtr &, const Ice::Current &);
+
+	virtual void getAssumedDatabaseState_async(const ::MumbleServer::AMD_Meta_getAssumedDatabaseStatePtr &,
+											   const ::Ice::Current &);
+
+	virtual void setAssumedDatabaseState_async(const ::MumbleServer::AMD_Meta_setAssumedDatabaseStatePtr &,
+											   ::MumbleServer::DBState state,
+											   const ::Ice::Current & = ::Ice::Current());
 };
 
 } // namespace MumbleServer

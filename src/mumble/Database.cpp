@@ -1,4 +1,4 @@
-// Copyright 2007-2023 The Mumble Developers. All rights reserved.
+// Copyright The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -45,7 +45,7 @@ bool Database::findOrCreateDatabase() {
 	QStringList datapaths;
 
 	datapaths << Global::get().qdBasePath.absolutePath();
-	datapaths << QStandardPaths::writableLocation(QStandardPaths::DataLocation);
+	datapaths << QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation);
 #if defined(Q_OS_UNIX) && !defined(Q_OS_MAC)
 	datapaths << QDir::homePath() + QLatin1String("/.config/Mumble");
 #endif
@@ -399,7 +399,13 @@ void Database::setLocalMuted(const QString &hash, bool muted) {
 	execQueryAndLogFailure(query);
 }
 
-ChannelFilterMode Database::getChannelFilterMode(const QByteArray &server_cert_digest, const int channel_id) {
+void Database::clearLocalMuted() {
+	QSqlQuery query(db);
+	query.prepare(QLatin1String("DELETE FROM `muted`"));
+	execQueryAndLogFailure(query);
+}
+
+ChannelFilterMode Database::getChannelFilterMode(const QByteArray &server_cert_digest, const unsigned int channel_id) {
 	QSqlQuery query(db);
 
 	query.prepare(QLatin1String(
@@ -415,7 +421,7 @@ ChannelFilterMode Database::getChannelFilterMode(const QByteArray &server_cert_d
 	return ChannelFilterMode::NORMAL;
 }
 
-void Database::setChannelFilterMode(const QByteArray &server_cert_digest, const int channel_id,
+void Database::setChannelFilterMode(const QByteArray &server_cert_digest, const unsigned int channel_id,
 									const ChannelFilterMode filterMode) {
 	QSqlQuery query(db);
 

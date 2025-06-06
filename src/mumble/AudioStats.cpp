@@ -1,4 +1,4 @@
-// Copyright 2007-2023 The Mumble Developers. All rights reserved.
+// Copyright The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -55,12 +55,12 @@ void AudioBar::paintEvent(QPaintEvent *) {
 	float scale = static_cast< float >(width()) / static_cast< float >(iMax - iMin);
 	int h       = height();
 
-	int val   = iroundf(static_cast< float >(iValue) * scale + 0.5f);
-	int below = iroundf(static_cast< float >(iBelow) * scale + 0.5f);
-	int above = iroundf(static_cast< float >(iAbove) * scale + 0.5f);
-	int max   = iroundf(static_cast< float >(iMax) * scale + 0.5f);
-	int min   = iroundf(static_cast< float >(iMin) * scale + 0.5f);
-	int peak  = iroundf(static_cast< float >(iPeak) * scale + 0.5f);
+	int val   = static_cast< int >(static_cast< float >(iValue) * scale + 0.5f);
+	int below = static_cast< int >(static_cast< float >(iBelow) * scale + 0.5f);
+	int above = static_cast< int >(static_cast< float >(iAbove) * scale + 0.5f);
+	int max   = static_cast< int >(static_cast< float >(iMax) * scale + 0.5f);
+	int min   = static_cast< int >(static_cast< float >(iMin) * scale + 0.5f);
+	int peak  = static_cast< int >(static_cast< float >(iPeak) * scale + 0.5f);
 
 	if (Global::get().s.bHighContrast) {
 		// Draw monochrome representation
@@ -153,22 +153,24 @@ void AudioEchoWidget::paintEvent(QPaintEvent *) {
 	spx_int32_t sz;
 	speex_echo_ctl(ai->sesEcho, SPEEX_ECHO_GET_IMPULSE_RESPONSE_SIZE, &sz);
 
-	STACKVAR(spx_int32_t, w, sz);
-	STACKVAR(float, W, sz);
+	static std::vector< spx_int32_t > w;
+	w.resize(static_cast< std::size_t >(sz));
+	static std::vector< float > W;
+	W.resize(static_cast< std::size_t >(sz));
 
-	speex_echo_ctl(ai->sesEcho, SPEEX_ECHO_GET_IMPULSE_RESPONSE, w);
+	speex_echo_ctl(ai->sesEcho, SPEEX_ECHO_GET_IMPULSE_RESPONSE, w.data());
 
 	ai->qmSpeex.unlock();
 
-	int N = 160;
-	int n = 2 * N;
-	int M = sz / n;
+	constexpr unsigned int N = 160;
+	constexpr unsigned int n = 2 * N;
+	const unsigned int M     = static_cast< unsigned int >(sz) / n;
 
 	drft_lookup d;
 	mumble_drft_init(&d, n);
 
-	for (int j = 0; j < M; j++) {
-		for (int i = 0; i < n; i++)
+	for (unsigned int j = 0; j < M; j++) {
+		for (unsigned int i = 0; i < n; i++)
 			W[j * n + i] = static_cast< float >(w[j * n + i]) / static_cast< float >(n);
 		mumble_drft_forward(&d, &W[j * n]);
 	}
@@ -178,8 +180,8 @@ void AudioEchoWidget::paintEvent(QPaintEvent *) {
 	float xscale = 1.0f / static_cast< float >(N);
 	float yscale = 1.0f / static_cast< float >(M);
 
-	for (int j = 0; j < M; j++) {
-		for (int i = 1; i < N; i++) {
+	for (unsigned int j = 0; j < M; j++) {
+		for (unsigned int i = 1; i < N; i++) {
 			float xa = static_cast< float >(i) * xscale;
 			float ya = static_cast< float >(j) * yscale;
 
@@ -195,7 +197,7 @@ void AudioEchoWidget::paintEvent(QPaintEvent *) {
 	QPolygonF poly;
 	xscale = 1.0f / (2.0f * static_cast< float >(n));
 	yscale = 1.0f / (200.0f * 32767.0f);
-	for (int i = 0; i < 2 * n; i++) {
+	for (unsigned int i = 0; i < 2 * n; i++) {
 		poly << QPointF(static_cast< float >(i) * xscale, 0.5f + static_cast< float >(w[i]) * yscale);
 	}
 
@@ -214,32 +216,28 @@ void AudioNoiseWidget::paintEvent(QPaintEvent *) {
 	paint.fillRect(rect(), pal.color(QPalette::Window));
 
 	AudioInputPtr ai = Global::get().ai;
-	if (!ai.get() || !ai->sppPreprocess)
+	if (!ai.get() || !ai->m_preprocessor)
 		return;
 
 	QPolygonF poly;
 
 	ai->qmSpeex.lock();
 
-	spx_int32_t ps_size = 0;
-	speex_preprocess_ctl(ai->sppPreprocess, SPEEX_PREPROCESS_GET_PSD_SIZE, &ps_size);
-
-	STACKVAR(spx_int32_t, noise, ps_size);
-	STACKVAR(spx_int32_t, ps, ps_size);
-
-	speex_preprocess_ctl(ai->sppPreprocess, SPEEX_PREPROCESS_GET_PSD, ps);
-	speex_preprocess_ctl(ai->sppPreprocess, SPEEX_PREPROCESS_GET_NOISE_PSD, noise);
+	const AudioPreprocessor::psd_t ps    = ai->m_preprocessor.getPSD();
+	const AudioPreprocessor::psd_t noise = ai->m_preprocessor.getNoisePSD();
 
 	ai->qmSpeex.unlock();
 
+	assert(ps.size() == noise.size());
+
 	qreal sx, sy;
 
-	sx = (static_cast< float >(width()) - 1.0f) / static_cast< float >(ps_size);
+	sx = (static_cast< float >(width()) - 1.0f) / static_cast< float >(ps.size());
 	sy = static_cast< float >(height()) - 1.0f;
 
 	poly << QPointF(0.0f, height() - 1);
 	float fftmul = 1.0 / (32768.0);
-	for (int i = 0; i < ps_size; i++) {
+	for (unsigned int i = 0; i < static_cast< unsigned int >(noise.size()); i++) {
 		qreal xp, yp;
 		xp = i * sx;
 		yp = sqrtf(sqrtf(static_cast< float >(noise[i]))) - 1.0f;
@@ -258,7 +256,7 @@ void AudioNoiseWidget::paintEvent(QPaintEvent *) {
 
 	poly.clear();
 
-	for (int i = 0; i < ps_size; i++) {
+	for (unsigned int i = 0; i < static_cast< unsigned int >(ps.size()); i++) {
 		qreal xp, yp;
 		xp = i * sx;
 		yp = sqrtf(sqrtf(static_cast< float >(ps[i]))) - 1.0f;
@@ -280,10 +278,6 @@ AudioStats::AudioStats(QWidget *p) : QDialog(p) {
 	qtTick->start(50);
 
 	setupUi(this);
-
-	abSpeech->setAccessibleName(tr("Current speech detection chance"));
-	anwNoise->setAccessibleName(tr("Power spectrum of input signal and noise estimate"));
-	aewEcho->setAccessibleName(tr("Weights of the echo canceller"));
 
 	AudioInputPtr ai = Global::get().ai;
 
@@ -307,16 +301,11 @@ AudioStats::AudioStats(QWidget *p) : QDialog(p) {
 AudioStats::~AudioStats() {
 }
 
-#if QT_VERSION >= 0x050500
-#	define FORMAT_TO_TXT(format, arg) txt = QString::asprintf(format, arg)
-#else
-// sprintf() has been deprecated in Qt 5.5 in favor for the static QString::asprintf()
-#	define FORMAT_TO_TXT(format, arg) txt.sprintf(format, arg)
-#endif
+#define FORMAT_TO_TXT(format, arg) txt = QString::asprintf(format, arg)
 void AudioStats::on_Tick_timeout() {
 	AudioInputPtr ai = Global::get().ai;
 
-	if (!ai.get() || !ai->sppPreprocess)
+	if (!ai.get() || !ai->m_preprocessor)
 		return;
 
 	bool nTalking = ai->isTransmitting();
@@ -332,22 +321,18 @@ void AudioStats::on_Tick_timeout() {
 	FORMAT_TO_TXT("%06.2f dB", ai->dPeakSignal);
 	qlSignalLevel->setText(txt);
 
-	spx_int32_t ps_size = 0;
-	speex_preprocess_ctl(ai->sppPreprocess, SPEEX_PREPROCESS_GET_PSD_SIZE, &ps_size);
+	const AudioPreprocessor::psd_t ps    = ai->m_preprocessor.getPSD();
+	const AudioPreprocessor::psd_t noise = ai->m_preprocessor.getNoisePSD();
 
-	STACKVAR(spx_int32_t, noise, ps_size);
-	STACKVAR(spx_int32_t, ps, ps_size);
-
-	speex_preprocess_ctl(ai->sppPreprocess, SPEEX_PREPROCESS_GET_PSD, ps);
-	speex_preprocess_ctl(ai->sppPreprocess, SPEEX_PREPROCESS_GET_NOISE_PSD, noise);
+	assert(ps.size() == noise.size());
 
 	float s = 0.0f;
 	float n = 0.0001f;
 
-	int start = (ps_size * 300) / SAMPLE_RATE;
-	int stop  = (ps_size * 2000) / SAMPLE_RATE;
+	unsigned int start = static_cast< unsigned int >(ps.size() * 300) / SAMPLE_RATE;
+	unsigned int stop  = static_cast< unsigned int >(ps.size() * 2000) / SAMPLE_RATE;
 
-	for (int i = start; i < stop; i++) {
+	for (unsigned int i = start; i < stop; i++) {
 		s += sqrtf(static_cast< float >(ps[i]));
 		n += sqrtf(static_cast< float >(noise[i]));
 	}
@@ -355,9 +340,7 @@ void AudioStats::on_Tick_timeout() {
 	FORMAT_TO_TXT("%06.3f", s / n);
 	qlMicSNR->setText(txt);
 
-	spx_int32_t v;
-	speex_preprocess_ctl(ai->sppPreprocess, SPEEX_PREPROCESS_GET_AGC_GAIN, &v);
-	float fv = powf(10.0f, (static_cast< float >(v) / 20.0f));
+	float fv = powf(10.0f, (static_cast< float >(ai->m_preprocessor.getAGCGain()) / 20.0f));
 	FORMAT_TO_TXT("%03.0f%%", 100.0f / fv);
 	qlMicVolume->setText(txt);
 
@@ -380,13 +363,13 @@ void AudioStats::on_Tick_timeout() {
 		FORMAT_TO_TXT("%04llu ms", Global::get().uiDoublePush / 1000);
 	qlDoublePush->setText(txt);
 
-	abSpeech->iBelow = iroundf(Global::get().s.fVADmin * 32767.0f + 0.5f);
-	abSpeech->iAbove = iroundf(Global::get().s.fVADmax * 32767.0f + 0.5f);
+	abSpeech->iBelow = static_cast< int >(Global::get().s.fVADmin * 32767.0f + 0.5f);
+	abSpeech->iAbove = static_cast< int >(Global::get().s.fVADmax * 32767.0f + 0.5f);
 
 	if (Global::get().s.vsVAD == Settings::Amplitude) {
-		abSpeech->iValue = iroundf((32767.f / 96.0f) * (96.0f + ai->dPeakCleanMic) + 0.5f);
+		abSpeech->iValue = static_cast< int >((32767.f / 96.0f) * (96.0f + ai->dPeakCleanMic) + 0.5f);
 	} else {
-		abSpeech->iValue = iroundf(ai->fSpeechProb * 32767.0f + 0.5f);
+		abSpeech->iValue = static_cast< int >(ai->fSpeechProb * 32767.0f + 0.5f);
 	}
 
 	abSpeech->update();

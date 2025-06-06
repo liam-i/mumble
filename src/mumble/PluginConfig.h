@@ -1,4 +1,4 @@
-// Copyright 2021-2023 The Mumble Developers. All rights reserved.
+// Copyright The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -62,6 +62,9 @@ public slots:
 	/// @param current The currently selected item
 	/// @param old The previously selected item (if applicable - otherwise NULL/nullptr)
 	void on_qtwPlugins_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *old);
+	/// @param item The changed item
+	/// @param column The column that has changed
+	void on_qtwPlugins_itemChanged(QTreeWidgetItem *item, int column);
 };
 
 #endif

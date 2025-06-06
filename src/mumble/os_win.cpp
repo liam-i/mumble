@@ -1,17 +1,21 @@
-// Copyright 2007-2023 The Mumble Developers. All rights reserved.
+// Copyright The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
 
-#include "LogEmitter.h"
 #include "MumbleApplication.h"
 
 #ifdef _MSC_VER
 #	include "Utils.h"
 #endif
 
-#include "Version.h"
+// Must be included before other Windows stuff
 #include "win.h"
+
+#include "versionhelpers.h"
+
+#include "Version.h"
+
 #include "Global.h"
 
 #include <cfloat>
@@ -30,6 +34,8 @@
 #include <shlobj.h>
 #include <shobjidl.h>
 
+#include <limits>
+
 extern "C" {
 void __cpuid(int a[4], int b);
 void mumble_speex_init();
@@ -38,12 +44,9 @@ void mumble_speex_init();
 #define DUMP_BUFFER_SIZE 1024
 
 static wchar_t wcCrashDumpPath[DUMP_BUFFER_SIZE];
-static FILE *fConsole = nullptr;
 
 static wchar_t wcComment[DUMP_BUFFER_SIZE] = L"";
 static MINIDUMP_USER_STREAM musComment;
-
-static QSharedPointer< LogEmitter > le;
 
 static int cpuinfo[4];
 
@@ -51,38 +54,6 @@ bool bIsWin7     = false;
 bool bIsVistaSP1 = false;
 
 HWND mumble_mw_hwnd = 0;
-
-static void mumbleMessageOutputQString(QtMsgType type, const QString &msg) {
-	char c;
-	switch (type) {
-		case QtDebugMsg:
-			c = 'D';
-			break;
-		case QtWarningMsg:
-			c = 'W';
-			break;
-		case QtFatalMsg:
-			c = 'F';
-			break;
-		default:
-			c = 'X';
-	}
-	QString date = QDateTime::currentDateTime().toString(QLatin1String("yyyy-MM-dd hh:mm:ss.zzz"));
-	QString fmsg = QString::fromLatin1("<%1>%2 %3").arg(c).arg(date).arg(msg);
-	fprintf(fConsole, "%s\n", qPrintable(fmsg));
-	fflush(fConsole);
-	OutputDebugStringA(qPrintable(fmsg));
-	le->addLogEntry(fmsg);
-	if (type == QtFatalMsg) {
-		::MessageBoxA(nullptr, qPrintable(msg), "Mumble", MB_OK | MB_ICONERROR);
-		exit(0);
-	}
-}
-
-static void mumbleMessageOutputWithContext(QtMsgType type, const QMessageLogContext &ctx, const QString &msg) {
-	Q_UNUSED(ctx);
-	mumbleMessageOutputQString(type, msg);
-}
 
 static LONG WINAPI MumbleUnhandledExceptionFilter(struct _EXCEPTION_POINTERS *ExceptionInfo) {
 	MINIDUMP_EXCEPTION_INFORMATION i;
@@ -174,12 +145,13 @@ FARPROC WINAPI delayHook(unsigned dliNotify, PDelayLoadInfo pdli) {
 
 	size_t buflen = length + 10;
 
-	STACKVAR(char, filename, buflen);
-	strcpy_s(filename, buflen, pdli->szDll);
+	std::vector< char > filename;
+	filename.resize(buflen);
+	strcpy_s(filename.data(), buflen, pdli->szDll);
 
 	size_t offset = 0;
 
-	if (_stricmp(filename + length - 4, ".dll") == 0)
+	if (_stricmp(filename.data() + length - 4, ".dll") == 0)
 		offset = length - 4;
 	else
 		offset = length;
@@ -192,20 +164,20 @@ FARPROC WINAPI delayHook(unsigned dliNotify, PDelayLoadInfo pdli) {
 		if (cpuinfo[3] & 0x04000000) {
 			// And SSE3?
 			if (cpuinfo[2] & 0x00000001) {
-				strcpy_s(filename + offset, 10, ".sse3.dll");
-				hmod = LoadLibraryA(filename);
+				strcpy_s(filename.data() + offset, 10, ".sse3.dll");
+				hmod = LoadLibraryA(filename.data());
 				if (hmod)
 					return (FARPROC) hmod;
 			}
 
-			strcpy_s(filename + offset, 10, ".sse2.dll");
-			hmod = LoadLibraryA(filename);
+			strcpy_s(filename.data() + offset, 10, ".sse2.dll");
+			hmod = LoadLibraryA(filename.data());
 			if (hmod)
 				return (FARPROC) hmod;
 		}
 
-		strcpy_s(filename + offset, 10, ".sse.dll");
-		hmod = LoadLibraryA(filename);
+		strcpy_s(filename.data() + offset, 10, ".sse.dll");
+		hmod = LoadLibraryA(filename.data());
 		if (hmod)
 			return (FARPROC) hmod;
 	}
@@ -226,13 +198,8 @@ void os_init() {
 		exit(0);
 	}
 
-	OSVERSIONINFOEXW ovi;
-	memset(&ovi, 0, sizeof(ovi));
-
-	ovi.dwOSVersionInfoSize = sizeof(ovi);
-	GetVersionEx(reinterpret_cast< OSVERSIONINFOW * >(&ovi));
-	bIsWin7     = (ovi.dwMajorVersion >= 7) || ((ovi.dwMajorVersion == 6) && (ovi.dwBuildNumber >= 7100));
-	bIsVistaSP1 = (ovi.dwMajorVersion >= 7) || ((ovi.dwMajorVersion == 6) && (ovi.dwBuildNumber >= 6001));
+	bIsWin7     = IsWindows7OrGreater();
+	bIsVistaSP1 = IsWindowsVistaSP1OrGreater();
 
 #if _MSC_VER == 1800 && defined(_M_X64)
 	// Disable MSVC 2013's FMA-optimized math routines on Windows
@@ -240,7 +207,7 @@ void os_init() {
 	// There are various issues on OSes that do not support the newer
 	// instructions.
 	// See issue mumble-voip/mumble#1615.
-	if (ovi.dwMajorVersion < 5 || (ovi.dwMajorVersion == 6 && ovi.dwMinorVersion <= 1)) {
+	if (!IsWindows8OrGreater()) {
 		_set_FMA3_enable(0);
 	}
 #endif
@@ -252,19 +219,7 @@ void os_init() {
 	enableCrashOnCrashes();
 	mumble_speex_init();
 
-	// Make a copy of the global LogEmitter, such that
-	// os_win.cpp doesn't have to consider the deletion
-	// of the Global object and its LogEmitter object.
-	le = Global::get().le;
-
 #ifdef QT_NO_DEBUG
-	QString console = Global::get().qdBasePath.filePath(QLatin1String("Console.txt"));
-	fConsole        = _wfsopen(console.toStdWString().c_str(), L"a+", _SH_DENYWR);
-
-	if (fConsole) {
-		qInstallMessageHandler(mumbleMessageOutputWithContext);
-	}
-
 	QString hash;
 	QFile f(qApp->applicationFilePath());
 	if (!f.open(QIODevice::ReadOnly)) {
@@ -301,7 +256,7 @@ void os_init() {
 }
 
 DWORD WinVerifySslCert(const QByteArray &cert) {
-	DWORD errorStatus = -1;
+	DWORD errorStatus = std::numeric_limits< DWORD >::max();
 
 	PCCERT_CONTEXT certContext = CertCreateCertificateContext(
 		X509_ASN_ENCODING, reinterpret_cast< const BYTE * >(cert.constData()), cert.size());

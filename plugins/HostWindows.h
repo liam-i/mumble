@@ -1,4 +1,4 @@
-// Copyright 2020-2023 The Mumble Developers. All rights reserved.
+// Copyright The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -12,6 +12,8 @@ using procid_t = uint64_t;
 
 class HostWindows {
 protected:
+	static std::string utf16To8(const std::wstring &wstr);
+
 	procid_t m_pid;
 	void *m_handle;
 

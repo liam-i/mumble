@@ -1,4 +1,4 @@
-// Copyright 2007-2023 The Mumble Developers. All rights reserved.
+// Copyright The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -14,6 +14,7 @@
 #include <pwd.h>
 #include <semaphore.h>
 #include <stdarg.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -37,9 +38,6 @@
 
 #	include <link.h>
 
-typedef unsigned char bool;
-#	define true 1
-#	define false 0
 #elif defined(TARGET_MAC)
 #	include <AGL/agl.h>
 #	include <Carbon/Carbon.h>

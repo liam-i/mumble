@@ -1,4 +1,4 @@
-// Copyright 2020-2023 The Mumble Developers. All rights reserved.
+// Copyright The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -58,7 +58,7 @@ std::unique_ptr< TalkingUIEntry > TalkingUIContainer::removeEntry(unsigned int a
 
 	if (index >= 0) {
 		// Move the entry out of the vector
-		entry = std::move(m_entries[index]);
+		entry = std::move(m_entries[static_cast< std::size_t >(index)]);
 		m_entries.erase(m_entries.begin() + index);
 
 		// reset container
@@ -100,7 +100,7 @@ TalkingUIEntry *TalkingUIContainer::get(unsigned int associatedUserSession, Entr
 	int index = find(associatedUserSession, type);
 
 	if (index >= 0) {
-		return m_entries[index].get();
+		return m_entries[static_cast< std::size_t >(index)].get();
 	} else {
 		return nullptr;
 	}

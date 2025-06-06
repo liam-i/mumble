@@ -1,4 +1,4 @@
-// Copyright 2014-2023 The Mumble Developers. All rights reserved.
+// Copyright The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -49,11 +49,13 @@
 
 #include <QtCore/QElapsedTimer>
 #include <QtCore/QLatin1String>
+#include <QtCore/QString>
 
 #include <openssl/err.h>
 #include <openssl/evp.h>
 #include <openssl/rand.h>
 
+#include <cassert>
 #include <limits>
 
 int PBKDF2::benchmark() {
@@ -92,12 +94,15 @@ int PBKDF2::benchmark() {
 QString PBKDF2::getHash(const QString &hexSalt, const QString &password, int iterationCount) {
 	QByteArray hash(DERIVED_KEY_LENGTH, 0);
 
+	assert(iterationCount > 0);
+
 	const QByteArray utf8Password = password.toUtf8();
 	const QByteArray salt         = QByteArray::fromHex(hexSalt.toLatin1());
 
-	if (PKCS5_PBKDF2_HMAC(utf8Password.constData(), utf8Password.size(),
-						  reinterpret_cast< const unsigned char * >(salt.constData()), salt.size(), iterationCount,
-						  EVP_sha384(), DERIVED_KEY_LENGTH, reinterpret_cast< unsigned char * >(hash.data()))
+	if (PKCS5_PBKDF2_HMAC(utf8Password.constData(), static_cast< int >(utf8Password.size()),
+						  reinterpret_cast< const unsigned char * >(salt.constData()), static_cast< int >(salt.size()),
+						  iterationCount, EVP_sha384(), DERIVED_KEY_LENGTH,
+						  reinterpret_cast< unsigned char * >(hash.data()))
 		== 0) {
 		qFatal("PBKDF2: PKCS5_PBKDF2_HMAC failed: %s", ERR_error_string(ERR_get_error(), nullptr));
 		return QString();
@@ -110,7 +115,7 @@ QString PBKDF2::getHash(const QString &hexSalt, const QString &password, int ite
 QString PBKDF2::getSalt() {
 	QByteArray salt(SALT_LENGTH, 0);
 
-	CryptographicRandom::fillBuffer(salt.data(), salt.size());
+	CryptographicRandom::fillBuffer(salt.data(), static_cast< int >(salt.size()));
 
 	return QString::fromLatin1(salt.toHex());
 }

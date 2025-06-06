@@ -1,4 +1,4 @@
-// Copyright 2010-2023 The Mumble Developers. All rights reserved.
+// Copyright The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -55,6 +55,9 @@ enum Format {
 	// OPUS Format
 	OPUS,
 #endif
+#ifdef USE_SNDFILE_MP3
+	MP3,
+#endif
 	kEnd
 };
 
@@ -89,6 +92,9 @@ public:
 		/// True if multi channel recording is disabled.
 		bool mixDownMode;
 
+		/// True if a transport recording mode is enabled.
+		bool transportEnable;
+
 		/// The current recording format.
 		VoiceRecorderFormat::Format recordingFormat;
 	};
@@ -119,8 +125,12 @@ public:
 	/// Returns a reference to the record user which is used to record local audio.
 	RecordUser &getRecordUser() const;
 
-	/// Returns true if the recorder is recording mixed down data instead of multichannel
+	/// Returns true if the recorder is recording mixed down data instead of multichannel.
 	bool isInMixDownMode() const;
+
+	/// Returns true if the recorder was instructed to enable an external transport.
+	bool isTransportEnabled() const;
+
 signals:
 	/// Emitted if an error is encountered
 	void error(int err, QString strerr);

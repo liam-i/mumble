@@ -1,4 +1,4 @@
-// Copyright 2010-2023 The Mumble Developers. All rights reserved.
+// Copyright The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -6,7 +6,7 @@
 #include "Version.h"
 
 #include <QObject>
-#include <QRegExp>
+#include <QRegularExpression>
 
 namespace Version {
 
@@ -69,16 +69,18 @@ QString toConfigString(Version::full_t v) {
 
 bool getComponents(Version::component_t &major, Version::component_t &minor, Version::component_t &patch,
 				   const QString &version) {
-	QRegExp rx(QLatin1String("(\\d+)\\.(\\d+)\\.(\\d+)(?:\\.(\\d+))?"));
+	const QRegularExpression regex(
+		QRegularExpression::anchoredPattern(QLatin1String("(\\d+)\\.(\\d+)\\.(\\d+)(?:\\.(\\d+))?")));
+	const QRegularExpressionMatch match = regex.match(version);
 
-	if (rx.exactMatch(version)) {
-		major = rx.cap(1).toInt();
-		minor = rx.cap(2).toInt();
-		patch = rx.cap(3).toInt();
+	if (match.hasMatch()) {
+		major = static_cast< Version::component_t >(match.captured(1).toInt());
+		minor = static_cast< Version::component_t >(match.captured(2).toInt());
+		patch = static_cast< Version::component_t >(match.captured(3).toInt());
 
 		return true;
 	}
 	return false;
 }
 
-}; // namespace Version
+} // namespace Version

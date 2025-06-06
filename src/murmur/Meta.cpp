@@ -1,4 +1,4 @@
-// Copyright 2007-2023 The Mumble Developers. All rights reserved.
+// Copyright The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -10,11 +10,23 @@
 #include "FFDHE.h"
 #include "Net.h"
 #include "OSInfo.h"
+#include "PBKDF2.h"
 #include "SSL.h"
 #include "Server.h"
-#include "ServerDB.h"
 #include "Version.h"
 
+#include "database/MySQLConnectionParameter.h"
+#include "database/PostgreSQLConnectionParameter.h"
+#include "database/SQLiteConnectionParameter.h"
+
+#include <boost/algorithm/string.hpp>
+
+#include <cassert>
+#include <optional>
+
+#include <QDir>
+#include <QFile>
+#include <QStringList>
 #include <QtCore/QCoreApplication>
 #include <QtCore/QSettings>
 
@@ -35,11 +47,9 @@
 #	include <sys/resource.h>
 #endif
 
-#if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
-#	include <QRandomGenerator>
-#endif
+#include <QRandomGenerator>
 
-MetaParams Meta::mp;
+std::unique_ptr< MetaParams > Meta::mp;
 
 #ifdef Q_OS_WIN
 HANDLE Meta::hQoS = nullptr;
@@ -70,8 +80,7 @@ MetaParams::MetaParams() {
 	qsDatabase                 = QString();
 	iSQLiteWAL                 = 0;
 	iDBPort                    = 0;
-	qsDBusService              = "net.sourceforge.mumble.murmur";
-	qsDBDriver                 = "QSQLITE";
+	qsDBDriver                 = "SQLITE";
 	qsLogfile                  = "mumble-server.log";
 
 	iLogDays = 31;
@@ -97,8 +106,8 @@ MetaParams::MetaParams() {
 	iChannelNestingLimit = 10;
 	iChannelCountLimit   = 1000;
 
-	qrUserName    = QRegExp(QLatin1String("[ -=\\w\\[\\]\\{\\}\\(\\)\\@\\|\\.]+"));
-	qrChannelName = QRegExp(QLatin1String("[ -=\\w\\#\\[\\]\\{\\}\\(\\)\\@\\|]+"));
+	qrUserName    = QRegularExpression(QLatin1String("[ -=\\w\\[\\]\\{\\}\\(\\)\\@\\|\\.]+"));
+	qrChannelName = QRegularExpression(QLatin1String("[ -=\\w\\#\\[\\]\\{\\}\\(\\)\\@\\|]+"));
 
 	iMessageLimit = 1;
 	iMessageBurst = 5;
@@ -114,6 +123,8 @@ MetaParams::MetaParams() {
 	bLogACLChanges   = false;
 
 	allowRecording = true;
+
+	rollingStatsWindow = 300;
 
 	qsSettings = nullptr;
 }
@@ -136,8 +147,9 @@ MetaParams::~MetaParams() {
  *	@param settings The QSettings object to read from. If null, the Meta's qsSettings will be used.
  *	@return Setting if valid, default if not or setting not set.
  */
-template< class T >
-T MetaParams::typeCheckedFromSettings(const QString &name, const T &defaultValue, QSettings *settings) {
+template< class ValueType, class ReturnType >
+ReturnType MetaParams::typeCheckedFromSettings(const QString &name, const ValueType &defaultValue,
+											   QSettings *settings) {
 	// Use qsSettings unless a specific QSettings instance
 	// is requested.
 	if (!settings) {
@@ -146,16 +158,15 @@ T MetaParams::typeCheckedFromSettings(const QString &name, const T &defaultValue
 
 	QVariant cfgVariable = settings->value(name, defaultValue);
 
-	if (!cfgVariable.convert(
-			QVariant(defaultValue)
-				.type())) { // Bit convoluted as canConvert<T>() only does a static check without considering whether
-							// say a string like "blub" is actually a valid double (which convert does).
+	// Bit convoluted as canConvert<T>() only does a static check without considering whether
+	// say a string like "blub" is actually a valid double (which convert does).
+	if (!cfgVariable.convert(QMetaType(QVariant(defaultValue).metaType()))) {
 		qCritical() << "Configuration variable" << name << "is of invalid format. Set to default value of"
 					<< defaultValue << ".";
-		return defaultValue;
+		return static_cast< ReturnType >(defaultValue);
 	}
 
-	return cfgVariable.value< T >();
+	return cfgVariable.value< ReturnType >();
 }
 
 void MetaParams::read(QString fname) {
@@ -165,7 +176,7 @@ void MetaParams::read(QString fname) {
 		QStringList datapaths;
 
 #if defined(Q_OS_WIN)
-		datapaths << QStandardPaths::writableLocation(QStandardPaths::DataLocation);
+		datapaths << QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation);
 
 		QDir appdir = QDir(QDir::fromNativeSeparators(EnvUtils::getenv(QLatin1String("APPDATA"))));
 		datapaths << appdir.absolutePath() + QLatin1String("/Mumble");
@@ -199,7 +210,6 @@ void MetaParams::read(QString fname) {
 			}
 		}
 		if (qsAbsSettingsFilePath.isEmpty()) {
-			QDir::root().mkpath(qdBasePath.absolutePath());
 			qdBasePath            = QDir(datapaths.at(0));
 			qsAbsSettingsFilePath = qdBasePath.absolutePath() + QLatin1String("/mumble-server.ini");
 		}
@@ -214,7 +224,6 @@ void MetaParams::read(QString fname) {
 	}
 	QDir::setCurrent(qdBasePath.absolutePath());
 	qsSettings = new QSettings(qsAbsSettingsFilePath, QSettings::IniFormat);
-	qsSettings->setIniCodec("UTF-8");
 
 	qsSettings->sync();
 	switch (qsSettings->status()) {
@@ -228,17 +237,17 @@ void MetaParams::read(QString fname) {
 			break;
 	}
 
-	qWarning("Initializing settings from %s (basepath %s)", qPrintable(qsSettings->fileName()),
-			 qPrintable(qdBasePath.absolutePath()));
+	if (QFile::exists(qsAbsSettingsFilePath)) {
+		qWarning("Initializing settings from %s (basepath %s)", qPrintable(qsSettings->fileName()),
+				 qPrintable(qdBasePath.absolutePath()));
+	} else {
+		qWarning("No ini file at %s (basepath %s). Initializing with default settings.",
+				 qPrintable(qsSettings->fileName()), qPrintable(qdBasePath.absolutePath()));
+	}
 
 	QString qsHost = qsSettings->value("host", QString()).toString();
 	if (!qsHost.isEmpty()) {
-#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
-		foreach (const QString &host, qsHost.split(QRegExp(QLatin1String("\\s+")), Qt::SkipEmptyParts)) {
-#else
-		// Qt 5.14 introduced the Qt::SplitBehavior flags deprecating the QString fields
-		foreach (const QString &host, qsHost.split(QRegExp(QLatin1String("\\s+")), QString::SkipEmptyParts)) {
-#endif
+		foreach (const QString &host, qsHost.split(QRegularExpression(QLatin1String("\\s+")), Qt::SkipEmptyParts)) {
 			QHostAddress qhaddr;
 			if (qhaddr.setAddress(host)) {
 				qlBind << qhaddr;
@@ -304,10 +313,8 @@ void MetaParams::read(QString fname) {
 
 	iLogDays = typeCheckedFromSettings("logdays", iLogDays);
 
-	qsDBus        = typeCheckedFromSettings("dbus", qsDBus);
-	qsDBusService = typeCheckedFromSettings("dbusservice", qsDBusService);
-	qsLogfile     = typeCheckedFromSettings("logfile", qsLogfile);
-	qsPid         = typeCheckedFromSettings("pidfile", qsPid);
+	qsLogfile = typeCheckedFromSettings("logfile", qsLogfile);
+	qsPid     = typeCheckedFromSettings("pidfile", qsPid);
 
 	qsRegName     = typeCheckedFromSettings("registerName", qsRegName);
 	qsRegPassword = typeCheckedFromSettings("registerPassword", qsRegPassword);
@@ -323,18 +330,19 @@ void MetaParams::read(QString fname) {
 
 	m_suggestVersion = Version::fromConfig(qsSettings->value("suggestVersion"));
 
-	qvSuggestPositional = qsSettings->value("suggestPositional");
-	if (qvSuggestPositional.toString().trimmed().isEmpty())
-		qvSuggestPositional = QVariant();
-
-	qvSuggestPushToTalk = qsSettings->value("suggestPushToTalk");
-	if (qvSuggestPushToTalk.toString().trimmed().isEmpty())
-		qvSuggestPushToTalk = QVariant();
+	QString strVal = qsSettings->value("suggestpositional").toString();
+	suggestPositional =
+		strVal.trimmed().isEmpty() ? std::nullopt : std::optional< bool >(strVal.compare("true", Qt::CaseInsensitive));
+	strVal = qsSettings->value("suggestpushtotalk").toString();
+	suggestPushToTalk =
+		strVal.trimmed().isEmpty() ? std::nullopt : std::optional< bool >(strVal.compare("true", Qt::CaseInsensitive));
 
 	bLogGroupChanges = typeCheckedFromSettings("loggroupchanges", bLogGroupChanges);
 	bLogACLChanges   = typeCheckedFromSettings("logaclchanges", bLogACLChanges);
 
 	allowRecording = typeCheckedFromSettings("allowRecording", allowRecording);
+
+	rollingStatsWindow = typeCheckedFromSettings("rollingStatsWindow", rollingStatsWindow);
 
 	iOpusThreshold = typeCheckedFromSettings("opusthreshold", iOpusThreshold);
 
@@ -363,26 +371,21 @@ void MetaParams::read(QString fname) {
 	}
 #endif
 
-	qrUserName    = QRegExp(typeCheckedFromSettings("username", qrUserName.pattern()));
-	qrChannelName = QRegExp(typeCheckedFromSettings("channelname", qrChannelName.pattern()));
+	qrUserName    = QRegularExpression(typeCheckedFromSettings("username", qrUserName.pattern()));
+	qrChannelName = QRegularExpression(typeCheckedFromSettings("channelname", qrChannelName.pattern()));
 
-	iMessageLimit = typeCheckedFromSettings("messagelimit", 1);
-	iMessageBurst = typeCheckedFromSettings("messageburst", 5);
+	iMessageLimit = typeCheckedFromSettings< unsigned int >("messagelimit", 1);
+	iMessageBurst = typeCheckedFromSettings< unsigned int >("messageburst", 5);
 
-	iPluginMessageLimit = typeCheckedFromSettings("pluginmessagelimit", 4);
-	iPluginMessageBurst = typeCheckedFromSettings("pluginmessageburst", 15);
+	iPluginMessageLimit = typeCheckedFromSettings< unsigned int >("pluginmessagelimit", 4);
+	iPluginMessageBurst = typeCheckedFromSettings< unsigned int >("pluginmessageburst", 15);
 
 	broadcastListenerVolumeAdjustments = typeCheckedFromSettings("broadcastlistenervolumeadjustments", false);
 
 	bool bObfuscate = typeCheckedFromSettings("obfuscate", false);
 	if (bObfuscate) {
 		qWarning("IP address obfuscation enabled.");
-#if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
-		iObfuscate = QRandomGenerator::global()->generate();
-#else
-		// Qt 5.10 introduces the QRandomGenerator class and in Qt 5.15 qrand got deprecated in its favor
-		iObfuscate = qrand();
-#endif
+		iObfuscate = static_cast< int >(QRandomGenerator::global()->generate());
 	}
 	bSendVersion = typeCheckedFromSettings("sendversion", bSendVersion);
 	bAllowPing   = typeCheckedFromSettings("allowping", bAllowPing);
@@ -425,9 +428,9 @@ void MetaParams::read(QString fname) {
 					bForceExternalAuth ? QLatin1String("true") : QLatin1String("false"));
 	qmConfig.insert(QLatin1String("suggestversion"), Version::toConfigString(m_suggestVersion));
 	qmConfig.insert(QLatin1String("suggestpositional"),
-					qvSuggestPositional.isNull() ? QString() : qvSuggestPositional.toString());
+					suggestPositional ? QStringLiteral("true") : QStringLiteral("false"));
 	qmConfig.insert(QLatin1String("suggestpushtotalk"),
-					qvSuggestPushToTalk.isNull() ? QString() : qvSuggestPushToTalk.toString());
+					suggestPushToTalk ? QStringLiteral("true") : QStringLiteral("false"));
 	qmConfig.insert(QLatin1String("opusthreshold"), QString::number(iOpusThreshold));
 	qmConfig.insert(QLatin1String("channelnestinglimit"), QString::number(iChannelNestingLimit));
 	qmConfig.insert(QLatin1String("channelcountlimit"), QString::number(iChannelCountLimit));
@@ -437,7 +440,6 @@ void MetaParams::read(QString fname) {
 
 bool MetaParams::loadSSLSettings() {
 	QSettings updatedSettings(qsAbsSettingsFilePath, QSettings::IniFormat);
-	updatedSettings.setIniCodec("UTF-8");
 
 	QString tmpCiphersStr = typeCheckedFromSettings("sslCiphers", qsCiphers);
 
@@ -475,12 +477,14 @@ bool MetaParams::loadSSLSettings() {
 	}
 
 	QByteArray crt, key;
+	bool certSpecified = false;
 
 	if (!qsSSLCert.isEmpty()) {
 		QFile pem(qsSSLCert);
 		if (pem.open(QIODevice::ReadOnly)) {
 			crt = pem.readAll();
 			pem.close();
+			certSpecified = true;
 		} else {
 			qCritical("MetaParams: Failed to read %s", qPrintable(qsSSLCert));
 			return false;
@@ -491,13 +495,14 @@ bool MetaParams::loadSSLSettings() {
 		if (pem.open(QIODevice::ReadOnly)) {
 			key = pem.readAll();
 			pem.close();
+			certSpecified = true;
 		} else {
 			qCritical("MetaParams: Failed to read %s", qPrintable(qsSSLKey));
 			return false;
 		}
 	}
 
-	if (!key.isEmpty() || !crt.isEmpty()) {
+	if (certSpecified) {
 		if (!key.isEmpty()) {
 			tmpKey = Server::privateKeyFromPEM(key, qbaPassPhrase);
 		}
@@ -527,7 +532,8 @@ bool MetaParams::loadSSLSettings() {
 		}
 		if (ql.size() > 0) {
 			tmpIntermediates = ql;
-			qCritical("MetaParams: Adding %d intermediate certificates from certificate file.", ql.size());
+			qCritical("MetaParams: Adding %lld intermediate certificates from certificate file.",
+					  static_cast< qsizetype >(ql.size()));
 		}
 	}
 
@@ -631,7 +637,7 @@ bool MetaParams::loadSSLSettings() {
 	return true;
 }
 
-Meta::Meta() {
+Meta::Meta(const ::mumble::db::ConnectionParameter &connectParam) : dbWrapper(connectParam) {
 #ifdef Q_OS_WIN
 	QOS_VERSION qvVer;
 	qvVer.MajorVersion = 1;
@@ -661,9 +667,153 @@ Meta::~Meta() {
 #endif
 }
 
+QString locateDatabase() {
+	QStringList datapaths;
+
+	datapaths << Meta::mp->qdBasePath.absolutePath();
+	datapaths << QDir::currentPath();
+	datapaths << QCoreApplication::instance()->applicationDirPath();
+	datapaths << QDir::homePath();
+
+	// We use a lambda, so we can easily "break out" of all levels of nested loops using return
+	QString path = [&]() {
+		for (const QString &currentDir : datapaths) {
+			// Prefer "mumble-server.sqlite", but for legacy reasons also keep looking for "murmur.sqlite"
+			for (const QString &currentFilename :
+				 { QStringLiteral("mumble-server.sqlite"), QStringLiteral("murmur.sqlite") }) {
+				QFile currentFile(currentDir + "/" + currentFilename);
+
+				if (currentFile.exists()) {
+					return currentFile.fileName();
+				}
+			}
+		}
+
+		return QString();
+	}();
+
+	if (path.isEmpty()) {
+		path = Meta::mp->qdBasePath.absoluteFilePath("mumble-server.sqlite");
+	}
+
+	return QDir::toNativeSeparators(path);
+}
+
+const ::mumble::db::ConnectionParameter &Meta::getConnectionParameter() {
+	assert(!Meta::mp->qsDBDriver.isEmpty());
+
+	bool isSQLite = boost::iequals(Meta::mp->qsDBDriver.toStdString(), "qsqlite")
+					|| boost::iequals(Meta::mp->qsDBDriver.toStdString(), "sqlite");
+
+	if (Meta::mp->qsDatabase.isEmpty()) {
+		if (isSQLite) {
+			Meta::mp->qsDatabase = locateDatabase();
+		} else {
+			qFatal("When using non-SQLite databases, the database name has to be provided explicitly (via the INI)");
+		}
+	}
+	assert(!Meta::mp->qsDatabase.isEmpty());
+
+	if (!Meta::mp->qsDBOpts.isEmpty()) {
+		qFatal("dbOpts no longer supported");
+	}
+	if (!Meta::mp->qsDBPrefix.isEmpty()) {
+		qFatal("qsDBPrefix no longer supported");
+	}
+
+	if (isSQLite) {
+#ifdef MUMBLE_DISABLE_SQLITE
+		qFatal("Your version of the Mumble server has been compiled without support for SQLite - choose a different DB "
+			   "backend");
+#endif
+
+		if (Meta::mp->iSQLiteWAL == 1) {
+			qFatal("SQLite WAL = 1 option no longer supported. Either enable fully (WAL = 2) or disable (WAL = 0)");
+		}
+		if (Meta::mp->iSQLiteWAL > 2) {
+			qFatal("Invalid value for sqlite_wal option. Allowed values are 0 or 2.");
+		}
+		if (!Meta::mp->qsDBUserName.isEmpty()) {
+			qFatal("When using a SQLite database, specifying a username doesn't make sense");
+		}
+		if (!Meta::mp->qsDBPassword.isEmpty()) {
+			qFatal("When using a SQLite database, specifying a password doesn't make sense");
+		}
+		if (!Meta::mp->qsDBHostName.isEmpty()) {
+			qFatal("When using a SQLite database, specifying a host doesn't make sense");
+		}
+		if (Meta::mp->iDBPort > 0) {
+			qFatal("When using a SQLite database, specifying a port doesn't make sense");
+		}
+
+		static ::mumble::db::SQLiteConnectionParameter sqliteConnection(Meta::mp->qsDatabase.toStdString(),
+																		Meta::mp->iSQLiteWAL > 0);
+
+		return sqliteConnection;
+	} else if (boost::iequals(Meta::mp->qsDBDriver.toStdString(), "qmysql")
+			   || boost::iequals(Meta::mp->qsDBDriver.toStdString(), "mysql")) {
+#ifdef MUMBLE_DISABLE_MYSQL
+		qFatal("Your version of the Mumble server has been compiled without support for MySQL - choose a different DB "
+			   "backend");
+#endif
+		if (Meta::mp->qsDatabase.isEmpty()) {
+			qFatal("When using a MySQL database, a database name must be specified");
+		}
+
+		static ::mumble::db::MySQLConnectionParameter mysqlConnection(Meta::mp->qsDatabase.toStdString());
+
+		if (!Meta::mp->qsDBUserName.isEmpty()) {
+			mysqlConnection.userName = Meta::mp->qsDBUserName.toStdString();
+		}
+		if (!Meta::mp->qsDBPassword.isEmpty()) {
+			mysqlConnection.password = Meta::mp->qsDBPassword.toStdString();
+		}
+		if (!Meta::mp->qsDBHostName.isEmpty()) {
+			mysqlConnection.host = Meta::mp->qsDBHostName.toStdString();
+		}
+		if (Meta::mp->iDBPort > 0) {
+			mysqlConnection.port = std::to_string(Meta::mp->iDBPort);
+		}
+
+		return mysqlConnection;
+	} else if (boost::iequals(Meta::mp->qsDBDriver.toStdString(), "qpsql")
+			   || boost::iequals(Meta::mp->qsDBDriver.toStdString(), "psql")
+			   || boost::iequals(Meta::mp->qsDBDriver.toStdString(), "postgresql")) {
+#ifdef MUMBLE_DISABLE_POSTGRESQL
+		qFatal("Your version of the Mumble server has been compiled without support for PostgreSQL - choose a "
+			   "different DB backend");
+#endif
+		if (Meta::mp->qsDatabase.isEmpty()) {
+			qFatal("When using a PostgreSQL database, a database name must be specified");
+		}
+
+		static ::mumble::db::PostgreSQLConnectionParameter postgresqlConnection(Meta::mp->qsDatabase.toStdString());
+
+		if (!Meta::mp->qsDBUserName.isEmpty()) {
+			postgresqlConnection.userName = Meta::mp->qsDBUserName.toStdString();
+		}
+		if (!Meta::mp->qsDBPassword.isEmpty()) {
+			postgresqlConnection.password = Meta::mp->qsDBPassword.toStdString();
+		}
+		if (!Meta::mp->qsDBHostName.isEmpty()) {
+			postgresqlConnection.host = Meta::mp->qsDBHostName.toStdString();
+		}
+		if (Meta::mp->iDBPort > 0) {
+			postgresqlConnection.port = std::to_string(Meta::mp->iDBPort);
+		}
+
+		return postgresqlConnection;
+	} else {
+		qFatal("Unsupported database driver: %s", Meta::mp->qsDBDriver.toStdString().c_str());
+	}
+
+	assert(false);
+	throw "Reached unreachable code";
+}
+
 bool Meta::reloadSSLSettings() {
 	// Reload SSL settings.
-	if (!Meta::mp.loadSSLSettings()) {
+	if (!Meta::mp->loadSSLSettings()) {
 		return false;
 	}
 
@@ -682,35 +832,77 @@ bool Meta::reloadSSLSettings() {
 	return true;
 }
 
+void Meta::initPBKDF2IterationCount() {
+	if (Meta::mp->kdfIterations <= 0) {
+		// No explicit iteration count given -> load from DB
+		std::optional< unsigned int > storedIterationCount = dbWrapper.loadPBKDF2IterationCount();
+
+		if (storedIterationCount) {
+			Meta::mp->kdfIterations = static_cast< int >(storedIterationCount.value());
+		} else {
+			// No stored value -> initialize from scratch
+			Meta::mp->kdfIterations = PBKDF2::benchmark();
+
+			qWarning() << "Performed initial PBKDF2 benchmark. Will use" << Meta::mp->kdfIterations
+					   << "iterations as default";
+
+			assert(Meta::mp->kdfIterations >= 0);
+			dbWrapper.storePBKDF2IterationCount(static_cast< unsigned int >(Meta::mp->kdfIterations));
+		}
+	}
+
+	assert(Meta::mp->kdfIterations > 0);
+
+	if (Meta::mp->kdfIterations < PBKDF2::BENCHMARK_MINIMUM_ITERATION_COUNT) {
+		qWarning() << "Configured default PBKDF2 iteration count of" << Meta::mp->kdfIterations
+				   << "is below minimum recommended value of" << PBKDF2::BENCHMARK_MINIMUM_ITERATION_COUNT
+				   << "and could be insecure.";
+	}
+}
+
 void Meta::getOSInfo() {
 	qsOS        = OSInfo::getOS();
 	qsOSVersion = OSInfo::getOSDisplayableVersion();
 }
 
-void Meta::bootAll() {
-	QList< int > ql = ServerDB::getBootServers();
-	foreach (int snum, ql)
-		boot(snum);
+void Meta::bootAll(const ::mumble::db::ConnectionParameter &connectionParam, bool createDefaultInstance) {
+	std::vector< unsigned int > bootServerIDs = dbWrapper.getBootServers();
+
+	if (bootServerIDs.empty() && createDefaultInstance) {
+		// Create a default server instance
+		bootServerIDs.push_back(dbWrapper.addServer());
+		dbWrapper.setServerBootProperty(bootServerIDs[0], true);
+		qWarning("Created new server default instance");
+	}
+
+	for (unsigned int currentServerID : bootServerIDs) {
+		boot(connectionParam, currentServerID);
+	}
 }
 
-bool Meta::boot(int srvnum) {
-	if (qhServers.contains(srvnum))
+bool Meta::boot(const ::mumble::db::ConnectionParameter &connectionParam, unsigned int srvnum) {
+	if (qhServers.contains(srvnum)) {
 		return false;
-	if (!ServerDB::serverExists(srvnum))
+	}
+
+	if (!dbWrapper.serverExists(srvnum)) {
 		return false;
-	Server *s = new Server(srvnum, this);
+	}
+
+	Server *s = new Server(srvnum, connectionParam, this);
 	if (!s->bValid) {
 		delete s;
 		return false;
 	}
+
 	qhServers.insert(srvnum, s);
 	emit started(s);
 
 #ifdef Q_OS_UNIX
 	unsigned int sockets = 19; // Base
 	foreach (s, qhServers) {
-		sockets += 11;           // Listen sockets, signal pipes etc.
-		sockets += s->iMaxUsers; // One per user
+		sockets += 11;                                        // Listen sockets, signal pipes etc.
+		sockets += static_cast< unsigned int >(s->iMaxUsers); // One per user
 	}
 
 	struct rlimit r;
@@ -739,7 +931,7 @@ bool Meta::boot(int srvnum) {
 	return true;
 }
 
-void Meta::kill(int srvnum) {
+void Meta::kill(unsigned int srvnum) {
 	Server *s = qhServers.take(srvnum);
 	if (!s)
 		return;
@@ -756,7 +948,7 @@ void Meta::killAll() {
 }
 
 void Meta::successfulConnectionFrom(const QHostAddress &addr) {
-	if (!mp.bBanSuccessful) {
+	if (!mp->bBanSuccessful) {
 		QList< Timer > &ql = qhAttempts[addr];
 		// Seems like this is the most efficient way to clear the list, given:
 		// 1. ql.clear() allocates a new array
@@ -769,12 +961,12 @@ void Meta::successfulConnectionFrom(const QHostAddress &addr) {
 }
 
 bool Meta::banCheck(const QHostAddress &addr) {
-	if ((mp.iBanTries <= 0) || (mp.iBanTimeframe <= 0))
+	if ((mp->iBanTries <= 0) || (mp->iBanTimeframe <= 0))
 		return false;
 
 	if (qhBans.contains(addr)) {
 		Timer t = qhBans.value(addr);
-		if (t.elapsed() < (1000000ULL * mp.iBanTime))
+		if (t.elapsed() < (1000000ULL * static_cast< unsigned long long >(mp->iBanTime)))
 			return true;
 		qhBans.remove(addr);
 	}
@@ -782,10 +974,10 @@ bool Meta::banCheck(const QHostAddress &addr) {
 	QList< Timer > &ql = qhAttempts[addr];
 
 	ql.append(Timer());
-	while (!ql.isEmpty() && (ql.at(0).elapsed() > (1000000ULL * mp.iBanTimeframe)))
+	while (!ql.isEmpty() && (ql.at(0).elapsed() > (1000000ULL * static_cast< unsigned long long >(mp->iBanTimeframe))))
 		ql.removeFirst();
 
-	if (ql.count() > mp.iBanTries) {
+	if (ql.count() > mp->iBanTries) {
 		qhBans.insert(addr, Timer());
 		return true;
 	}

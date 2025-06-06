@@ -1,4 +1,4 @@
-# Copyright 2020-2023 The Mumble Developers. All rights reserved.
+# Copyright The Mumble Developers. All rights reserved.
 # Use of this source code is governed by a BSD-style license
 # that can be found in the LICENSE file at the root of the
 # Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -37,7 +37,7 @@ function(include_qt_plugin TARGET SCOPE PLUGIN)
 endfunction()
 
 function(compile_translations OUT_VAR OUT_DIR TS_FILES)
-	find_pkg(Qt5 COMPONENTS LinguistTools REQUIRED)
+	find_pkg(Qt6 COMPONENTS LinguistTools REQUIRED)
 
 	# Create output directory
 	file(MAKE_DIRECTORY "${OUT_DIR}")
@@ -47,7 +47,7 @@ function(compile_translations OUT_VAR OUT_DIR TS_FILES)
 	# Compile the given .ts files into .qm files into the output directory
 	foreach(CURRENT_TS IN LISTS TS_FILES)
 		set_source_files_properties("${CURRENT_TS}" PROPERTIES OUTPUT_LOCATION "${OUT_DIR}")
-		qt5_add_translation(COMPILED_FILES "${CURRENT_TS}")
+		qt6_add_translation(COMPILED_FILES "${CURRENT_TS}")
 	endforeach()
 
 	# return the list of compiled .qm files
@@ -96,7 +96,7 @@ endfunction()
 
 function(query_qmake OUT_VAR PROP)
 	# Get the path to the qmake executable
-	get_target_property(QT_QMAKE_EXECUTABLE Qt5::qmake IMPORTED_LOCATION)
+	get_target_property(QT_QMAKE_EXECUTABLE Qt6::qmake IMPORTED_LOCATION)
 
 	# Query qmake for the location of the installed Qt translations
 	execute_process(
@@ -112,6 +112,35 @@ endfunction()
 function(bundle_qt_translations TARGET)
 	query_qmake(QT_TRANSLATIONS_DIRECTORY "QT_INSTALL_TRANSLATIONS")
 	string(STRIP "${QT_TRANSLATIONS_DIRECTORY}" QT_TRANSLATIONS_DIRECTORY)
+
+	if (NOT EXISTS "${QT_TRANSLATIONS_DIRECTORY}" AND VCPKG_TARGET_TRIPLET)
+		message(STATUS "Trying to fix Qt translation directory...")
+
+		file(TO_NATIVE_PATH "/" path_separator)
+		file(TO_NATIVE_PATH "${QT_TRANSLATIONS_DIRECTORY}" QT_TRANSLATIONS_DIRECTORY)
+		string(REPLACE "${path_separator}" ";" PATH_COMPONENTS "${QT_TRANSLATIONS_DIRECTORY}")
+
+		set(PROCESSED_COMPONENTS "")
+
+		foreach (CURRENT_COMPONENT IN LISTS PATH_COMPONENTS)
+			if ("${VCPKG_TARGET_TRIPLET}" MATCHES "^${CURRENT_COMPONENT}")
+				# In a vcpkg installation, it can happen that the path to the translation directory
+				# is reported to reside in the wrong triplet subdir. Hence, we try to rectify this
+				# by replacing the wrong triplet with the actual triplet that is being used.
+				# See https://github.com/microsoft/vcpkg/issues/40506
+				list(APPEND PROCESSED_COMPONENTS "${VCPKG_TARGET_TRIPLET}")
+			else()
+				list(APPEND PROCESSED_COMPONENTS "${CURRENT_COMPONENT}")
+			endif()
+		endforeach()
+
+		list(JOIN PROCESSED_COMPONENTS "${path_separator}" QT_TRANSLATIONS_DIRECTORY)
+	endif()
+
+	if (NOT EXISTS "${QT_TRANSLATIONS_DIRECTORY}")
+		message(WARNING "Unable to determine Qt translation directory (determined path '${QT_TRANSLATIONS_DIRECTORY}' does not exist) -> not bundling translations")
+		return()
+	endif()
 
 	message(STATUS "Bundling Qt translations from \"${QT_TRANSLATIONS_DIRECTORY}\"")
 

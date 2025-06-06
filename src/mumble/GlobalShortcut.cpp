@@ -1,4 +1,4 @@
-// Copyright 2007-2023 The Mumble Developers. All rights reserved.
+// Copyright The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -11,7 +11,9 @@
 #include "Database.h"
 #include "EnvUtils.h"
 #include "MainWindow.h"
+#include "MumbleConstants.h"
 #include "ServerHandler.h"
+#include "widgets/EventFilters.h"
 #include "Global.h"
 #include "GlobalShortcutButtons.h"
 
@@ -43,43 +45,70 @@ static ConfigRegistrar registrarGlobalShortcut(1200, GlobalShortcutConfigDialogN
 
 static const QString UPARROW = QString::fromUtf8("\xE2\x86\x91 ");
 
-ShortcutActionWidget::ShortcutActionWidget(QWidget *p) : MUComboBox(p) {
+ShortcutActionWidget::ShortcutActionWidget(QWidget *p) : QWidget(p) {
 	int idx = 0;
 
-	insertItem(idx, tr("Unassigned"));
-	setItemData(idx, -1);
+	m_comboBox = new MUComboBox();
+	m_comboBox->insertItem(idx, tr("Unassigned"));
+	m_comboBox->setItemData(idx, -1);
 #ifndef Q_OS_MAC
-	setSizeAdjustPolicy(AdjustToContents);
+	m_comboBox->setSizeAdjustPolicy(QComboBox::AdjustToContents);
 #endif
 
 	idx++;
 
+	QFontMetrics fontMetrics = m_comboBox->fontMetrics();
+	int maxWidth             = m_comboBox->minimumWidth();
+
 	foreach (GlobalShortcut *gs, GlobalShortcutEngine::engine->qmShortcuts) {
-		insertItem(idx, gs->name);
-		setItemData(idx, gs->idx);
-		if (!gs->qsToolTip.isEmpty())
-			setItemData(idx, gs->qsToolTip, Qt::ToolTipRole);
-		if (!gs->qsWhatsThis.isEmpty())
-			setItemData(idx, gs->qsWhatsThis, Qt::WhatsThisRole);
+		m_comboBox->insertItem(idx, gs->name);
+		m_comboBox->setItemData(idx, gs->idx);
+		if (!gs->qsToolTip.isEmpty()) {
+			m_comboBox->setItemData(idx, gs->qsToolTip, Qt::ToolTipRole);
+		}
+		if (!gs->qsWhatsThis.isEmpty()) {
+			m_comboBox->setItemData(idx, gs->qsWhatsThis, Qt::WhatsThisRole);
+		}
 		idx++;
+
+		maxWidth = std::max(maxWidth, fontMetrics.horizontalAdvance(gs->name));
 	}
 
 	// Sort the ShortcutActionWidget items
 	QSortFilterProxyModel *proxy = new QSortFilterProxyModel(this);
-	proxy->setSourceModel(model());
+	proxy->setSourceModel(m_comboBox->model());
 
-	model()->setParent(proxy);
-	setModel(proxy);
+	m_comboBox->model()->setParent(proxy);
+	m_comboBox->setModel(proxy);
 
-	model()->sort(0);
+	m_comboBox->model()->sort(0);
+
+	m_comboBox->setFocusPolicy(Qt::NoFocus);
+
+	setMinimumWidth(maxWidth);
+	m_comboBox->view()->setMinimumWidth(maxWidth);
+	m_comboBox->adjustSize();
+
+	m_comboBox->setParent(this);
+
+	adjustSize();
+
+	KeyEventObserver *eventFilter = new KeyEventObserver(this, QEvent::KeyPress, true, { Qt::Key_Space });
+	connect(eventFilter, &KeyEventObserver::keyEventObserved, this, [this]() { m_comboBox->showPopup(); });
+	installEventFilter(eventFilter);
+
+	QTreeWidget *treeWidget = qobject_cast< QTreeWidget * >(p->parentWidget());
+	if (treeWidget) {
+		treeWidget->resizeColumnToContents(0);
+	}
 }
 
-void ShortcutActionWidget::setIndex(int idx) {
-	setCurrentIndex(findData(idx));
+void ShortcutActionWidget::setIndex(unsigned int idx) {
+	m_comboBox->setCurrentIndex(m_comboBox->findData(idx));
 }
 
 unsigned int ShortcutActionWidget::index() const {
-	return itemData(currentIndex()).toUInt();
+	return m_comboBox->itemData(m_comboBox->currentIndex()).toUInt();
 }
 
 ShortcutToggleWidget::ShortcutToggleWidget(QWidget *p) : MUComboBox(p) {
@@ -128,14 +157,14 @@ void ChannelSelectWidget::setCurrentChannel(const ChannelTarget &target) {
 }
 
 ChannelTarget ChannelSelectWidget::currentChannel() const {
-	return itemData(currentIndex()).toInt();
+	return itemData(currentIndex()).toUInt();
 }
 
 void iterateChannelChildren(QTreeWidgetItem *root, Channel *chan, QMap< int, QTreeWidgetItem * > &map) {
 	foreach (Channel *c, chan->qlChannels) {
 		QTreeWidgetItem *sub = new QTreeWidgetItem(root, QStringList(c->qsName));
 		sub->setData(0, Qt::UserRole, c->iId);
-		map.insert(c->iId, sub);
+		map.insert(static_cast< int >(c->iId), sub);
 		iterateChannelChildren(sub, c, map);
 	}
 }
@@ -244,7 +273,7 @@ ShortcutTargetDialog::ShortcutTargetDialog(const ShortcutTarget &st, QWidget *pw
 
 	// And if we are connected add the channels on the current server
 	if (Global::get().uiSession) {
-		Channel *c             = Channel::get(Channel::ROOT_ID);
+		Channel *c             = Channel::get(Mumble::ROOT_CHANNEL_ID);
 		QTreeWidgetItem *sroot = new QTreeWidgetItem(qtwChannels, QStringList(c->qsName));
 		qmTree.insert(0, sroot);
 		iterateChannelChildren(sroot, c, qmTree);
@@ -254,7 +283,7 @@ ShortcutTargetDialog::ShortcutTargetDialog(const ShortcutTarget &st, QWidget *pw
 
 	QTreeWidgetItem *qtwi;
 	if (Global::get().uiSession) {
-		qtwi = qmTree.value(ClientUser::get(Global::get().uiSession)->cChannel->iId);
+		qtwi = qmTree.value(static_cast< int >(ClientUser::get(Global::get().uiSession)->cChannel->iId));
 		if (qtwi)
 			qtwChannels->scrollToItem(qtwi);
 	}
@@ -344,6 +373,7 @@ void ShortcutTargetDialog::on_qpbRemove_clicked() {
 ShortcutTargetWidget::ShortcutTargetWidget(QWidget *p) : QFrame(p) {
 	qleTarget = new QLineEdit();
 	qleTarget->setReadOnly(true);
+	qleTarget->setFocusPolicy(Qt::NoFocus);
 
 	qtbEdit = new QToolButton();
 	qtbEdit->setText(tr("..."));
@@ -355,7 +385,36 @@ ShortcutTargetWidget::ShortcutTargetWidget(QWidget *p) : QFrame(p) {
 	l->addWidget(qleTarget, 1);
 	l->addWidget(qtbEdit);
 
+	KeyEventObserver *eventFilter = new KeyEventObserver(this, QEvent::KeyPress, true, { Qt::Key_Space });
+	connect(eventFilter, &KeyEventObserver::keyEventObserved, this, [this]() { qtbEdit->click(); });
+	installEventFilter(eventFilter);
+
 	QMetaObject::connectSlotsByName(this);
+}
+
+TextEditWidget::TextEditWidget(QWidget *p) : QWidget(p) {
+	m_lineEdit = new QLineEdit();
+	m_lineEdit->setFocusPolicy(Qt::ClickFocus);
+
+	QHBoxLayout *l = new QHBoxLayout(this);
+	l->setContentsMargins(0, 0, 0, 0);
+	l->setSpacing(0);
+	l->addWidget(m_lineEdit);
+
+	KeyEventObserver *eventFilter = new KeyEventObserver(this, QEvent::KeyPress, true, { Qt::Key_Space });
+	connect(eventFilter, &KeyEventObserver::keyEventObserved, this,
+			[this]() { m_lineEdit->setFocus(Qt::MouseFocusReason); });
+	installEventFilter(eventFilter);
+
+	QMetaObject::connectSlotsByName(this);
+}
+
+QString TextEditWidget::currentString() const {
+	return m_lineEdit->text();
+}
+
+void TextEditWidget::setCurrentString(const QString &str) {
+	m_lineEdit->setText(str);
 }
 
 /**
@@ -408,7 +467,7 @@ QString ShortcutTargetWidget::targetString(const ShortcutTarget &st) {
 						return tr("Subchannel #%1").arg(SHORTCUT_TARGET_CURRENT - st.iChannel);
 			}
 		} else {
-			Channel *c = Channel::get(st.iChannel);
+			Channel *c = Channel::get(static_cast< unsigned int >(st.iChannel));
 			if (c)
 				return c->qsName;
 			else
@@ -454,15 +513,15 @@ void ShortcutTargetWidget::on_qtbEdit_clicked() {
 ShortcutDelegate::ShortcutDelegate(QObject *p) : QStyledItemDelegate(p) {
 	QItemEditorFactory *factory = new QItemEditorFactory;
 
-	factory->registerEditor(QVariant::List, new QStandardItemEditorCreator< GlobalShortcutButtons >());
-	factory->registerEditor(QVariant::UInt, new QStandardItemEditorCreator< ShortcutActionWidget >());
-	factory->registerEditor(QVariant::Int, new QStandardItemEditorCreator< ShortcutToggleWidget >());
-	factory->registerEditor(static_cast< QVariant::Type >(QVariant::fromValue(ShortcutTarget()).userType()),
+	factory->registerEditor(QMetaType::QVariantList, new QStandardItemEditorCreator< GlobalShortcutButtons >());
+	factory->registerEditor(QMetaType::UInt, new QStandardItemEditorCreator< ShortcutActionWidget >());
+	factory->registerEditor(QMetaType::Int, new QStandardItemEditorCreator< ShortcutToggleWidget >());
+	factory->registerEditor(static_cast< int >(QVariant::fromValue(ShortcutTarget()).userType()),
 							new QStandardItemEditorCreator< ShortcutTargetWidget >());
-	factory->registerEditor(static_cast< QVariant::Type >(QVariant::fromValue(ChannelTarget()).userType()),
+	factory->registerEditor(static_cast< int >(QVariant::fromValue(ChannelTarget()).userType()),
 							new QStandardItemEditorCreator< ChannelSelectWidget >());
-	factory->registerEditor(QVariant::String, new QStandardItemEditorCreator< QLineEdit >());
-	factory->registerEditor(QVariant::Invalid, new QStandardItemEditorCreator< QWidget >());
+	factory->registerEditor(QMetaType::QString, new QStandardItemEditorCreator< TextEditWidget >());
+	factory->registerEditor(QMetaType::UnknownType, new QStandardItemEditorCreator< QWidget >());
 	setItemEditorFactory(factory);
 }
 
@@ -487,9 +546,8 @@ QString ShortcutDelegate::displayText(const QVariant &item, const QLocale &loc) 
 			return tr("< Unknown Channel >");
 		}
 	}
-
-	switch (item.type()) {
-		case QVariant::Int: {
+	switch (item.typeId()) {
+		case QMetaType::Int: {
 			const auto v = item.toInt();
 			if (v > 0) {
 				return tr("On");
@@ -499,11 +557,11 @@ QString ShortcutDelegate::displayText(const QVariant &item, const QLocale &loc) 
 
 			return tr("Toggle");
 		}
-		case QVariant::UInt: {
+		case QMetaType::UInt: {
 			const auto shortcut = GlobalShortcutEngine::engine->qmShortcuts.value(item.toInt());
 			return shortcut ? shortcut->name : tr("Unassigned");
 		}
-		case QVariant::List: {
+		case QMetaType::QVariantList: {
 			const auto buttons = item.value< QList< QVariant > >();
 			if (buttons.count() > 0) {
 				QString text;
@@ -522,7 +580,7 @@ QString ShortcutDelegate::displayText(const QVariant &item, const QLocale &loc) 
 			}
 		}
 		default:
-			qWarning("ShortcutDelegate::displayText(): Unknown type %d", item.type());
+			qWarning("ShortcutDelegate::displayText(): Unknown type %d", item.typeId());
 	}
 
 	return QStyledItemDelegate::displayText(item, loc);
@@ -540,7 +598,6 @@ bool ShortcutDelegate::helpEvent(QHelpEvent *event, QAbstractItemView *, const Q
 
 GlobalShortcutConfig::GlobalShortcutConfig(Settings &st) : ConfigWidget(st) {
 	setupUi(this);
-	qtwShortcuts->setAccessibleName(tr("Configured shortcuts"));
 	installEventFilter(this);
 
 	bool canSuppress = GlobalShortcutEngine::engine->canSuppress();
@@ -557,11 +614,16 @@ GlobalShortcutConfig::GlobalShortcutConfig(Settings &st) : ConfigWidget(st) {
 	qtwShortcuts->setColumnCount(canSuppress ? 4 : 3);
 	qtwShortcuts->setItemDelegate(new ShortcutDelegate(qtwShortcuts));
 
+	qtwShortcuts->headerItem()->setData(0, Qt::AccessibleTextRole, tr("Shortcut action"));
+	qtwShortcuts->headerItem()->setData(1, Qt::AccessibleTextRole, tr("Shortcut data"));
+	qtwShortcuts->headerItem()->setData(2, Qt::AccessibleTextRole, tr("Shortcut input combinations"));
+
 	qtwShortcuts->header()->setSectionResizeMode(0, QHeaderView::Fixed);
 	qtwShortcuts->header()->resizeSection(0, 150);
 	qtwShortcuts->header()->setSectionResizeMode(2, QHeaderView::Stretch);
-	if (canSuppress)
+	if (canSuppress) {
 		qtwShortcuts->header()->setSectionResizeMode(3, QHeaderView::ResizeToContents);
+	}
 
 	qcbEnableGlobalShortcuts->setVisible(canDisable);
 
@@ -575,12 +637,8 @@ GlobalShortcutConfig::GlobalShortcutConfig(Settings &st) : ConfigWidget(st) {
 
 #ifdef Q_OS_MAC
 	// Help Mac users enable accessibility access for Mumble...
-#	if QT_VERSION >= QT_VERSION_CHECK(5, 9, 0)
 	const QOperatingSystemVersion current = QOperatingSystemVersion::current();
 	if (current >= QOperatingSystemVersion::OSXMavericks) {
-#	else
-	if (QSysInfo::MacintoshVersion >= QSysInfo::MV_MAVERICKS) {
-#	endif
 		qpbOpenAccessibilityPrefs->setHidden(true);
 		label->setText(tr("<html><head/><body>"
 						  "<p>"
@@ -617,12 +675,8 @@ bool GlobalShortcutConfig::eventFilter(QObject * /*object*/, QEvent *e) {
 bool GlobalShortcutConfig::showWarning() const {
 #ifdef Q_OS_MAC
 #	if MAC_OS_X_VERSION_MAX_ALLOWED >= 1090
-#		if QT_VERSION >= QT_VERSION_CHECK(5, 9, 0)
 	const QOperatingSystemVersion current = QOperatingSystemVersion::current();
 	if (current >= QOperatingSystemVersion::OSXMavericks) {
-#		else
-	if (QSysInfo::MacintoshVersion >= QSysInfo::MV_MAVERICKS) {
-#		endif
 		return !AXIsProcessTrustedWithOptions(nullptr);
 	} else
 #	endif
@@ -671,6 +725,7 @@ void GlobalShortcutConfig::on_qpbAdd_clicked(bool) {
 	sc.bSuppress = false;
 	qlShortcuts << sc;
 	reload();
+	qtwShortcuts->setFocus(Qt::TabFocusReason);
 }
 
 void GlobalShortcutConfig::on_qpbRemove_clicked(bool) {
@@ -706,6 +761,17 @@ void GlobalShortcutConfig::on_qtwShortcuts_itemChanged(QTreeWidgetItem *item, in
 	if (gs && sc.qvData.userType() != gs->qvDefault.userType()) {
 		item->setData(1, Qt::DisplayRole, gs->qvDefault);
 	}
+
+	if (gs) {
+		item->setData(0, Qt::AccessibleTextRole, gs->name);
+	} else {
+		item->setData(0, Qt::AccessibleTextRole, tr("Unassigned"));
+	}
+	item->setData(1, Qt::AccessibleTextRole, sc.qvData);
+	item->setData(3, Qt::AccessibleDescriptionRole,
+				  item->checkState(3) == Qt::Checked ? tr("checked") : tr("unchecked"));
+
+	qtwShortcuts->resizeColumnToContents(0);
 }
 
 QString GlobalShortcutConfig::title() const {
@@ -775,7 +841,7 @@ QTreeWidgetItem *GlobalShortcutConfig::itemForShortcut(const Shortcut &sc) const
 	::GlobalShortcut *gs  = GlobalShortcutEngine::engine->qmShortcuts.value(sc.iIndex);
 
 	item->setData(0, Qt::DisplayRole, static_cast< unsigned int >(sc.iIndex));
-	if (sc.qvData.isValid() && gs && (sc.qvData.type() == gs->qvDefault.type()))
+	if (sc.qvData.isValid() && gs && (sc.qvData.metaType() == gs->qvDefault.metaType()))
 		item->setData(1, Qt::DisplayRole, sc.qvData);
 	else if (gs)
 		item->setData(1, Qt::DisplayRole, gs->qvDefault);
@@ -812,6 +878,7 @@ void GlobalShortcutConfig::reload() {
 	foreach (const Shortcut &sc, qlShortcuts) {
 		QTreeWidgetItem *item = itemForShortcut(sc);
 		qtwShortcuts->addTopLevelItem(item);
+		on_qtwShortcuts_itemChanged(item, 0);
 	}
 #ifdef Q_OS_MAC
 	if (!Global::get().s.bSuppressMacEventTapWarning) {
@@ -836,14 +903,7 @@ GlobalShortcutEngine::GlobalShortcutEngine(QObject *p) : QThread(p) {
 
 GlobalShortcutEngine::~GlobalShortcutEngine() {
 	QSet< ShortcutKey * > qs;
-	foreach (const QList< ShortcutKey * > &ql, qlShortcutList) {
-#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
-		qs += QSet< ShortcutKey * >(ql.begin(), ql.end());
-#else
-		// In Qt 5.14 QList::toSet() has been deprecated as there exists a dedicated constructor of QSet for this now
-		qs += ql.toSet();
-#endif
-	}
+	foreach (const QList< ShortcutKey * > &ql, qlShortcutList) { qs += QSet< ShortcutKey * >(ql.begin(), ql.end()); }
 
 	foreach (ShortcutKey *sk, qs)
 		delete sk;
@@ -853,14 +913,7 @@ void GlobalShortcutEngine::remap() {
 	bNeedRemap = false;
 
 	QSet< ShortcutKey * > qs;
-	foreach (const QList< ShortcutKey * > &ql, qlShortcutList) {
-#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
-		qs += QSet< ShortcutKey * >(ql.begin(), ql.end());
-#else
-		// In Qt 5.14 QList::toSet() has been deprecated as there exists a dedicated constructor of QSet for this now
-		qs += ql.toSet();
-#endif
-	}
+	foreach (const QList< ShortcutKey * > &ql, qlShortcutList) { qs += QSet< ShortcutKey * >(ql.begin(), ql.end()); }
 
 	foreach (ShortcutKey *sk, qs)
 		delete sk;
@@ -878,7 +931,7 @@ void GlobalShortcutEngine::remap() {
 			sk->gs          = gs;
 
 			foreach (const QVariant &button, sc.qlButtons) {
-				int idx = qlButtonList.indexOf(button);
+				auto idx = qlButtonList.indexOf(button);
 				if (idx == -1) {
 					qlButtonList << button;
 					qlShortcutList << QList< ShortcutKey * >();
@@ -951,7 +1004,7 @@ bool GlobalShortcutEngine::handleButton(const QVariant &button, bool down) {
 		}
 	}
 
-	int idx = qlButtonList.indexOf(button);
+	const auto idx = qlButtonList.indexOf(button);
 	if (idx == -1)
 		return false;
 

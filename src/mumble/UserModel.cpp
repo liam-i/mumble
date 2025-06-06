@@ -1,16 +1,18 @@
-// Copyright 2009-2023 The Mumble Developers. All rights reserved.
+// Copyright The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
 
 #include "UserModel.h"
 
+#include "Accessibility.h"
 #include "Channel.h"
 #include "ClientUser.h"
 #include "Database.h"
 #include "LCD.h"
 #include "Log.h"
 #include "MainWindow.h"
+#include "MumbleConstants.h"
 #ifdef USE_OVERLAY
 #	include "Overlay.h"
 #endif
@@ -135,9 +137,9 @@ int ModelItem::rowOf(Channel *c) const {
 	return -1;
 }
 
-int ModelItem::rowOf(ClientUser *p, const bool isListener) const {
+int ModelItem::rowOf(ClientUser *p, const bool lookForListener) const {
 	for (int i = 0; i < qlChildren.count(); i++)
-		if (qlChildren.at(i)->isListener == isListener && qlChildren.at(i)->pUser == p)
+		if (qlChildren.at(i)->isListener == lookForListener && qlChildren.at(i)->pUser == p)
 			return i;
 	return -1;
 }
@@ -154,7 +156,7 @@ int ModelItem::rowOfSelf() const {
 }
 
 int ModelItem::rows() const {
-	return qlChildren.count();
+	return static_cast< int >(qlChildren.count());
 }
 
 int ModelItem::insertIndex(Channel *c) const {
@@ -173,10 +175,10 @@ int ModelItem::insertIndex(Channel *c) const {
 	}
 	qlpc << c;
 	std::sort(qlpc.begin(), qlpc.end(), Channel::lessThan);
-	return qlpc.indexOf(c) + (bUsersTop ? ocount : 0);
+	return static_cast< int >(qlpc.indexOf(c) + (bUsersTop ? ocount : 0));
 }
 
-int ModelItem::insertIndex(ClientUser *p, bool isListener) const {
+int ModelItem::insertIndex(ClientUser *p, bool userIsListener) const {
 	QList< ClientUser * > qlclientuser;
 	ModelItem *item;
 
@@ -187,7 +189,7 @@ int ModelItem::insertIndex(ClientUser *p, bool isListener) const {
 		if (item->pUser) {
 			if (item->pUser != p) {
 				// Make sure listeners and non-listeners are all grouped together and not mixed
-				if ((isListener && item->isListener) || (!isListener && !item->isListener)) {
+				if ((userIsListener && item->isListener) || (!userIsListener && !item->isListener)) {
 					qlclientuser << item->pUser;
 				}
 			}
@@ -206,7 +208,8 @@ int ModelItem::insertIndex(ClientUser *p, bool isListener) const {
 	// Make sure that the a user is always added to other users either all above or all below
 	// sub-channels) and also make sure that listeners are grouped together and directly above
 	// normal users.
-	return qlclientuser.indexOf(p) + (bUsersTop ? 0 : ocount) + (isListener ? 0 : listenerCount);
+	return static_cast< int >(qlclientuser.indexOf(p) + (bUsersTop ? 0 : ocount)
+							  + (userIsListener ? 0 : listenerCount));
 }
 
 QString ModelItem::hash() const {
@@ -266,7 +269,7 @@ UserModel::UserModel(QObject *p) : QAbstractItemModel(p) {
 	iChannelDescription = -1;
 	bClicked            = false;
 
-	miRoot = new ModelItem(Channel::get(Channel::ROOT_ID));
+	miRoot = new ModelItem(Channel::get(Mumble::ROOT_CHANNEL_ID));
 }
 
 UserModel::~UserModel() {
@@ -515,6 +518,16 @@ QVariant UserModel::data(const QModelIndex &idx, int role) const {
 				if (!p->qsFriendName.isEmpty() && !item->isListener)
 					l << qiFriend;
 				return l;
+			case Qt::AccessibleTextRole:
+				if (item->isListener) {
+					return tr("Channel Listener");
+				}
+				return Mumble::Accessibility::userToText(p);
+			case Qt::AccessibleDescriptionRole:
+				if (item->isListener) {
+					return tr("This channel listener belongs to %1").arg(Mumble::Accessibility::userToText(p));
+				}
+				return Mumble::Accessibility::userToDescription(p);
 			default:
 				break;
 		}
@@ -583,6 +596,10 @@ QVariant UserModel::data(const QModelIndex &idx, int role) const {
 					return qc;
 				}
 				break;
+			case Qt::AccessibleTextRole:
+				return Mumble::Accessibility::channelToText(c);
+			case Qt::AccessibleDescriptionRole:
+				return Mumble::Accessibility::channelToDescription(c);
 			default:
 				break;
 		}
@@ -679,7 +696,7 @@ QVariant UserModel::otherRoles(const QModelIndex &idx, int role) const {
 							if (c->qsDesc.isEmpty()) {
 								c->qsDesc = QString::fromUtf8(Global::get().db->blob(c->qbaDescHash));
 								if (c->qsDesc.isEmpty()) {
-									const_cast< UserModel * >(this)->iChannelDescription = c->iId;
+									const_cast< UserModel * >(this)->iChannelDescription = static_cast< int >(c->iId);
 
 									MumbleProto::RequestBlob mprb;
 									mprb.add_channel_description(c->iId);
@@ -826,7 +843,7 @@ void UserModel::recursiveClone(const ModelItem *old, ModelItem *item, QModelInde
 	if (old->qlChildren.isEmpty())
 		return;
 
-	beginInsertRows(index(item), 0, old->qlChildren.count());
+	beginInsertRows(index(item), 0, static_cast< int >(old->qlChildren.count()));
 
 	for (int i = 0; i < old->qlChildren.count(); ++i) {
 		ModelItem *o  = old->qlChildren.at(i);
@@ -851,7 +868,7 @@ ModelItem *UserModel::moveItem(ModelItem *oldparent, ModelItem *newparent, Model
 	// Here's the idea. We insert the item, update persistent indexes, THEN remove it.
 
 	// Get the current position of the item under its parent (aka its "row")
-	int oldrow = oldparent->qlChildren.indexOf(oldItem);
+	auto oldrow = static_cast< int >(oldparent->qlChildren.indexOf(oldItem));
 
 	// Get the row of the item at its new position. This depends on whether we're moving a
 	// channel or a user.
@@ -1044,7 +1061,7 @@ ClientUser *UserModel::addUser(unsigned int id, const QString &name) {
 	connect(p, &ClientUser::localVolumeAdjustmentsChanged, this, &UserModel::userStateChanged);
 	connect(p, &ClientUser::localNicknameChanged, this, &UserModel::userStateChanged);
 
-	Channel *c       = Channel::get(Channel::ROOT_ID);
+	Channel *c       = Channel::get(Mumble::ROOT_CHANNEL_ID);
 	ModelItem *citem = ModelItem::c_qhChannels.value(c);
 
 	item->parent = citem;
@@ -1078,7 +1095,7 @@ void UserModel::removeUser(ClientUser *p) {
 	ModelItem *item  = ModelItem::c_qhUsers.value(p);
 	ModelItem *citem = ModelItem::c_qhChannels.value(c);
 
-	int row = citem->qlChildren.indexOf(item);
+	const auto row = static_cast< int >(citem->qlChildren.indexOf(item));
 
 	beginRemoveRows(index(citem), row, row);
 	c->removeUser(p);
@@ -1111,6 +1128,8 @@ void UserModel::moveUser(ClientUser *p, Channel *np) {
 	ModelItem *opi  = ModelItem::c_qhChannels.value(oc);
 	ModelItem *pi   = ModelItem::c_qhChannels.value(np);
 	ModelItem *item = ModelItem::c_qhUsers.value(p);
+
+	emit userMoved(p->uiSession, p->cChannel ? std::optional< unsigned int >(p->cChannel->iId) : std::nullopt, np->iId);
 
 	item = moveItem(opi, pi, item);
 
@@ -1245,7 +1264,7 @@ void UserModel::setComment(Channel *c, const QString &comment) {
 		if (!comment.isEmpty()) {
 			Global::get().db->setBlob(c->qbaDescHash, c->qsDesc.toUtf8());
 
-			if (c->iId == iChannelDescription) {
+			if (c->iId == static_cast< unsigned int >(iChannelDescription)) {
 				iChannelDescription = -1;
 				item->bCommentSeen  = false;
 				if (bClicked) {
@@ -1339,7 +1358,7 @@ void UserModel::repositionChannel(Channel *c, const int position) {
 	}
 }
 
-Channel *UserModel::addChannel(int id, Channel *p, const QString &name) {
+Channel *UserModel::addChannel(unsigned int id, Channel *p, const QString &name) {
 	Channel *c = Channel::add(id, name);
 
 	if (!c)
@@ -1430,7 +1449,7 @@ bool UserModel::isChannelListener(const QModelIndex &idx) const {
 	return item->isListener;
 }
 
-void UserModel::setSelectedChannelListener(unsigned int userSession, int channelID) {
+void UserModel::setSelectedChannelListener(unsigned int userSession, unsigned int channelID) {
 	QModelIndex idx = channelListenerIndex(ClientUser::get(userSession), Channel::get(channelID));
 
 	if (!idx.isValid()) {
@@ -1469,7 +1488,7 @@ void UserModel::removeChannelListener(ModelItem *item, ModelItem *citem) {
 		return;
 	}
 
-	int row = citem->qlChildren.indexOf(item);
+	const auto row = static_cast< int >(citem->qlChildren.indexOf(item));
 
 	beginRemoveRows(index(citem), row, row);
 	citem->qlChildren.removeAt(row);
@@ -1667,7 +1686,7 @@ Channel *UserModel::getSelectedChannel() const {
 	return nullptr;
 }
 
-void UserModel::setSelectedChannel(int id) {
+void UserModel::setSelectedChannel(unsigned int id) {
 	QModelIndex idx = index(Channel::get(id));
 
 	if (!idx.isValid()) {
@@ -1707,7 +1726,7 @@ void UserModel::userStateChanged() {
 	updateOverlay();
 }
 
-void UserModel::on_channelListenerLocalVolumeAdjustmentChanged(int channelID, float oldValue, float newValue) {
+void UserModel::on_channelListenerLocalVolumeAdjustmentChanged(unsigned int channelID, float oldValue, float newValue) {
 	Q_UNUSED(oldValue);
 	Q_UNUSED(newValue);
 
@@ -1778,7 +1797,7 @@ bool UserModel::dropMimeData(const QMimeData *md, Qt::DropAction, int row, int c
 
 	Channel *c;
 	if (!p.isValid()) {
-		c = Channel::get(Channel::ROOT_ID);
+		c = Channel::get(Mumble::ROOT_CHANNEL_ID);
 	} else {
 		c = getChannel(p);
 	}
@@ -1813,7 +1832,7 @@ bool UserModel::dropMimeData(const QMimeData *md, Qt::DropAction, int row, int c
 		mpus.set_session(uiSession);
 		mpus.set_channel_id(c->iId);
 		Global::get().sh->sendMessage(mpus);
-	} else if (c->iId != iId) {
+	} else if (c->iId != static_cast< unsigned int >(iId)) {
 		// Channel dropped somewhere (not on itself)
 		int ret;
 		switch (Global::get().s.ceChannelDrag) {
@@ -1841,7 +1860,7 @@ bool UserModel::dropMimeData(const QMimeData *md, Qt::DropAction, int row, int c
 		}
 
 		long long inewpos = 0;
-		Channel *dropped  = Channel::c_qhChannels.value(iId);
+		Channel *dropped  = Channel::c_qhChannels.value(static_cast< unsigned int >(iId));
 
 		if (!dropped)
 			return false;
@@ -1952,7 +1971,7 @@ bool UserModel::dropMimeData(const QMimeData *md, Qt::DropAction, int row, int c
 		}
 
 		MumbleProto::ChannelState mpcs;
-		mpcs.set_channel_id(iId);
+		mpcs.set_channel_id(static_cast< unsigned int >(iId));
 		if (dropped->parent() != c)
 			mpcs.set_parent(c->iId);
 		mpcs.set_position(static_cast< int >(inewpos));

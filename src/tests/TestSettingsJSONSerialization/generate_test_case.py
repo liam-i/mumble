@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# Copyright 2022-2023 The Mumble Developers. All rights reserved.
+# Copyright The Mumble Developers. All rights reserved.
 # Use of this source code is governed by a BSD-style license
 # that can be found in the LICENSE file at the root of the
 # Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -104,6 +104,8 @@ def getDefaultValueForType(dataType):
     if dataType in ["int", "short", "long", "float", "double", "qreal"] or dataType.startswith("qint") or dataType.startswith("quint") or \
         dataType.startswith("uint"):
         return "42"
+    elif match := re.search(r"optional<(.*)>", dataType):
+        return getDefaultValueForType(match.group(1))
     elif dataType in ["bool"]:
         return "true"
     elif dataType in ["QString", "std::string"]:
@@ -139,7 +141,7 @@ def getDefaultValueForType(dataType):
     elif dataType in ["IdleAction"]:
         return "Settings::Deafen"
     elif dataType in ["NoiseCancel"]:
-        return "Settings::NoiseCancelBoth"
+        return "Settings::NoiseCancelOff"
     elif dataType in ["EchoCancelOptionID"]:
         return "EchoCancelOptionID::SPEEX_MULTICHANNEL"
     elif dataType in ["QuitBehavior"]:

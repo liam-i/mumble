@@ -1,4 +1,4 @@
-# Copyright 2020-2023 The Mumble Developers. All rights reserved.
+# Copyright The Mumble Developers. All rights reserved.
 # Use of this source code is governed by a BSD-style license
 # that can be found in the LICENSE file at the root of the
 # Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -96,6 +96,11 @@ if(NOT APPLE)
 					"-ldl"
 					"-lrt"
 			)
+		endif()
+	endif()
+
+	if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux" OR ${CMAKE_SYSTEM_NAME} STREQUAL "FreeBSD")
+		if(TARGET overlay_gl_x86)
 			# install 32bit overlay library
 			install(TARGETS overlay_gl_x86 LIBRARY DESTINATION "${MUMBLE_INSTALL_LIBDIR}")
 		endif()

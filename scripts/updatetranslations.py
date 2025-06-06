@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 #
-# Copyright 2021-2023 The Mumble Developers. All rights reserved.
+# Copyright The Mumble Developers. All rights reserved.
 # Use of this source code is governed by a BSD-style license
 # that can be found in the LICENSE file at the root of the
 # Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -11,7 +11,7 @@
 # * lupdate to update translation strings
 # * Commit the resulting translation file
 #
-# Requires qt5 ; sudo apt-get install libqt5-dev
+# Requires Qt "lupdate" binary; check build requirements
 
 import os, glob, logging, sys, subprocess, re
 import argparse
@@ -23,7 +23,7 @@ def FindLupdate(vcpkg_triplet: Optional[str] = None) -> Optional[str]:
     if which('lupdate') is not None:
         return 'lupdate'
     if vcpkg_triplet is not None:
-        vcpkgbin = os.path.join(os.path.expanduser('~'), 'vcpkg', 'installed', vcpkg_triplet, 'tools', 'qt5', 'bin')
+        vcpkgbin = os.path.join(os.path.expanduser('~'), 'vcpkg', 'installed', vcpkg_triplet, 'tools', 'qt6', 'bin')
         logging.debug('Looking for lupdate in %s…', vcpkgbin)
         return which('lupdate', path=vcpkgbin)
     return None
@@ -86,7 +86,7 @@ def Update(lupdatebin, tsfile: str, debuglupdate: bool, applyHeuristics = True) 
         logging.error('lupdate failed with error code %d', res.returncode)
         logging.debug('stdout: ' + res.stdout)
         exit(1)
-    p = re.compile('Found (?P<nsrc>[0-9]+) source text\(s\) \((?P<nnew>[0-9]+) new and (?P<nsame>[0-9]+) already existing\)')
+    p = re.compile(r'Found (?P<nsrc>[0-9]+) source text\(s\) \((?P<nnew>[0-9]+) new and (?P<nsame>[0-9]+) already existing\)')
     m = p.search(res.stdout.decode('ascii'))
     logging.debug('Found %s texts where %s new and %s same', m.group('nsrc'), m.group('nnew'), m.group('nsame'))
     return (m.group('nsrc'), m.group('nnew'), m.group('nsame'))

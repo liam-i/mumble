@@ -1,4 +1,4 @@
-# Copyright 2020-2023 The Mumble Developers. All rights reserved.
+# Copyright The Mumble Developers. All rights reserved.
 # Use of this source code is governed by a BSD-style license
 # that can be found in the LICENSE file at the root of the
 # Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -15,9 +15,11 @@ option(zeroconf "Build support for zeroconf (mDNS/DNS-SD)." ON)
 option(tracy "Enable the tracy profiler." OFF)
 
 option(bundled-gsl "Use the bundled GSL version instead of looking for one on the system" ON)
+option(bundled-json "Build the included version of nlohmann_json instead of looking for one on the system" ON)
+option(bundled-spdlog "Use the bundled spdlog version instead of looking for one on the system" ON)
 
-
-find_pkg(Qt5
+find_pkg(Qt6
+	VERSION 6.2
 	COMPONENTS
 		Core
 		Network
@@ -33,6 +35,8 @@ find_pkg(OpenSSL
 )
 
 find_pkg(Protobuf REQUIRED)
+
+add_compile_options(${MUMBLE_COMPILER_FLAGS})
 
 add_library(shared STATIC)
 
@@ -57,11 +61,13 @@ set(SHARED_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 set(SHARED_SOURCES
 	"Ban.cpp"
 	"EnvUtils.cpp"
+	"ExceptionUtils.cpp"
 	"FFDHE.cpp"
 	"HostAddress.cpp"
 	"HTMLFilter.cpp"
 	"License.cpp"
 	"LogEmitter.cpp"
+	"Logger.cpp"
 	"MumbleProtocol.cpp"
 	"OSInfo.cpp"
 	"PasswordGenerator.cpp"
@@ -82,6 +88,7 @@ set(SHARED_SOURCES
 
 	"crypto/CryptographicHash.cpp"
 	"crypto/CryptographicRandom.cpp"
+	"crypto/CryptState.cpp"
 	"crypto/CryptStateOCB2.cpp"
 
 	"${3RDPARTY_DIR}/arc4random/arc4random_uniform.cpp"
@@ -91,11 +98,13 @@ set(SHARED_HEADERS
 	"Ban.h"
 	"ByteSwap.h"
 	"EnvUtils.h"
+	"ExceptionUtils.h"
 	"FFDHE.h"
 	"HostAddress.h"
 	"HTMLFilter.h"
 	"License.h"
 	"LogEmitter.h"
+	"Logger.h"
 	"MumbleProtocol.h"
 	"Net.h"
 	"OSInfo.h"
@@ -174,9 +183,9 @@ target_link_libraries(shared
 		protobuf::libprotobuf
 		OpenSSL::Crypto
 		OpenSSL::SSL
-		Qt5::Core
-		Qt5::Network
-		Qt5::Xml
+		Qt6::Core
+		Qt6::Network
+		Qt6::Xml
 )
 
 if(WIN32)
@@ -217,8 +226,8 @@ else()
 	# GSL since version 3)
 	find_pkg("Microsoft.GSL")
 
-	if (TARGET GSL)
-		target_link_libraries(shared PUBLIC GSL)
+	if (TARGET Microsoft.GSL::GSL)
+		target_link_libraries(shared PUBLIC Microsoft.GSL::GSL)
 	else()
 		# If the above failed, it could mean that there is an installation of GSL < v3.0 on this system, which does not yet
 		# provide cmake support for finding it. Thus, we have to use our custom Find-script.
@@ -234,6 +243,14 @@ else()
 	endif()
 endif()
 
+if(bundled-spdlog)
+	set(SPDLOG_SYSTEM_INCLUDES ON)
+	add_subdirectory("${3RDPARTY_DIR}/spdlog" "${CMAKE_CURRENT_BINARY_DIR}/spdlog" EXCLUDE_FROM_ALL)
+else()
+	find_pkg("spdlog")
+endif()
+target_link_libraries(shared PUBLIC spdlog::spdlog)
+
 if(client)
 	add_subdirectory(mumble)
 
@@ -242,6 +259,8 @@ if(client)
 		install(FILES "${CMAKE_SOURCE_DIR}/icons/mumble_256x256.png" DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/icons/hicolor/256x256/apps" RENAME "mumble.png")
 	endif()
 endif()
+
+add_subdirectory(database)
 
 if(server)
 	add_subdirectory(murmur)

@@ -14,22 +14,16 @@
 Mumble is an Open Source, low-latency and high-quality voice-chat program
 written on top of Qt and Opus.
 
-There are two modules in Mumble; the client (mumble) and the server (murmur).
-The client works on Windows, Linux, FreeBSD, OpenBSD and macOS,
+There are two modules in Mumble; the client (mumble) and the server (mumble-server formerly known as murmur).
+The client works on Windows, Linux, FreeBSD, OpenBSD, and macOS,
 while the server should work on anything Qt can be installed on.
 
-Please note that with "Windows" we mean 7 and newer.
-Vista may be supported, but we can't guarantee it.
-If you don't want to encounter potential issues, you may download Mumble 1.3.x,
-the last version to provide support for XP.
-
-The documentation of the project can be found on the [wiki](https://wiki.mumble.info/wiki/Main_Page). The
-[FAQ](https://wiki.mumble.info/wiki/FAQ/English) can also be found there.
+The documentation of the project can be found on [the website](https://www.mumble.info/documentation/).
 
 
 ## Contributing
 
-We always welcome contributions to the project. If you have code that you would like to contribute, please go ahead and create a PR. While doing so,
+We always welcome contributions to the project. If you have some code that you would like to contribute, please go ahead and create a PR. While doing so,
 please try to make sure that you follow our [commit guidelines](COMMIT_GUIDELINES.md).
 
 If you are new to the Mumble project, you may want to check out the general [introduction to the Mumble source code](docs/dev/TheMumbleSourceCode.md).
@@ -43,18 +37,28 @@ We are using Weblate as a translation platform. [Register on Weblate](https://ho
 ### Writing plugins
 
 Mumble supports general-purpose plugins that can provide functionality that is not implemented in the main Mumble application. You can find more
-information on how this works and on how these have to be created in the [plugin documentation](docs/dev/plugins/README.md).
+information on how this works and how these have to be created in the [plugin documentation](docs/dev/plugins/README.md).
 
 ## Building
 
-For information on how to build Mumble, checkout [the dedicated documentation](docs/dev/build-instructions/README.md).
+For information on how to build Mumble, check out [the dedicated documentation](docs/dev/build-instructions/README.md).
+
+Make sure to switch to the appropriate branch in this repository to get the correct build documentation. The current ``master`` branch contains
+the unstable code for a future release of Mumble. If you want to build an already released stable version of Mumble, e.g. ``1.5.735``, select the
+corresponding branch, e.g. ``1.5.x``, in the dropdown menu above. Alternatively, use the documentation in the respective release tarball.
 
 
 ## Reporting issues
 
-If you want to report a bug or create a feature-request, you can open a new issue (after you have checked that there is none already) on
+If you want to report a bug or create a feature request, you can open a new issue (after you have checked that there is none already) on
 [GitHub](https://github.com/mumble-voip/mumble/issues/new/choose).
 
+
+## Code Signing
+
+We graciously acknowledge that this program uses free code signing provided by
+[SignPath.io](https://signpath.io?utm_source=foundation&utm_medium=github&utm_campaign=mumble), and a free code signing certificate by the
+[SignPath Foundation](https://signpath.org?utm_source=foundation&utm_medium=github&utm_campaign=mumble).
 
 ## Windows
 
@@ -63,12 +67,12 @@ If you want to report a bug or create a feature-request, you can open a new issu
 After installation, you should have a new Mumble folder in your
 Start Menu, from which you can start Mumble.
 
-### Running Murmur
+### Running Mumble-Server
 
-Doubleclick the Murmur icon to start murmur. There will be a small icon on your
+Double-click the icon to start ``mumble-server``. There will be a small icon on your
 taskbar from which you can view the log.
 
-To set the superuser password, run murmur with the parameters `-supw <password>`.
+To set the superuser password, run ``mumble-server`` with the parameters `-supw <password>`.
 
 
 ## MacOS
@@ -78,38 +82,38 @@ To set the superuser password, run murmur with the parameters `-supw <password>`
 To install Mumble, drag the application from the downloaded
 disk image into your `/Applications` folder.
 
-### Running Murmur
+### Running Mumble-Server
 
-Murmur is distributed separately from the Mumble client on MacOS.
+``mumble-server`` is distributed separately from the Mumble client on MacOS.
 It is called Static OS X Server and can be downloaded from the main webpage.
 
 Once downloaded it can be run in the same way as on any other Unix-like system.
-For more information please see the "Running Murmur" in the Linux/Unix section below.
+For more information please see the "Running mumble-server" in the Linux/Unix section below.
 
 
 ## Linux/Unix
 
 ### Running Mumble
 
-If you have installed Mumble through your distributon's package
+If you have installed Mumble through your distribution package
 repository, you should be able to find Mumble in your start menu. No
-additional steps necessary.
+additional steps are necessary.
 
-### Running Murmur
+### Running Mumble-Server
 
-Murmur should be run from the command line, so start a shell (command prompt)
-and go to wherever you installed Mumble. Run murmur as
+``mumble-server`` should be run from the command line, so start a shell (command prompt)
+and go to wherever you installed Mumble. Run ``mumble-server`` as
 
 ```
-murmurd [-supw <password>] [-ini <inifile>] [-fg] [v]
+mumble-server [-supw <password>] [-ini <inifile>] [-fg] [v]
 
 -supw   Set a new password for the user SuperUser, which is hardcoded to
         bypass ACLs. Keep this password safe. Until you set a password,
-        the SuperUser is disabled. If you use this option, murmur will
+        the SuperUser is disabled. If you use this option, mumble-server will
         set the password in the database and then exit.
 
--ini    Use an inifile other than murmur.ini, use this to run several instances
-        of murmur from the same directory. Make sure each instance is using
+-ini    Use an inifile other than mumble-server.ini, use this to run several instances
+        of mumble-server from the same directory. Make sure each instance is using
         a separate database.
 
 -fg     Run in the foreground, logging to standard output.
@@ -117,18 +121,15 @@ murmurd [-supw <password>] [-ini <inifile>] [-fg] [v]
 -v      More verbose logging.
 ```
 
-#### Build and run from Docker
+#### Docker image
 
-On recent Docker versions you can build images directly from sources on GitHub:
-```bash
-docker build --pull -t mumble-server github.com/mumble-voip/mumble#master
-```
-Example `--pull`s each time to check for updated base image, then downloads and builds `master` branch.
+Our official Docker image along with instructions on how to use it can be found at https://github.com/mumble-voip/mumble-docker
 
-You can also specify user id (UID) and group id (GID) for the *murmur* user in the image. This allows users who use bind mount volumes to use the same UID/GID in the container as in the host:
-```bash
-docker build --pull -t mumble-server --build-arg UID=1234 --build-arg GID=1234 github.com/mumble-voip/mumble#master
-```
+
+### Server configuration
+
+You can find an up-to-date ``mumble-server`` configuration template in [this repository](auxiliary_files/mumble-server.ini).
+Further server configuration documentation can be found [on the project website](https://www.mumble.info/documentation/administration/).
 
 ### OpenGL Overlay
 

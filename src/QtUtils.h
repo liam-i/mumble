@@ -1,4 +1,4 @@
-// Copyright 2021-2023 The Mumble Developers. All rights reserved.
+// Copyright The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -8,11 +8,13 @@
 
 #include <QCryptographicHash>
 #include <QString>
+#include <QStringList>
 
+#include <filesystem>
 #include <memory>
+#include <type_traits>
 
 class QObject;
-class QStringList;
 
 namespace Mumble {
 namespace QtUtils {
@@ -34,8 +36,63 @@ namespace QtUtils {
 	 */
 	QString decode_first_utf8_qssl_string(const QStringList &list);
 
-}; // namespace QtUtils
-}; // namespace Mumble
+	/**
+	 * A wrapper around a QString object that ensures all comparisons and hashes are performed
+	 * in a case-insensitive manner.
+	 */
+	class CaseInsensitiveQString {
+	public:
+		CaseInsensitiveQString()  = default;
+		~CaseInsensitiveQString() = default;
+
+		CaseInsensitiveQString(const CaseInsensitiveQString &) = default;
+		CaseInsensitiveQString(CaseInsensitiveQString &&)      = default;
+		CaseInsensitiveQString &operator=(const CaseInsensitiveQString &) = default;
+		CaseInsensitiveQString &operator=(CaseInsensitiveQString &&) = default;
+
+		CaseInsensitiveQString(const QString &str);
+		CaseInsensitiveQString(QString &&str);
+		CaseInsensitiveQString &operator=(const QString &str);
+		CaseInsensitiveQString &operator=(QString &&str);
+
+		operator const QString &() const;
+		operator QString &();
+
+		friend bool operator==(const QString &lhs, const CaseInsensitiveQString &rhs);
+		friend bool operator==(const CaseInsensitiveQString &lhs, const CaseInsensitiveQString &rhs);
+		friend bool operator==(const CaseInsensitiveQString &lhs, const QString &rhs);
+		friend bool operator!=(const QString &lhs, const CaseInsensitiveQString &rhs);
+		friend bool operator!=(const CaseInsensitiveQString &lhs, const CaseInsensitiveQString &rhs);
+		friend bool operator!=(const CaseInsensitiveQString &lhs, const QString &rhs);
+		friend bool operator<(const QString &lhs, const CaseInsensitiveQString &rhs);
+		friend bool operator<(const CaseInsensitiveQString &lhs, const CaseInsensitiveQString &rhs);
+		friend bool operator<(const CaseInsensitiveQString &lhs, const QString &rhs);
+		friend bool operator<=(const QString &lhs, const CaseInsensitiveQString &rhs);
+		friend bool operator<=(const CaseInsensitiveQString &lhs, const CaseInsensitiveQString &rhs);
+		friend bool operator<=(const CaseInsensitiveQString &lhs, const QString &rhs);
+		friend bool operator>(const QString &lhs, const CaseInsensitiveQString &rhs);
+		friend bool operator>(const CaseInsensitiveQString &lhs, const CaseInsensitiveQString &rhs);
+		friend bool operator>(const CaseInsensitiveQString &lhs, const QString &rhs);
+		friend bool operator>=(const QString &lhs, const CaseInsensitiveQString &rhs);
+		friend bool operator>=(const CaseInsensitiveQString &lhs, const CaseInsensitiveQString &rhs);
+		friend bool operator>=(const CaseInsensitiveQString &lhs, const QString &rhs);
+
+	private:
+		QString m_str;
+	};
+
+	/**
+	 * Creates a platform agnostic path from a QString
+	 */
+	std::filesystem::path qstring_to_path(const QString &input);
+
+} // namespace QtUtils
+} // namespace Mumble
+
+inline std::size_t qHash(const Mumble::QtUtils::CaseInsensitiveQString &str, std::size_t seed = 0) {
+	const QString &lower = static_cast< const QString & >(str).toLower();
+	return static_cast< std::size_t (*)(const QString &, std::size_t) >(&qHash)(lower, seed);
+}
 
 template< typename T > using qt_unique_ptr = std::unique_ptr< T, decltype(&Mumble::QtUtils::deleteQObject) >;
 
@@ -57,7 +114,7 @@ inline QString u8(const ::std::wstring &str) {
 
 inline ::std::string u8(const QString &str) {
 	const QByteArray &qba = str.toUtf8();
-	return ::std::string(qba.constData(), qba.length());
+	return ::std::string(qba.constData(), static_cast< std::size_t >(qba.length()));
 }
 
 inline QByteArray blob(const ::std::string &str) {
@@ -65,7 +122,7 @@ inline QByteArray blob(const ::std::string &str) {
 }
 
 inline ::std::string blob(const QByteArray &str) {
-	return ::std::string(str.constData(), str.length());
+	return ::std::string(str.constData(), static_cast< std::size_t >(str.length()));
 }
 
 inline QByteArray sha1(const QByteArray &blob) {

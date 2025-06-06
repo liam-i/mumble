@@ -1,4 +1,4 @@
-// Copyright 2022-2023 The Mumble Developers. All rights reserved.
+// Copyright The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -17,6 +17,6 @@ void setVersion(MumbleProto::Version &msg, const ::Version::full_t version);
 ::Version::full_t getSuggestedVersion(const MumbleProto::SuggestConfig &msg);
 void setSuggestedVersion(MumbleProto::SuggestConfig &msg, const ::Version::full_t version);
 
-}; // namespace MumbleProto
+} // namespace MumbleProto
 
 #endif // MUMBLE_PROTOUTILS_H_

@@ -1,4 +1,4 @@
-// Copyright 2007-2023 The Mumble Developers. All rights reserved.
+// Copyright The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -58,6 +58,8 @@ public slots:
 	void on_qsAmp_valueChanged(int v);
 	void on_qsDoublePush_valueChanged(int v);
 	void on_qsPTTHold_valueChanged(int v);
+	void on_qsTransmitMin_valueChanged();
+	void on_qsTransmitMax_valueChanged();
 	void on_qsSpeexNoiseSupStrength_valueChanged(int v);
 	void on_qcbTransmit_currentIndexChanged(int v);
 	void on_qcbSystem_currentIndexChanged(int);

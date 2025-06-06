@@ -1,10 +1,11 @@
-// Copyright 2007-2023 The Mumble Developers. All rights reserved.
+// Copyright The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
 
 #include "Log.h"
 
+#include "Accessibility.h"
 #include "AudioOutput.h"
 #include "AudioOutputSample.h"
 #include "AudioOutputToken.h"
@@ -23,12 +24,12 @@
 
 #include <QSignalBlocker>
 #include <QtCore/QMutexLocker>
+#include <QtCore/QRegularExpression>
 #include <QtGui/QImageWriter>
 #include <QtGui/QScreen>
 #include <QtGui/QTextBlock>
 #include <QtGui/QTextDocumentFragment>
 #include <QtNetwork/QNetworkReply>
-#include <QtWidgets/QDesktopWidget>
 
 const QString LogConfig::name = QLatin1String("LogConfig");
 
@@ -40,16 +41,6 @@ static ConfigRegistrar registrarLog(4000, LogConfigDialogNew);
 
 LogConfig::LogConfig(Settings &st) : ConfigWidget(st) {
 	setupUi(this);
-	qtwMessages->setAccessibleName(tr("Log messages"));
-	qsTTSVolume->setAccessibleName(tr("TTS engine volume"));
-	qsNotificationVolume->setAccessibleName(tr("Notification sound volume adjustment"));
-	qsbNotificationVolume->setAccessibleName(tr("Notification sound volume adjustment"));
-	qsCueVolume->setAccessibleName(tr("Audio cue volume adjustment"));
-	qsbCueVolume->setAccessibleName(tr("Audio cue volume adjustment"));
-	qsbThreshold->setAccessibleName(tr("Length threshold"));
-	qsbMessageLimitUsers->setAccessibleName(tr("User limit for message limiting"));
-	qsbMaxBlocks->setAccessibleName(tr("Maximum chat length"));
-	qsbChatMessageMargins->setAccessibleName(tr("Chat message margins"));
 
 #ifdef USE_NO_TTS
 	qgbTTS->setDisabled(true);
@@ -63,6 +54,20 @@ LogConfig::LogConfig(Settings &st) : ConfigWidget(st) {
 	qtwMessages->header()->setSectionResizeMode(ColTTS, QHeaderView::ResizeToContents);
 	qtwMessages->header()->setSectionResizeMode(ColMessageLimit, QHeaderView::ResizeToContents);
 	qtwMessages->header()->setSectionResizeMode(ColStaticSound, QHeaderView::ResizeToContents);
+
+	qtwMessages->headerItem()->setData(ColMessage, Qt::AccessibleTextRole, tr("Message type"));
+	qtwMessages->headerItem()->setData(ColConsole, Qt::AccessibleTextRole, tr("Log message to console checkbox"));
+	qtwMessages->headerItem()->setData(ColNotification, Qt::AccessibleTextRole,
+									   tr("Display pop-up notification for message checkbox"));
+	qtwMessages->headerItem()->setData(ColHighlight, Qt::AccessibleTextRole,
+									   tr("Highlight window for message checkbox"));
+	qtwMessages->headerItem()->setData(ColTTS, Qt::AccessibleTextRole,
+									   tr("Read message using text to speech checkbox"));
+	qtwMessages->headerItem()->setData(ColMessageLimit, Qt::AccessibleTextRole,
+									   tr("Limit message notification if user count is high checkbox"));
+	qtwMessages->headerItem()->setData(ColStaticSound, Qt::AccessibleTextRole,
+									   tr("Play sound file for message checkbox"));
+	qtwMessages->headerItem()->setData(ColStaticSoundPath, Qt::AccessibleTextRole, tr("Path to sound file"));
 
 	// Add a "All messages" entry
 	allMessagesItem = new QTreeWidgetItem(qtwMessages);
@@ -190,6 +195,7 @@ void LogConfig::updateSelectAllButtons() {
 		}
 	}
 
+	const QSignalBlocker blocker(qtwMessages);
 	allMessagesItem->setCheckState(ColConsole, allConsoleChecked ? Qt::Checked : Qt::Unchecked);
 	allMessagesItem->setCheckState(ColNotification, allNotificationChecked ? Qt::Checked : Qt::Unchecked);
 	allMessagesItem->setCheckState(ColHighlight, allHighlightChecked ? Qt::Checked : Qt::Unchecked);
@@ -280,7 +286,7 @@ void LogConfig::save() const {
 		}
 		if (i->checkState(ColStaticSound) == Qt::Checked)
 			v |= Settings::LogSoundfile;
-		s.qmMessages[mt]      = v;
+		s.qmMessages[mt]      = static_cast< unsigned int >(v);
 		s.qmMessageSounds[mt] = i->text(ColStaticSoundPath);
 	}
 	s.iMaxLogBlocks       = qsbMaxBlocks->value();
@@ -340,6 +346,11 @@ void LogConfig::on_qtwMessages_itemChanged(QTreeWidgetItem *i, int column) {
 			}
 		}
 	}
+
+	if (column != ColMessage && column != ColStaticSoundPath) {
+		i->setData(column, Qt::AccessibleDescriptionRole,
+				   i->checkState(column) == Qt::Checked ? tr("checked") : tr("unchecked"));
+	}
 }
 
 void LogConfig::on_qtwMessages_itemClicked(QTreeWidgetItem *item, int column) {
@@ -370,14 +381,18 @@ void LogConfig::browseForAudioFile() {
 
 void LogConfig::on_qsNotificationVolume_valueChanged(int value) {
 	qsbNotificationVolume->setValue(value);
+	Mumble::Accessibility::setSliderSemanticValue(qsNotificationVolume,
+												  QString("%1 %2").arg(value).arg(tr("decibels")));
 }
 
 void LogConfig::on_qsCueVolume_valueChanged(int value) {
 	qsbCueVolume->setValue(value);
+	Mumble::Accessibility::setSliderSemanticValue(qsCueVolume, QString("%1 %2").arg(value).arg(tr("decibels")));
 }
 
 void LogConfig::on_qsTTSVolume_valueChanged(int value) {
 	qsbTTSVolume->setValue(value);
+	Mumble::Accessibility::setSliderSemanticValue(qsTTSVolume, Mumble::Accessibility::SliderMode::READ_PERCENT, "%");
 }
 
 void LogConfig::on_qsbNotificationVolume_valueChanged(int value) {
@@ -407,9 +422,7 @@ Log::Log(QObject *p) : QObject(p) {
 	uiLastId = 0;
 	qdDate   = QDate::currentDate();
 
-	// remove gap above first chat message; the gaps below
-	// each chat message are handled within `Log::log`.
-	Global::get().mw->qteLog->document()->firstBlock().setVisible(false);
+	QObject::connect(this, &Log::highlightSpawned, Global::get().mw, &MainWindow::highlightWindow);
 }
 
 // Display order in settingsscreen, allows to insert new events without breaking config-compatibility with older
@@ -594,8 +607,8 @@ QString Log::imageToImg(const QByteArray &format, const QByteArray &image) {
 }
 
 QString Log::imageToImg(QImage img, int maxSize) {
-	constexpr int MAX_WIDTH  = 600;
-	constexpr int MAX_HEIGHT = 400;
+	constexpr int MAX_WIDTH  = 1600;
+	constexpr int MAX_HEIGHT = 1000;
 
 	if ((img.width() > MAX_WIDTH) || (img.height() > MAX_HEIGHT)) {
 		img = img.scaled(MAX_WIDTH, MAX_HEIGHT, Qt::KeepAspectRatio, Qt::SmoothTransformation);
@@ -671,7 +684,7 @@ QString Log::validHtml(const QString &html, QTextCursor *tc) {
 		}
 	}
 
-	int messageSize = s.width() * s.height();
+	int messageSize = static_cast< int >(s.width() * s.height());
 	int allowedSize = 2048 * 2048;
 
 	if (messageSize > allowedSize) {
@@ -696,6 +709,15 @@ QString Log::validHtml(const QString &html, QTextCursor *tc) {
 
 void Log::log(MsgType mt, const QString &console, const QString &terse, bool ownMessage, const QString &overrideTTS,
 			  bool ignoreTTS) {
+	if (QThread::currentThread() != thread()) {
+		// Invoke in main thread in order to keep the Qt gods on our side by not calling any UI
+		// functions from a separate thread (can lead to program crashes)
+		QMetaObject::invokeMethod(this, "log", Qt::QueuedConnection, Q_ARG(Log::MsgType, mt),
+								  Q_ARG(const QString &, console), Q_ARG(const QString &, terse),
+								  Q_ARG(bool, ownMessage), Q_ARG(const QString &, overrideTTS), Q_ARG(bool, ignoreTTS));
+		return;
+	}
+
 	QDateTime dt = QDateTime::currentDateTime();
 
 	int ignore = qmIgnore.value(mt);
@@ -726,21 +748,41 @@ void Log::log(MsgType mt, const QString &console, const QString &terse, bool own
 
 		LogTextBrowser *tlog     = Global::get().mw->qteLog;
 		const int oldscrollvalue = tlog->getLogScroll();
-		const bool scroll        = (oldscrollvalue == tlog->getLogScrollMaximum());
+		// Restore the previous scroll position after inserting a new message
+		// if the message was not sent by the user AND the chat log is not
+		// scrolled all the way down.
+		const bool restoreScroll = !(ownMessage || tlog->isScrolledToBottom());
+
+		// A newline is inserted after each frame, but this spaces out the
+		// log entries too much, so the line height is set to zero to reduce
+		// the space between log entries. This line height is only set for the
+		// blank lines between entries, not for entries themselves.
+		//
+		// NOTE: All further log entries must go in a new text frame.
+		// Otherwise, they will not display correctly as a result of having
+		// line height equal to 0 for the current block.
+		QTextBlockFormat bf = tc.blockFormat();
+		bf.setLineHeight(0, QTextBlockFormat::FixedHeight);
+		bf.setTopMargin(0);
+		bf.setBottomMargin(0);
+
+		// Set the line height of the leading blank line to zero
+		tc.setBlockFormat(bf);
 
 		if (qdDate != dt.date()) {
 			qdDate = dt.date();
-			tc.insertBlock();
+			tc.insertFrame(qttf);
 			tc.insertHtml(
-				tr("[Date changed to %1]\n").arg(qdDate.toString(Qt::DefaultLocaleShortDate).toHtmlEscaped()));
+				tr("[Date changed to %1]\n").arg(QLocale().toString(qdDate, QLocale::ShortFormat).toHtmlEscaped()));
 			tc.movePosition(QTextCursor::End);
+			tc.setBlockFormat(bf);
 		}
 
 		// Convert CRLF to unix-style LF and old mac-style LF (single \r) to unix-style as well
 		QString fixedNLPlain =
 			plain.replace(QLatin1String("\r\n"), QLatin1String("\n")).replace(QLatin1String("\r"), QLatin1String("\n"));
 
-		if (fixedNLPlain.contains(QRegExp(QLatin1String("\\n[ \\t]*$")))) {
+		if (fixedNLPlain.contains(QRegularExpression(QLatin1String("\\n[ \\t]*$")))) {
 			// If the message ends with one or more blank lines (or lines only containing whitespace)
 			// paint a border around the message to make clear that it contains invisible parts.
 			// The beginning of the message is clear anyway (the date and potentially the "To XY" part)
@@ -760,44 +802,70 @@ void Log::log(MsgType mt, const QString &console, const QString &terse, bool own
 		tc.movePosition(QTextCursor::End);
 		Global::get().mw->qteLog->setTextCursor(tc);
 
-		// Qt's document model for [Rich Text Documents][RT] is based on blocks and frames.
-		// You always have a root frame and at least one block per frame:
-		//
-		// [Document]
-		//     +--> [Root frame]
-		//               +--> [Block]
-		//               +--> [Frame]
-		//               +--> [Block]
-		//               +--> [Frame]
-		//               +--> [Block]
-		//
-		// [RT]: https://doc.qt.io/qt-5/richtext-structure.html
-		//
-		// However, the issue is that the blocks between the frames are mandatory. They lead
-		// to additional gaps, especially on Windows, where `QTextCursor::setBlockCharFormat`
-		// cannot be used to decrease the trailing block's size.
-		//
-		// Fortunately, the `tlog`/`LogTextBrowser` is a `QTextBrowser` with a `QDocument*`.
-		// This allows us to hide the last block created by `QTextCursor::insertFrame()`.
-		tlog->document()->lastBlock().setVisible(false);
+		// Set the line height of the trailing blank line to zero
+		tc.setBlockFormat(bf);
 
-		if (scroll || ownMessage)
-			tlog->scrollLogToBottom();
-		else
+		if (restoreScroll) {
 			tlog->setLogScroll(oldscrollvalue);
+		}
 	}
 
 	if (!ownMessage) {
 		if (!(Global::get().mw->isActiveWindow() && Global::get().mw->qdwLog->isVisible())) {
 			// Message notification with window highlight
 			if (flags & Settings::LogHighlight) {
-				QApplication::alert(Global::get().mw);
+				emit highlightSpawned();
 			}
 
 			// Message notification with balloon tooltips
 			if (flags & Settings::LogBalloon) {
 				// Replace any instances of a "Object Replacement Character" from QTextDocumentFragment::toPlainText
-				postNotification(mt, plain.replace("\xEF\xBF\xBC", tr("[embedded content]")));
+				plain = plain.replace("\xEF\xBF\xBC", tr("[embedded content]"));
+
+				QSystemTrayIcon::MessageIcon msgIcon = QSystemTrayIcon::NoIcon;
+				switch (mt) {
+					case DebugInfo:
+					case CriticalError:
+						msgIcon = QSystemTrayIcon::Critical;
+						break;
+					case Warning:
+						msgIcon = QSystemTrayIcon::Warning;
+						break;
+					case TextMessage:
+					case PrivateTextMessage:
+						msgIcon = QSystemTrayIcon::NoIcon;
+						break;
+					case Information:
+					case ServerConnected:
+					case ServerDisconnected:
+					case UserJoin:
+					case UserLeave:
+					case Recording:
+					case YouKicked:
+					case UserKicked:
+					case SelfMute:
+					case OtherSelfMute:
+					case YouMuted:
+					case YouMutedOther:
+					case OtherMutedOther:
+					case ChannelJoin:
+					case ChannelLeave:
+					case PermissionDenied:
+					case SelfUnmute:
+					case SelfDeaf:
+					case SelfUndeaf:
+					case UserRenamed:
+					case SelfChannelJoin:
+					case SelfChannelJoinOther:
+					case ChannelJoinConnect:
+					case ChannelLeaveDisconnect:
+					case ChannelListeningAdd:
+					case ChannelListeningRemove:
+					case PluginMessage:
+						msgIcon = QSystemTrayIcon::Information;
+						break;
+				}
+				emit notificationSpawned(msgName(mt), plain, msgIcon);
 			}
 		}
 
@@ -807,7 +875,7 @@ void Log::log(MsgType mt, const QString &console, const QString &terse, bool own
 		}
 
 		// Message notification with static sounds
-		int connectedUsers = 0;
+		qsizetype connectedUsers = 0;
 		{
 			QReadLocker lock(&ClientUser::c_qrwlUsers);
 			connectedUsers = ClientUser::c_qmUsers.size();
@@ -837,18 +905,19 @@ void Log::log(MsgType mt, const QString &console, const QString &terse, bool own
 	}
 
 	// Apply simplifications to spoken text
-	QRegExp identifyURL(QLatin1String("[a-z-]+://[^ <]*"), Qt::CaseInsensitive, QRegExp::RegExp2);
+	const QRegularExpression identifyURL(QRegularExpression::anchoredPattern(QLatin1String("[a-z-]+://[^ <]*")),
+										 QRegularExpression::CaseInsensitiveOption);
 
-	QStringList qslAllowed = allowedSchemes();
+	const QStringList qslAllowed  = allowedSchemes();
+	QRegularExpressionMatch match = identifyURL.match(plain);
+	qsizetype pos                 = 0;
 
-	int pos = 0;
-	while ((pos = identifyURL.indexIn(plain, pos)) != -1) {
-		QUrl url(identifyURL.cap(0).toLower());
-		int len = identifyURL.matchedLength();
+	while (match.hasMatch()) {
+		QUrl url(match.captured(0).toLower());
 		if (url.isValid() && qslAllowed.contains(url.scheme())) {
 			// Replace it appropriately
 			QString replacement;
-			QString host = url.host().replace(QRegExp(QLatin1String("^www.")), QString());
+			QString host = url.host().replace(QRegularExpression(QLatin1String("^www.")), QString());
 
 			if (url.scheme() == QLatin1String("http") || url.scheme() == QLatin1String("https"))
 				replacement = tr("link to %1").arg(host);
@@ -861,10 +930,12 @@ void Log::log(MsgType mt, const QString &console, const QString &terse, bool own
 			else
 				replacement = tr("%1 link").arg(url.scheme());
 
-			plain.replace(pos, len, replacement);
+			plain.replace(pos, match.capturedLength(), replacement);
 		} else {
-			pos += len;
+			pos += match.capturedLength();
 		}
+
+		match = identifyURL.match(plain, pos);
 	}
 
 #ifndef USE_NO_TTS
@@ -889,26 +960,6 @@ void Log::processDeferredLogs() {
 	}
 }
 
-// Post a notification using the MainWindow's QSystemTrayIcon.
-void Log::postQtNotification(MsgType mt, const QString &plain) {
-	if (Global::get().mw->qstiIcon->isSystemTrayAvailable() && Global::get().mw->qstiIcon->supportsMessages()) {
-		QSystemTrayIcon::MessageIcon msgIcon;
-		switch (mt) {
-			case DebugInfo:
-			case CriticalError:
-				msgIcon = QSystemTrayIcon::Critical;
-				break;
-			case Warning:
-				msgIcon = QSystemTrayIcon::Warning;
-				break;
-			default:
-				msgIcon = QSystemTrayIcon::Information;
-				break;
-		}
-		Global::get().mw->qstiIcon->showMessage(msgName(mt), plain, msgIcon);
-	}
-}
-
 LogMessage::LogMessage(Log::MsgType mt, const QString &console, const QString &terse, bool ownMessage,
 					   const QString &overrideTTS, bool ignoreTTS)
 	: mt(mt), console(console), terse(terse), ownMessage(ownMessage), overrideTTS(overrideTTS), ignoreTTS(ignoreTTS) {
@@ -925,64 +976,13 @@ QVariant LogDocument::loadResource(int type, const QUrl &url) {
 		return QByteArray();
 	}
 
+	// Only accept data URLs, not external resources
+	if (url.isValid() && url.scheme() == QLatin1String("data")) {
+		return QTextDocument::loadResource(type, url);
+	}
+
 	QImage qi(1, 1, QImage::Format_Mono);
 	addResource(type, url, qi);
 
-	if (!url.isValid()) {
-		return qi;
-	}
-
-	if (url.scheme() != QLatin1String("data")) {
-		return qi;
-	}
-
-	QNetworkReply *rep = Network::get(url);
-	connect(rep, SIGNAL(finished()), this, SLOT(finished()));
-
-	// Handle data URLs immediately without a roundtrip to the event loop.
-	// We need this to perform proper validation for data URL images when
-	// a LogDocument is used inside Log::validHtml().
-	QCoreApplication::sendPostedEvents(rep, 0);
-
 	return qi;
-}
-
-void LogDocument::finished() {
-	QNetworkReply *rep = qobject_cast< QNetworkReply * >(sender());
-
-	if (rep->error() == QNetworkReply::NoError) {
-		QByteArray ba = rep->readAll();
-		QByteArray fmt;
-		QImage qi;
-
-		// Sniff the format instead of relying on the MIME type.
-		// There are many misconfigured servers out there and
-		// Mumble has historically sniffed the received data
-		// instead of strictly requiring a correct Content-Type.
-		if (RichTextImage::isValidImage(ba, fmt)) {
-			if (qi.loadFromData(ba, fmt)) {
-				addResource(QTextDocument::ImageResource, rep->request().url(), qi);
-
-				// Force a re-layout of the QTextEdit the next
-				// time we enter the event loop.
-				// We must not trigger a re-layout immediately.
-				// Doing so can trigger crashes deep inside Qt
-				// if the QTextDocument has just been set on the
-				// text edit widget.
-				QTextEdit *qte = qobject_cast< QTextEdit * >(parent());
-				if (qte) {
-					QEvent *e = new QEvent(QEvent::FontChange);
-					QApplication::postEvent(qte, e);
-
-					e = new LogDocumentResourceAddedEvent();
-					QApplication::postEvent(qte, e);
-				}
-			}
-		}
-	}
-
-	rep->deleteLater();
-}
-
-LogDocumentResourceAddedEvent::LogDocumentResourceAddedEvent() : QEvent(LogDocumentResourceAddedEvent::Type) {
 }

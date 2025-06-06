@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
-# Copyright 2010-2023 The Mumble Developers. All rights reserved.
+# Copyright The Mumble Developers. All rights reserved.
 # Use of this source code is governed by a BSD-style license
 # that can be found in the LICENSE file at the root of the
 # Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -162,6 +162,7 @@ class AppBundle(object):
 			print(' * Changing version in Info.plist')
 			p = self.infoplist
 			p['CFBundleVersion'] = self.version
+			p['CFBundleShortVersionString'] = self.version
 			plistlib.dump(p, open(self.infopath, "wb"))
 
 	def set_min_macosx_version(self, version):

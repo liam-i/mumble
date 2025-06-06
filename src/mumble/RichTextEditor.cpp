@@ -1,4 +1,4 @@
-// Copyright 2009-2023 The Mumble Developers. All rights reserved.
+// Copyright The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -11,6 +11,7 @@
 #include "Global.h"
 
 #include <QtCore/QMimeData>
+#include <QtCore/QRegularExpression>
 #include <QtGui/QImageReader>
 #include <QtGui/QPainter>
 #include <QtWidgets/QColorDialog>
@@ -34,9 +35,9 @@ static QString decodeMimeString(const QByteArray &src) {
 	if (src.isEmpty())
 		return QString();
 
-	if ((src.length() >= 4) && ((src.length() % sizeof(ushort)) == 0)) {
-		const ushort *ptr = reinterpret_cast< const ushort * >(src.constData());
-		int len           = static_cast< int >(src.length() / sizeof(ushort));
+	if ((src.length() >= 4) && ((static_cast< std::size_t >(src.length()) % sizeof(char16_t)) == 0)) {
+		const auto *ptr = reinterpret_cast< const char16_t * >(src.constData());
+		auto len        = static_cast< int >(static_cast< std::size_t >(src.length()) / sizeof(char16_t));
 		if ((ptr[0] > 0) && (ptr[0] < 0x7f) && (ptr[1] > 0) && (ptr[1] < 0x7f)) {
 			while (len && (ptr[len - 1] == 0))
 				--len;
@@ -44,18 +45,27 @@ static QString decodeMimeString(const QByteArray &src) {
 		}
 	}
 
+#ifdef _MSVC_LANG
+#	pragma warning(push)
+	// Disable warning about this if condition being constant
+	// TODO: Use if constexpr as soon as we have moved to C++17 (or higher)
+#	pragma warning(disable : 4127)
+#endif
 	if ((sizeof(wchar_t) != sizeof(ushort)) && (src.length() >= static_cast< int >(sizeof(wchar_t)))
-		&& ((src.length() % sizeof(wchar_t)) == 0)) {
+		&& ((static_cast< std::size_t >(src.length()) % sizeof(wchar_t)) == 0)) {
 		const wchar_t *ptr = reinterpret_cast< const wchar_t * >(src.constData());
-		int len            = static_cast< int >(src.length() / sizeof(wchar_t));
+		int len            = static_cast< int >(static_cast< std::size_t >(src.length()) / sizeof(wchar_t));
 		if (*ptr < 0x7f) {
 			while (len && (ptr[len - 1] == 0))
 				--len;
 			return QString::fromWCharArray(ptr, len);
 		}
 	}
+#ifdef _MSVC_LANG
+#	pragma warning(pop)
+#endif
 	const char *ptr = src.constData();
-	int len         = src.length();
+	auto len        = src.length();
 	while (len && (ptr[len - 1] == 0))
 		--len;
 	return QString::fromUtf8(ptr, len);
@@ -67,7 +77,7 @@ static QString decodeMimeString(const QByteArray &src) {
 void RichTextHtmlEdit::insertFromMimeData(const QMimeData *source) {
 	QString uri;
 	QString title;
-	QRegExp newline(QLatin1String("[\\r\\n]"));
+	QRegularExpression newline(QLatin1String("[\\r\\n]"));
 
 #ifndef QT_NO_DEBUG
 	qWarning() << "RichTextHtmlEdit::insertFromMimeData" << source->formats();
@@ -75,7 +85,7 @@ void RichTextHtmlEdit::insertFromMimeData(const QMimeData *source) {
 
 	if (source->hasImage()) {
 		QImage img   = qvariant_cast< QImage >(source->imageData());
-		QString html = Log::imageToImg(img);
+		QString html = Log::imageToImg(img, static_cast< int >(Global::get().uiImageLength));
 		if (!html.isEmpty())
 			insertHtml(html);
 		return;
@@ -228,28 +238,18 @@ void RichTextEditor::on_qaLink_triggered() {
 }
 
 void RichTextEditor::on_qaImage_triggered() {
-	QPair< QByteArray, QImage > choice = Global::get().mw->openImageFile();
-
-	QByteArray &qba = choice.first;
-
-	if (qba.isEmpty())
+	QImage img = Global::get().mw->openImageFile().second;
+	if (img.isNull()) {
 		return;
-
-	if ((Global::get().uiImageLength > 0)
-		&& (static_cast< unsigned int >(qba.length()) > Global::get().uiImageLength)) {
+	}
+	QString processedImage = Log::imageToImg(img, static_cast< int >(Global::get().uiImageLength));
+	if (processedImage.length() > 0) {
+		qteRichText->insertHtml(processedImage);
+	} else {
 		QMessageBox::warning(this, tr("Failed to load image"),
 							 tr("Image file too large to embed in document. Please use images smaller than %1 kB.")
 								 .arg(Global::get().uiImageLength / 1024));
-		return;
 	}
-
-	QBuffer qb(&qba);
-	qb.open(QIODevice::ReadOnly);
-
-	QByteArray format = QImageReader::imageFormat(&qb);
-	qb.close();
-
-	qteRichText->insertHtml(Log::imageToImg(format, qba));
 }
 
 void RichTextEditor::onCurrentChanged(int index) {
@@ -283,7 +283,7 @@ void RichTextEditor::on_qteRichText_textChanged() {
 
 	bool over = true;
 
-	unsigned int imagelength = plainText.length();
+	unsigned int imagelength = static_cast< unsigned int >(plainText.length());
 
 
 	if (Global::get().uiMessageLength && imagelength <= Global::get().uiMessageLength) {

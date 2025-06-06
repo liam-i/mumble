@@ -164,10 +164,6 @@ Tato hodnota Vám umožní změnit způsob, jakým Mumble uspořádá kanály ve
         <translation>Aktivní ACL</translation>
     </message>
     <message>
-        <source>List of entries</source>
-        <translation>Seznam záznamů</translation>
-    </message>
-    <message>
         <source>Inherit ACL of parent?</source>
         <translation>Zdědit ACL nadřazeného?</translation>
     </message>
@@ -209,7 +205,7 @@ Tato hodnota Vám umožní změnit způsob, jakým Mumble uspořádá kanály ve
     </message>
     <message>
         <source>This adds a new entry, initially set with no permissions and applying to all.</source>
-        <translation>Toto přidá nový záznam, ze záčátku nastaven bez jakýchkoli oprávnění a  použitý na vše.</translation>
+        <translation>Toto přidá nový záznam, ze záčátku nastaven bez jakýchkoli oprávnění a použitý na vše.</translation>
     </message>
     <message>
         <source>&amp;Add</source>
@@ -362,7 +358,7 @@ Toto jsou všechny skupiny v současnosti definované pro kanál. Pro vytvořen�
         <source>&lt;b&gt;Members&lt;/b&gt;&lt;br /&gt;
 This list contains all members that were added to the group by the current channel. Be aware that this does not include members inherited by higher levels of the channel tree. These can be found in the &lt;i&gt;Inherited members&lt;/i&gt; list. To prevent this list to be inherited by lower level channels uncheck &lt;i&gt;Inheritable&lt;/i&gt; or manually add the members to the &lt;i&gt;Excluded members&lt;/i&gt; list.</source>
         <translation>&lt;b&gt;Členové&lt;/b&gt;&lt;br /&gt;
-Tento seznam obsahuje všechny členy, kteří byli do skupiny přidáni současným kanálem. Nezapomeňte, že toto nezahrnuje členy zděděné vyššími úrovněmi stromu kanálů. Ti můžou být nalezeni v seznamu &lt;i&gt;Zdědění členové&lt;/i&gt;. Aby se zabránilo zdědění tohoto seznamu kanály nižší úrovně, odškrtněte &lt;i&gt;Děditelné&lt;/i&gt; nebo ručně členy přidejte do  seznamu &lt;i&gt;Vyřazení členové&lt;/i&gt;.</translation>
+Tento seznam obsahuje všechny členy, kteří byli do skupiny přidáni současným kanálem. Nezapomeňte, že toto nezahrnuje členy zděděné vyššími úrovněmi stromu kanálů. Ti můžou být nalezeni v seznamu &lt;i&gt;Zdědění členové&lt;/i&gt;. Aby se zabránilo zdědění tohoto seznamu kanály nižší úrovně, odškrtněte &lt;i&gt;Děditelné&lt;/i&gt; nebo ručně členy přidejte do seznamu &lt;i&gt;Vyřazení členové&lt;/i&gt;.</translation>
     </message>
     <message>
         <source>&lt;b&gt;Excluded members&lt;/b&gt;&lt;br /&gt;
@@ -378,7 +374,7 @@ Obsahuje seznam členů, zděděných současným kanálem. Odškrtněte &lt;i&g
     </message>
     <message>
         <source>This controls which group of users this entry applies to.&lt;br /&gt;Note that the group is evaluated in the context of the channel the entry is used in. For example, the default ACL on the Root channel gives &lt;i&gt;Write&lt;/i&gt; permission to the &lt;i&gt;admin&lt;/i&gt; group. This entry, if inherited by a channel, will give a user write privileges if he belongs to the &lt;i&gt;admin&lt;/i&gt; group in that channel, even if he doesn&apos;t belong to the &lt;i&gt;admin&lt;/i&gt; group in the channel where the ACL originated.&lt;br /&gt;If a group name starts with &apos;!&apos;, its membership is negated, and if it starts with &apos;~&apos;, it is evaluated in the channel the ACL was defined in, rather than the channel the ACL is active in.&lt;br /&gt;If a group name starts with &apos;#&apos;, it is interpreted as an access token. Users must have entered whatever follows the &apos;#&apos; in their list of access tokens to match. This can be used for very simple password access to channels for non-authenticated users.&lt;br /&gt;If a group name starts with &apos;$&apos;, it will only match users whose certificate hash matches what follows the &apos;$&apos;.&lt;br /&gt;A few special predefined groups are:&lt;br /&gt;&lt;b&gt;all&lt;/b&gt; - Everyone will match.&lt;br /&gt;&lt;b&gt;auth&lt;/b&gt; - All authenticated users will match.&lt;br /&gt;&lt;b&gt;sub,a,b,c&lt;/b&gt; - User currently in a sub-channel minimum &lt;i&gt;a&lt;/i&gt; common parents, and between &lt;i&gt;b&lt;/i&gt; and &lt;i&gt;c&lt;/i&gt; channels down the chain. See the website for more extensive documentation on this one.&lt;br /&gt;&lt;b&gt;in&lt;/b&gt; - Users currently in the channel will match (convenience for &apos;&lt;i&gt;sub,0,0,0&lt;/i&gt;&apos;).&lt;br /&gt;&lt;b&gt;out&lt;/b&gt; - Users outside the channel will match (convenience for &apos;&lt;i&gt;!sub,0,0,0&lt;/i&gt;&apos;).&lt;br /&gt;Note that an entry applies to either a user or a group, not both.</source>
-        <translation>Toto kontroluje, na kterou skupinu uživatelů se tento záznam použije.&lt;br /&gt;Nezapomeňte, že skupina je vyhodnocena v kontextu kanálu, v kterém je záznam použit. Například, výchozí ACL v Kořenovém kanálu dává oprávnění k &lt;i&gt;Zápisu&lt;/i&gt; skupině &lt;i&gt;admin&lt;/i&gt;. Tento záznam, pokud je zděděn kanálem, dá uživateli oprávnění k zápisu, pokud patři do skupiny &lt;i&gt;admin&lt;/i&gt; v onom kanálu, i když do skupiny &lt;i&gt;admin&lt;/i&gt; nepatří v kanále kde ACL vznikl.&lt;br /&gt;Pokud jméno skupiny začíná &apos;!&apos;, její členství je znegováno, a pokud začíná &apos;~&apos;, je vyhodnoceno v kanále, kde byl ACL definováno, spíše než kde je ACL aktivní.&lt;br /&gt;Pokud jméno skupiny začíná &apos;#&apos;,je vyloženo jako znak přístupu. Uživatelé musí zadat cokoliv, co následuje po &apos;#&apos; v jejich seznamu znaků přístupu ke shodě. Toto může být použito pro velmi jednoduchý přístup heslem do kanálů pro neověřené uživatele.&lt;br &gt;Pokud jméno skupiny začíná &apos;$&apos;, skupina se bude shodovat pouze s uživateli, jejichž haš certifikátu se shoduje s tím co následuje po &apos;$&apos;.&lt;br /&gt;Několik speciálních přednastavených skupin je:&lt;br /&gt;&lt;b&gt;all&lt;/b&gt;- Shoda se všemi.&lt;br /&gt;&lt;b&gt;auth&lt;/b&gt; - Všichni ověření uživatelé se budou shodovat.&lt;br /&gt;&lt;b&gt;sub,a,b,c&lt;/b&gt; - Uživatel současně v podkanále minimum &lt;i&gt;a&lt;/i&gt; společných nadřazených, a mezi &lt;i&gt;b&lt;/i&gt; a &lt;i&gt;c&lt;/i&gt; kanály níže v řetězci. Navštivte stránku pro rozsáhlejší dokumentaci této skupiny.&lt;br /&gt;&lt;b&gt;in&lt;/b&gt; - Uživatelé, kteří jsou nyní v kanále se budou shodovat (nemusíte psát &apos;&lt;i&gt;sub,0,0,0&lt;/i&gt;&apos;).&lt;br /&gt;&lt;b&gt;out&lt;/b&gt; - Uživatelé mimo kanál se budou shodovat (nemusíte psát  &apos;&lt;i&gt;!sub,0,0,0&lt;/i&gt;&apos;).&lt;br /&gt;Nezapomeňte, že záznam bude použit buď na skupinu, nebo na uživatele, ne na obojí.</translation>
+        <translation>Toto kontroluje, na kterou skupinu uživatelů se tento záznam použije.&lt;br /&gt;Nezapomeňte, že skupina je vyhodnocena v kontextu kanálu, v kterém je záznam použit. Například, výchozí ACL v Kořenovém kanálu dává oprávnění k &lt;i&gt;Zápisu&lt;/i&gt; skupině &lt;i&gt;admin&lt;/i&gt;. Tento záznam, pokud je zděděn kanálem, dá uživateli oprávnění k zápisu, pokud patři do skupiny &lt;i&gt;admin&lt;/i&gt; v onom kanálu, i když do skupiny &lt;i&gt;admin&lt;/i&gt; nepatří v kanále kde ACL vznikl.&lt;br /&gt;Pokud jméno skupiny začíná &apos;!&apos;, její členství je znegováno, a pokud začíná &apos;~&apos;, je vyhodnoceno v kanále, kde byl ACL definováno, spíše než kde je ACL aktivní.&lt;br /&gt;Pokud jméno skupiny začíná &apos;#&apos;,je vyloženo jako znak přístupu. Uživatelé musí zadat cokoliv, co následuje po &apos;#&apos; v jejich seznamu znaků přístupu ke shodě. Toto může být použito pro velmi jednoduchý přístup heslem do kanálů pro neověřené uživatele.&lt;br /&gt;Pokud jméno skupiny začíná &apos;$&apos;, skupina se bude shodovat pouze s uživateli, jejichž haš certifikátu se shoduje s tím co následuje po &apos;$&apos;.&lt;br /&gt;Několik speciálních přednastavených skupin je:&lt;br /&gt;&lt;b&gt;all&lt;/b&gt;- Shoda se všemi.&lt;br /&gt;&lt;b&gt;auth&lt;/b&gt; - Všichni ověření uživatelé se budou shodovat.&lt;br /&gt;&lt;b&gt;sub,a,b,c&lt;/b&gt; - Uživatel současně v podkanále minimum &lt;i&gt;a&lt;/i&gt; společných nadřazených, a mezi &lt;i&gt;b&lt;/i&gt; a &lt;i&gt;c&lt;/i&gt; kanály níže v řetězci. Navštivte stránku pro rozsáhlejší dokumentaci této skupiny.&lt;br /&gt;&lt;b&gt;in&lt;/b&gt; - Uživatelé, kteří jsou nyní v kanále se budou shodovat (nemusíte psát &apos;&lt;i&gt;sub,0,0,0&lt;/i&gt;&apos;).&lt;br /&gt;&lt;b&gt;out&lt;/b&gt; - Uživatelé mimo kanál se budou shodovat (nemusíte psát &apos;&lt;i&gt;!sub,0,0,0&lt;/i&gt;&apos;).&lt;br /&gt;Nezapomeňte, že záznam bude použit buď na skupinu, nebo na uživatele, ne na obojí.</translation>
     </message>
     <message>
         <source>&lt;b&gt;Password&lt;/b&gt;&lt;br /&gt;This field allows you to easily set and change the password of a channel. It uses Mumble&apos;s access tokens feature in the background. Use ACLs and groups if you need more fine grained and powerful access control.</source>
@@ -419,10 +415,6 @@ Tato hodnota Vám umožňuje nastavit maximální počet povolených uživatelů
         <translation>Heslo kanálu</translation>
     </message>
     <message>
-        <source>Maximum users</source>
-        <translation>Maximální počet uživatelů</translation>
-    </message>
-    <message>
         <source>Channel name</source>
         <translation>Název kanálu</translation>
     </message>
@@ -431,20 +423,60 @@ Tato hodnota Vám umožňuje nastavit maximální počet povolených uživatelů
         <translation>Zdědění členové skupiny</translation>
     </message>
     <message>
-        <source>Foreign group members</source>
-        <translation>Členové cizích skupin</translation>
-    </message>
-    <message>
         <source>Inherited channel members</source>
         <translation>Zdědění členové kanálu</translation>
     </message>
     <message>
-        <source>Add members to group</source>
-        <translation>Přidat členy do skupiny</translation>
-    </message>
-    <message>
         <source>List of ACL entries</source>
         <translation>Seznam záznamů ACL</translation>
+    </message>
+    <message>
+        <source>Channel position</source>
+        <translation>Pozice kanálu</translation>
+    </message>
+    <message>
+        <source>Channel maximum users</source>
+        <translation>Maximální počet členů kanálu</translation>
+    </message>
+    <message>
+        <source>Channel description</source>
+        <translation>Popis kanálu</translation>
+    </message>
+    <message>
+        <source>Select member to add</source>
+        <translation>Vybrat člena k přidání</translation>
+    </message>
+    <message>
+        <source>Excluded group members</source>
+        <translation>Vyloučení členové skupiny</translation>
+    </message>
+    <message>
+        <source>Select member to remove</source>
+        <translation>Vybrat člena k odstranění</translation>
+    </message>
+    <message>
+        <source>List of access control list entries</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select group</source>
+        <translation>Vybrat skupinu</translation>
+    </message>
+    <message>
+        <source>Selects a group this ACL entry applies to. Selecting a group and selecting a user are mutually exclusive.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select user</source>
+        <translation>Vybrat člena</translation>
+    </message>
+    <message>
+        <source>Selects a user this ACL entry applies to. Selecting a group and selecting a user are mutually exclusive.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>List of available permissions</source>
+        <translation>Seznam dostupných oprávnění</translation>
     </message>
 </context>
 <context>
@@ -462,7 +494,7 @@ Tato hodnota Vám umožňuje nastavit maximální počet povolených uživatelů
     <name>ALSAAudioOutput</name>
     <message>
         <source>Default ALSA Card</source>
-        <translation>Výchozí  Karta ALSA</translation>
+        <translation>Výchozí Karta ALSA</translation>
     </message>
     <message>
         <source>Opening chosen ALSA Output failed: %1</source>
@@ -557,7 +589,7 @@ Tato hodnota Vám umožňuje nastavit maximální počet povolených uživatelů
     </message>
     <message>
         <source>This will configure the input channels for ASIO. Make sure you select at least one channel as microphone and speaker. &lt;i&gt;Microphone&lt;/i&gt; should be where your microphone is attached, and &lt;i&gt;Speaker&lt;/i&gt; should be a channel that samples &apos;&lt;i&gt;What you hear&lt;/i&gt;&apos;.&lt;br /&gt;For example, on the Audigy 2 ZS, a good selection for Microphone would be &apos;&lt;i&gt;Mic L&lt;/i&gt;&apos; while Speaker should be &apos;&lt;i&gt;Mix L&lt;/i&gt;&apos; and &apos;&lt;i&gt;Mix R&lt;/i&gt;&apos;.</source>
-        <translation>Toto nastaví kanály vstupu pro ASIO. Ujistěte se, že vyberete alespoň jeden kanál jako mikrofon a reproduktor. &lt;i&gt;Mikrofon&lt;/i&gt; by měl být tam, kde je Váš mikrofon připojen, a &lt;i&gt;Reproduktor&lt;/i&gt; by měl být kanál, který vzorkuje &apos;&lt;i&gt;To co slyšíte&lt;/i&gt;&apos;.&lt;br /&gt;Například, na Audigy 2 ZS, dobrý výběr pro mikrofon by mohl být &apos;&lt;i&gt;Mic L&lt;/i&gt;&apos; zatímco Reproduktor by mohl být  &apos;&lt;i&gt;Mix L&lt;/i&gt;&apos; a &apos;&lt;i&gt;Mix R&lt;/i&gt;&apos;.</translation>
+        <translation>Toto nastaví kanály vstupu pro ASIO. Ujistěte se, že vyberete alespoň jeden kanál jako mikrofon a reproduktor. &lt;i&gt;Mikrofon&lt;/i&gt; by měl být tam, kde je Váš mikrofon připojen, a &lt;i&gt;Reproduktor&lt;/i&gt; by měl být kanál, který vzorkuje &apos;&lt;i&gt;To co slyšíte&lt;/i&gt;&apos;.&lt;br /&gt;Například, na Audigy 2 ZS, dobrý výběr pro mikrofon by mohl být &apos;&lt;i&gt;Mic L&lt;/i&gt;&apos; zatímco Reproduktor by mohl být &apos;&lt;i&gt;Mix L&lt;/i&gt;&apos; a &apos;&lt;i&gt;Mix R&lt;/i&gt;&apos;.</translation>
     </message>
     <message>
         <source>Configure input channels</source>
@@ -594,6 +626,30 @@ Tato hodnota Vám umožňuje nastavit maximální počet povolených uživatelů
     <message>
         <source>List of speakers</source>
         <translation>Seznam reproduktorů</translation>
+    </message>
+    <message>
+        <source>Device list</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Move from unused to microphone list</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Move from microphone to unused list</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>List of unused devices</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Move from unused to speakers list</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Move from speakers to unused list</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -665,10 +721,6 @@ Tato hodnota Vám umožňuje nastavit maximální počet povolených uživatelů
         <translation>Systém</translation>
     </message>
     <message>
-        <source>Input method for audio</source>
-        <translation>Vstupní metoda pro zvuk</translation>
-    </message>
-    <message>
         <source>Device</source>
         <translation>Zařízení</translation>
     </message>
@@ -694,7 +746,7 @@ Tato hodnota Vám umožňuje nastavit maximální počet povolených uživatelů
     </message>
     <message>
         <source>&lt;b&gt;This sets when speech should be transmitted.&lt;/b&gt;&lt;br /&gt;&lt;i&gt;Continuous&lt;/i&gt; - All the time&lt;br /&gt;&lt;i&gt;Voice Activity&lt;/i&gt; - When you are speaking clearly.&lt;br /&gt;&lt;i&gt;Push To Talk&lt;/i&gt; - When you hold down the hotkey set under &lt;i&gt;Shortcuts&lt;/i&gt;.</source>
-        <translation>Nastaví, kdy bude Vaše řeč vysílána.&lt;/b&gt;&lt;br /&gt;&lt;i&gt;Průběžně&lt;/i&gt; - neustále&lt;br /&gt;&lt;i&gt;Při aktivitě hlasu&lt;/i&gt; - když je zjištěna aktivita hlasu .&lt;br /&gt;&lt;i&gt;Mluvení při stisku tlačítka&lt;/i&gt; - mluvení je vysíláno, pouze když držíte stisknutou určenou klávesu pro mluvení.</translation>
+        <translation type="unfinished">&lt;b&gt;Nastaví, kdy bude Vaše řeč vysílána.&lt;/b&gt;&lt;br /&gt;&lt;i&gt;Průběžně&lt;/i&gt; - neustále&lt;br /&gt;&lt;i&gt;Při aktivitě hlasu&lt;/i&gt; - když je zjištěna aktivita hlasu .&lt;br /&gt;&lt;i&gt;Mluvení při stisku tlačítka&lt;/i&gt; - mluvení je vysíláno, pouze když držíte stisknutou určenou klávesu pro mluvení.</translation>
     </message>
     <message>
         <source>DoublePush Time</source>
@@ -731,10 +783,6 @@ Tato hodnota Vám umožňuje nastavit maximální počet povolených uživatelů
     <message>
         <source>On</source>
         <translation>Zapnuto</translation>
-    </message>
-    <message>
-        <source>Preview the audio cues</source>
-        <translation>Náhled zvukových signálů</translation>
     </message>
     <message>
         <source>Use SNR based speech detection</source>
@@ -805,10 +853,6 @@ Tato hodnota Vám umožňuje nastavit maximální počet povolených uživatelů
         <translation>&lt;b&gt;Vybere kolik zvukových rámců by mělo být dáno do jednoho paketu.&lt;/b&gt;&lt;br /&gt;Zvětšením této hodnoty se zvětší zpoždění ve Vašem hlase, ale také sníží využití šířky pásma.</translation>
     </message>
     <message>
-        <source>&lt;b&gt;This shows peak outgoing bandwidth used.&lt;/b&gt;&lt;br /&gt;This shows the peak amount of bandwidth sent out from your machine. Audio bitrate is the maximum bitrate (as we use VBR) for the audio data alone. Position is the bitrate used for positional information. Overhead is our framing and the IP packet headers (IP and UDP is 75% of this overhead).</source>
-        <translation>&lt;b&gt;Toto zobrazuje špičku využití odchozí šírky pásma.&lt;/b&gt;&lt;br /&gt; Toto zobrazuje špičku množství šírky pásma odeslané z Vašeho stroje. Bitový tok zvuku je nejvyšší (protože používáme VBR) pro samotná zvuková data. Pozice je bitový tok, používaný pro informace o pozici. Čas zpracování se skládá z našeho rámečkování a hlavičky paketů IP( IP a UDP tvoří 75% z tohoto času).</translation>
-    </message>
-    <message>
         <source>Audio Processing</source>
         <translation>Zpracování Zvuku</translation>
     </message>
@@ -826,7 +870,7 @@ Tato hodnota Vám umožňuje nastavit maximální počet povolených uživatelů
     </message>
     <message>
         <source>&lt;b&gt;Maximum amplification of input.&lt;/b&gt;&lt;br /&gt;Mumble normalizes the input volume before compressing, and this sets how much it&apos;s allowed to amplify.&lt;br /&gt;The actual level is continually updated based on your current speech pattern, but it will never go above the level specified here.&lt;br /&gt;If the &lt;i&gt;Microphone loudness&lt;/i&gt; level of the audio statistics hover around 100%, you probably want to set this to 2.0 or so, but if, like most people, you are unable to reach 100%, set this to something much higher.&lt;br /&gt;Ideally, set it so &lt;i&gt;Microphone Loudness * Amplification Factor &gt;= 100&lt;/i&gt;, even when you&apos;re speaking really soft.&lt;br /&gt;&lt;br /&gt;Note that there is no harm in setting this to maximum, but Mumble will start picking up other conversations if you leave it to auto-tune to that level.</source>
-        <translation>&lt;b&gt;Maximální zesílení vstupu.&lt;/b&gt;&lt;br /&gt;Mumble normalizuje hlasitost vstupu před komprimací, a toto nastavuje jak moc je dovoleno zesilovat.&lt;br /&gt;Skutečná úroveň je neustále aktualizována podle Vaši současné řeči, ale nikdy nepřesáhne úroveň zadanou zde.&lt;br /&gt;Pokud  úroveň&lt;i&gt;Hlasitosti Mikrofonu&lt;/i&gt; statistiky zvuku se pohybuje okol 100%, pravděpodobně budete toto chtít nastavit na 2.0 nebo tak nějak, ale pokud, jako většina lidí, nemůžete 100% dosáhnout, tak toto nastavte na mnohem větší úroveň.&lt;br /&gt; Ideálně to nastavte na &lt;i&gt;Hlasitost Mikrofonu * Faktor Zesílení &gt;= 100&lt;/i&gt;, i když mluvíte velmi jemně.&lt;br /&gt;&lt;br /&gt;Nezapomeňte, že neuškodí toto nastavit na maximum, ale Mumble začne zachycovat jiné konverzace, pokud ho necháte toto automaticky nastavit na tuto úroveň.</translation>
+        <translation>&lt;b&gt;Maximální zesílení vstupu.&lt;/b&gt;&lt;br /&gt;Mumble normalizuje hlasitost vstupu před komprimací, a toto nastavuje jak moc je dovoleno zesilovat.&lt;br /&gt;Skutečná úroveň je neustále aktualizována podle Vaši současné řeči, ale nikdy nepřesáhne úroveň zadanou zde.&lt;br /&gt;Pokud úroveň&lt;i&gt;Hlasitosti Mikrofonu&lt;/i&gt; statistiky zvuku se pohybuje okol 100%, pravděpodobně budete toto chtít nastavit na 2.0 nebo tak nějak, ale pokud, jako většina lidí, nemůžete 100% dosáhnout, tak toto nastavte na mnohem větší úroveň.&lt;br /&gt; Ideálně to nastavte na &lt;i&gt;Hlasitost Mikrofonu * Faktor Zesílení &gt;= 100&lt;/i&gt;, i když mluvíte velmi jemně.&lt;br /&gt;&lt;br /&gt;Nezapomeňte, že neuškodí toto nastavit na maximum, ale Mumble začne zachycovat jiné konverzace, pokud ho necháte toto automaticky nastavit na tuto úroveň.</translation>
     </message>
     <message>
         <source>Current speech detection chance</source>
@@ -926,7 +970,7 @@ Tato hodnota Vám umožňuje nastavit maximální počet povolených uživatelů
     </message>
     <message>
         <source>Server maximum network bandwidth is only %1 kbit/s. Audio quality auto-adjusted to %2 kbit/s (%3 ms)</source>
-        <translation>Maximální propustnost sítě na serveru je %1 kbit/s. Kvalita zvuku byla automaticky upravena na %2 kbit/s (%3 ms) </translation>
+        <translation>Maximální propustnost sítě na serveru je %1 kbit/s. Kvalita zvuku byla automaticky upravena na %2 kbit/s (%3 ms)</translation>
     </message>
     <message>
         <source>Max. Amplification</source>
@@ -1056,6 +1100,138 @@ Tato hodnota Vám umožňuje nastavit maximální počet povolených uživatelů
         <source>Voice Activity</source>
         <translation type="unfinished">Při aktivitě hlasu</translation>
     </message>
+    <message>
+        <source>Input backend for audio</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Audio input system</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Audio input device</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Transmission mode</source>
+        <translation type="unfinished">Režim přenosu</translation>
+    </message>
+    <message>
+        <source>Push to talk lock threshold</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Switch between push to talk and continuous mode by double tapping in this time frame</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;b&gt;Voice hold Time&lt;/b&gt;&lt;br /&gt;After you release the push-to-talk key Mumble will keep transmitting for the selected amount of time.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Push to talk hold threshold</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Extend push to talk send time after the key is released by this amount of time</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Voice hold time</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Silence below threshold</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This sets the threshold when Mumble will definitively consider a signal silence</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Speech above threshold</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This sets the threshold when Mumble will definitively consider a signal speech</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This sets how much speech is packed into a single network package</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Audio compression quality</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This sets the target compression bitrate</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Maximum amplification</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Speech is dynamically amplified by at most this amount</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Noise suppression strength</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Echo cancellation mode</source>
+        <translation type="unfinished">Režim potlačení ozvěny</translation>
+    </message>
+    <message>
+        <source>Path to audio file</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Path to audio cue file when stopping to speak. Use the &quot;browse&quot; button to open a file dialog.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Idle action time threshold (in minutes)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select what to do when being idle for a configurable amount of time. Default: nothing</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Gets played when you are trying to speak while being muted</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Path to mute cue file. Use the &quot;browse&quot; button to open a file dialog.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Browse for mute cue audio file</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Path to audio cue file when starting to speak. Use the &quot;browse&quot; button to open a file dialog.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Preview the mute cue</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The mute cue is an audio sample which plays when you are trying to speak while being muted</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Preview both audio cues</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;b&gt;This shows peak outgoing bandwidth used.&lt;/b&gt;&lt;br /&gt;This shows the peak amount of bandwidth sent out from your machine. Audio bitrate is the maximum bitrate for the audio data alone. Position is the bitrate used for positional information. Overhead is our framing and the IP packet headers (IP and UDP is 75% of this overhead).</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>AudioInputDialog</name>
@@ -1100,78 +1276,6 @@ Tato hodnota Vám umožňuje nastavit maximální počet povolených uživatelů
         <translation>%1 kbit/s (Zvuk %2, Pozice %4, Čas na zpracování %3)</translation>
     </message>
     <message>
-        <source>Audio system</source>
-        <translation>Audio systém</translation>
-    </message>
-    <message>
-        <source>Input device</source>
-        <translation>Vstupní zařízení</translation>
-    </message>
-    <message>
-        <source>Echo cancellation mode</source>
-        <translation>Režim potlačení ozvěny</translation>
-    </message>
-    <message>
-        <source>Transmission mode</source>
-        <translation>Režim přenosu</translation>
-    </message>
-    <message>
-        <source>PTT lock threshold</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>PTT hold threshold</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Silence below</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Current speech detection chance</source>
-        <translation type="unfinished">Současná šance zjištění řeči</translation>
-    </message>
-    <message>
-        <source>Speech above</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Speech below</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Audio per packet</source>
-        <translation type="unfinished">Zvuk na paket</translation>
-    </message>
-    <message>
-        <source>Quality of compression (peak bandwidth)</source>
-        <translation type="unfinished">Kvalita komprimace (maximální šířka pásma)</translation>
-    </message>
-    <message>
-        <source>Noise suppression</source>
-        <translation type="unfinished">Potlačení šumu</translation>
-    </message>
-    <message>
-        <source>Maximum amplification</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Transmission started sound</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Transmission stopped sound</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Initiate idle action after (in minutes)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Idle action</source>
-        <translation type="unfinished">Akce při nečinnosti</translation>
-    </message>
-    <message>
         <source>Access to the microphone was denied. Please allow Mumble to use the microphone by changing the settings in System Preferences -&gt; Security &amp; Privacy -&gt; Privacy -&gt; Microphone.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1185,6 +1289,22 @@ Tato hodnota Vám umožňuje nastavit maximální počet povolených uživatelů
     </message>
     <message>
         <source>Disable echo cancellation.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>milliseconds</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>seconds</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>kilobits per second</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>decibels</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1244,7 +1364,7 @@ Tato hodnota Vám umožňuje nastavit maximální počet povolených uživatelů
     </message>
     <message>
         <source>&lt;b&gt;This enables one of the loopback test modes.&lt;/b&gt;&lt;br /&gt;&lt;i&gt;None&lt;/i&gt; - Loopback disabled&lt;br /&gt;&lt;i&gt;Local&lt;/i&gt; - Emulate a local server.&lt;br /&gt;&lt;i&gt;Server&lt;/i&gt; - Request loopback from server.&lt;br /&gt;Please note than when loopback is enabled, no other users will hear your voice. This setting is not saved on application exit.</source>
-        <translation>&lt;b&gt; Toto povolí jeden z testovacích režimů zpětné smyčky.&lt;/b&gt;&lt;br /&gt;&lt;i&gt;Žádná&lt;/i&gt; - Zpětná smyčka zakázána&lt;br /&gt;&lt;i&gt;Místní&lt;/i&gt; - Emulovat místní server.&lt;br /&gt;&lt;i&gt;Server&lt;/i&gt; - Požádat o zpětnou smyčku ze serveru.&lt;/br&gt; Uvědomte si, prosím, že když je zpětná smyčka zapnuta, ostatní uživatelé neuslyší Váš hlas. Toto nastavení se při ukončení aplikace neukládá.</translation>
+        <translation>&lt;b&gt; Toto povolí jeden z testovacích režimů zpětné smyčky.&lt;/b&gt;&lt;br /&gt;&lt;i&gt;Žádná&lt;/i&gt; - Zpětná smyčka zakázána&lt;br /&gt;&lt;i&gt;Místní&lt;/i&gt; - Emulovat místní server.&lt;br /&gt;&lt;i&gt;Server&lt;/i&gt; - Požádat o zpětnou smyčku ze serveru.&lt;br /&gt; Uvědomte si, prosím, že když je zpětná smyčka zapnuta, ostatní uživatelé neuslyší Váš hlas. Toto nastavení se při ukončení aplikace neukládá.</translation>
     </message>
     <message>
         <source>Volume</source>
@@ -1460,6 +1580,58 @@ Tato hodnota Vám umožňuje nastavit maximální počet povolených uživatelů
         <source>Positional audio cannot work with mono output devices!</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Audio output system</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Audio output device</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Output delay of incoming speech</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Jitter buffer time</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Attenuation percentage</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>During speech, the volume of other applications will be reduced by this amount</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Minimum volume</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Minimum distance</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Maximum distance</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Loopback artificial delay</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Loopback artificial packet loss</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Loopback test mode</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The loopback test can be used to test your audio configuration. While the loopback test is enabled, others will not be able to hear you.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>AudioOutputDialog</name>
@@ -1488,58 +1660,6 @@ Tato hodnota Vám umožňuje nastavit maximální počet povolených uživatelů
         <translation>%1 %</translation>
     </message>
     <message>
-        <source>Output system</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Output device</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Default jitter buffer</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Volume of incoming speech</source>
-        <translation type="unfinished">Hlasitost příchozí řeči</translation>
-    </message>
-    <message>
-        <source>Output delay</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Attenuation of other applications during speech</source>
-        <translation type="unfinished">Ztišení ostatních aplikací během mluvení</translation>
-    </message>
-    <message>
-        <source>Minimum distance</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Maximum distance</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Minimum volume</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Bloom</source>
-        <translation type="unfinished">Bloom</translation>
-    </message>
-    <message>
-        <source>Delay variance</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Packet loss</source>
-        <translation type="unfinished">Ztráta paketů</translation>
-    </message>
-    <message>
-        <source>Loopback</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Distance at which audio volume from another player starts decreasing</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1553,6 +1673,14 @@ Tato hodnota Vám umožňuje nastavit maximální počet povolených uživatelů
     </message>
     <message>
         <source>If an audio source is close enough, blooming will cause the audio to be played on all speakers more or less regardless of their position (albeit with lower volume)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>milliseconds</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>meters</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1641,7 +1769,7 @@ Tato hodnota Vám umožňuje nastavit maximální počet povolených uživatelů
     </message>
     <message>
         <source>This is the Signal-To-Noise Ratio (SNR) of the microphone in the last frame (20 ms). It shows how much clearer the voice is compared to the noise.&lt;br /&gt;If this value is below 1.0, there&apos;s more noise than voice in the signal, and so quality is reduced.&lt;br /&gt;There is no upper limit to this value, but don&apos;t expect to see much above 40-50 without a sound studio.</source>
-        <translation>Toto je poměr signál-šum mikrofonu v posledním snímku (20 ms). Ukazuje jak je čistý hlas v porovnání s hlukem.&lt;br /&gt;  Pokud je tato hodnota pod 1.0, je šum silnější než hlas a kvalita je tedy snížena. &lt;br /&gt; Neexistuje žádný horní limit pro tuto hodnotu, ale neočekávejte hodnoty větší než 40 nebo 50 bez zvukového studia.</translation>
+        <translation>Toto je poměr signál-šum mikrofonu v posledním snímku (20 ms). Ukazuje jak je čistý hlas v porovnání s hlukem.&lt;br /&gt;Pokud je tato hodnota pod 1.0, je šum silnější než hlas a kvalita je tedy snížena. &lt;br /&gt;Neexistuje žádný horní limit pro tuto hodnotu, ale neočekávejte hodnoty větší než 40 nebo 50 bez zvukového studia.</translation>
     </message>
     <message>
         <source>Speech Probability</source>
@@ -1653,7 +1781,7 @@ Tato hodnota Vám umožňuje nastavit maximální počet povolených uživatelů
     </message>
     <message>
         <source>This is the probability that the last frame (20 ms) was speech and not environment noise.&lt;br /&gt;Voice activity transmission depends on this being right. The trick with this is that the middle of a sentence is always detected as speech; the problem is the pauses between words and the start of speech. It&apos;s hard to distinguish a sigh from a word starting with &apos;h&apos;.&lt;br /&gt;If this is in bold font, it means Mumble is currently transmitting (if you&apos;re connected).</source>
-        <translation>Toto je pravděpodobnost, že poslední  zvukový rámec (20 ms) byla řeč, ne jenom šum okolního prostředí.&lt;br /&gt; Přenos při hlasová aktivitě ns tomto závisí. Trik je v tom, že prostředek věty je vždy rozpoznána jako řeč; problémem jsou pauzy mezi slovy a začátek mluvení. Je obtížné rozpoznat povzdech od slova, začínajícího na &apos;h&apos;.&lt;br /&gt; Pokud je toto zobrazeno tučně, znamená to, že nyní probíhá přenos.</translation>
+        <translation>Toto je pravděpodobnost, že poslední zvukový rámec (20 ms) byla řeč, ne jenom šum okolního prostředí.&lt;br /&gt;Přenos při hlasová aktivitě ns tomto závisí. Trik je v tom, že prostředek věty je vždy rozpoznána jako řeč; problémem jsou pauzy mezi slovy a začátek mluvení. Je obtížné rozpoznat povzdech od slova, začínajícího na &apos;h&apos;.&lt;br /&gt;Pokud je toto zobrazeno tučně, znamená to, že nyní probíhá přenos.</translation>
     </message>
     <message>
         <source>Configuration feedback</source>
@@ -1665,7 +1793,7 @@ Tato hodnota Vám umožňuje nastavit maximální počet povolených uživatelů
     </message>
     <message>
         <source>Bitrate of last frame</source>
-        <translation>Šířka zvukového pásma </translation>
+        <translation>Šířka zvukového pásma</translation>
     </message>
     <message>
         <source>DoublePush interval</source>
@@ -1709,11 +1837,11 @@ Tato hodnota Vám umožňuje nastavit maximální počet povolených uživatelů
     </message>
     <message>
         <source>This shows the weights of the echo canceller, with time increasing downwards and frequency increasing to the right.&lt;br /&gt;Ideally, this should be black, indicating no echo exists at all. More commonly, you&apos;ll have one or more horizontal stripes of bluish color representing time delayed echo. You should be able to see the weights updated in real time.&lt;br /&gt;Please note that as long as you have nothing to echo off, you won&apos;t see much useful data here. Play some music and things should stabilize. &lt;br /&gt;You can choose to view the real or imaginary parts of the frequency-domain weights, or alternately the computed modulus and phase. The most useful of these will likely be modulus, which is the amplitude of the echo, and shows you how much of the outgoing signal is being removed at that time step. The other viewing modes are mostly useful to people who want to tune the echo cancellation algorithms.&lt;br /&gt;Please note: If the entire image fluctuates massively while in modulus mode, the echo canceller fails to find any correlation whatsoever between the two input sources (speakers and microphone). Either you have a very long delay on the echo, or one of the input sources is configured wrong.</source>
-        <translation>Toto zobrazuje váhy rušitele ozvěny s časem zvyšujícím se dolů a frekvencí zvyšující se doprava.&lt;br /&gt; Ideálně by toto mělo být černé, což znamená, že neexistuje žádná ozvěna. Běžně budete mít jednu nebo více vodorovných modrých čar, označující časově zpožděnou ozvěnu. Měli byste vidět, jak jsou váhy aktualizovány ve  skutečném čase.&lt;br /&gt;Uvědomte si, prosím, že dokud nebudete mít něco, od čeho ozvěnu odrážet, tak zde moc užitečná data neuvidíte. Přehrajte nějakou hudbu a věci by se měli ustálit. &lt;br /&gt; Můžete si zvolit k zobrazení skutečné nebo domnělé části vah kmitočtového pásma, nebo jinak vypočítaná modulace a fáze. Z těchto bude asi nejužitečnější modulace, což je amplituda ozvěny, a ukazuje kolik výstupního signálu je v onom časovém kroku odstraněno. Ostatní režimy zobrazení jsou většinou užitečné pro lidi, kteří si chtějí vyladit jejich algoritmy vyrušení ozvěny.&lt;br /&gt; Uvědomte si, prosím, že pokud se celý obrázek hodně mění, když je v režimu modulace, rušitel ozvěny nemůže najít žádnou souvztažnost mezi dvěma vstupními zdroji (reproduktory a mikrofon). Buď máte velmi dlouhou prodlevu ozvěny, nebo jeden ze vstupních zdrojů není správně nastaven.</translation>
+        <translation>Toto zobrazuje váhy rušitele ozvěny s časem zvyšujícím se dolů a frekvencí zvyšující se doprava.&lt;br /&gt;Ideálně by toto mělo být černé, což znamená, že neexistuje žádná ozvěna. Běžně budete mít jednu nebo více vodorovných modrých čar, označující časově zpožděnou ozvěnu. Měli byste vidět, jak jsou váhy aktualizovány ve skutečném čase.&lt;br /&gt;Uvědomte si, prosím, že dokud nebudete mít něco, od čeho ozvěnu odrážet, tak zde moc užitečná data neuvidíte. Přehrajte nějakou hudbu a věci by se měli ustálit. &lt;br /&gt;Můžete si zvolit k zobrazení skutečné nebo domnělé části vah kmitočtového pásma, nebo jinak vypočítaná modulace a fáze. Z těchto bude asi nejužitečnější modulace, což je amplituda ozvěny, a ukazuje kolik výstupního signálu je v onom časovém kroku odstraněno. Ostatní režimy zobrazení jsou většinou užitečné pro lidi, kteří si chtějí vyladit jejich algoritmy vyrušení ozvěny.&lt;br /&gt;Uvědomte si, prosím, že pokud se celý obrázek hodně mění, když je v režimu modulace, rušitel ozvěny nemůže najít žádnou souvztažnost mezi dvěma vstupními zdroji (reproduktory a mikrofon). Buď máte velmi dlouhou prodlevu ozvěny, nebo jeden ze vstupních zdrojů není správně nastaven.</translation>
     </message>
     <message>
-        <source>This is the audio bitrate of the last compressed frame (20 ms), and as such will jump up and down as the VBR adjusts the quality. The peak bitrate can be adjusted in the Settings dialog.</source>
-        <translation>Toto je bitový tok posledního komprimovaného rámce (20ms), a jako takový bude skákat nahoru a dolů jak VBR upravuje kvalitu. Nejvyšší bitový tok může být upraven v dialogovém okně Nastavení.</translation>
+        <source>This is the audio bitrate of the last compressed frame (20 ms). The peak bitrate can be adjusted in the Settings dialog.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -2075,7 +2203,7 @@ Mluvte nahlas, jako kdybyste byli podráždění nebo nadšení. Snižujte hlasi
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This is the audio tuning wizard for Mumble. This will help you correctly set the input levels of your sound card, and also set the correct parameters for sound processing in Mumble. &lt;/p&gt;&lt;p&gt;Please be aware that as long as this wizard is active, audio will be looped locally to allow you to listen to it, and no audio will be sent to the server. &lt;/p&gt;&lt;p&gt;Note that you can cancel this wizard at any time without it having an effect on your current audio systems. The settings are only once this wizard has been completed.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This is the audio tuning wizard for Mumble. This will help you correctly set the input levels of your sound card, and also set the correct parameters for sound processing in Mumble. &lt;/p&gt;&lt;p&gt;Please be aware that as long as this wizard is active, audio will be looped locally to allow you to listen to it, and no audio will be sent to the server. &lt;/p&gt;&lt;p&gt;Note that you can cancel this wizard at any time without it having an effect on your current audio systems. The settings are only applied once this wizard has been completed.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2083,39 +2211,79 @@ Mluvte nahlas, jako kdybyste byli podráždění nebo nadšení. Snižujte hlasi
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Input system</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Input device</source>
-        <translation type="unfinished">Vstupní zařízení</translation>
-    </message>
-    <message>
-        <source>Output system</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Output device</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Output delay</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Maximum amplification</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>VAD level</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>PTT shortcut</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>No buttons assigned</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Audio input system</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Audio input device</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select audio output device</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Audio output system</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Audio output device</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The Mumble positional audio system enables users to link the relative position of their voice to third party applications such as games.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Output delay for incoming speech</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Maximum amplification of input sound</source>
+        <translation type="unfinished">Maximální zesílení vstupního zvuku</translation>
+    </message>
+    <message>
+        <source>Speech is dynamically amplified by at most this amount</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Voice activity detection level</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This will set the range in which Mumble will consider a signal speech. Increase value to make voice activation more sensitive.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Push to talk</source>
+        <translation type="unfinished">Stiskněte pro mluvení</translation>
+    </message>
+    <message>
+        <source>Use the &quot;push to talk shortcut&quot; button to assign a key</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Set push to talk shortcut</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This will open a shortcut edit dialog</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Graphical positional audio simulation view</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This visually represents the positional audio that is currently being played</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2258,23 +2426,39 @@ Mluvte nahlas, jako kdybyste byli podráždění nebo nadšení. Snižujte hlasi
         </translation>
     </message>
     <message>
-        <source>Search</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>IP Address</source>
-        <translation type="unfinished">IP Adresa</translation>
-    </message>
-    <message>
         <source>Mask</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Start date/time</source>
+        <source>Search for banned user</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>End date/time</source>
+        <source>Username to ban</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>IP address to ban</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ban reason</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ban start date/time</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ban end date/time</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Certificate hash to ban</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>List of banned users</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2358,38 +2542,6 @@ Mluvte nahlas, jako kdybyste byli podráždění nebo nadšení. Snižujte hlasi
     <message>
         <source>&lt;b&gt;Certificate Expiry:&lt;/b&gt; Your certificate is about to expire. You need to renew it, or you will no longer be able to connect to servers you are registered on.</source>
         <translation>&lt;b&gt;Vypršení Certifikátu:&lt;/b&gt; Váš certifikát brzy vyprší. Musíte ho obnovit, nebo se už nebudete moci připojit k serverům, na kterých jste registrování.</translation>
-    </message>
-    <message>
-        <source>Current certificate</source>
-        <translation type="unfinished">Současný Certifikát</translation>
-    </message>
-    <message>
-        <source>Certificate file to import</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Certificate password</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Certificate to import</source>
-        <translation type="unfinished">Který certifikát importovat</translation>
-    </message>
-    <message>
-        <source>New certificate</source>
-        <translation type="unfinished">Nový certifikát</translation>
-    </message>
-    <message>
-        <source>File to export certificate to</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Email address</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Your name</source>
-        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -2478,10 +2630,6 @@ Mluvte nahlas, jako kdybyste byli podráždění nebo nadšení. Snižujte hlasi
     <message>
         <source>Select file to import from</source>
         <translation>Vyberte soubor z kterého importovat</translation>
-    </message>
-    <message>
-        <source>This opens a file selection dialog to choose a file to import a certificate from.</source>
-        <translation>Toto otevře dialogové okno výběru souboru ke zvolení souboru, z kterého certifikát importovat.</translation>
     </message>
     <message>
         <source>Open...</source>
@@ -2634,7 +2782,47 @@ Jste si jisti, že chcete certifikát nahradit?
 &lt;p&gt;Nezapomeňte, že tento soubor nebude zašifrován, a pokud k němu získá někdo jiný přístup, může se za Vás vydávat, takže se o něj dobře starejte.&lt;/p&gt;</translation>
     </message>
     <message>
-        <source>&lt;p&gt;Mumble can use certificates to authenticate with servers. Using certificates avoids passwords, meaning you don&apos;t need to disclose any password to the remote site. It also enables very easy user registration and a client side friends list independent of servers.&lt;/p&gt;&lt;p&gt;While Mumble can work without certificates, the majority of servers will expect you to have one.&lt;/p&gt;&lt;p&gt;Creating a new certificate automatically is sufficient for most use cases. But Mumble also supports certificates representing trust in the users ownership of an email address. These certificates are issued by third parties. For more information see our &lt;a href=&quot;http://mumble.info/certificate.php&quot;&gt;user certificate documentation&lt;/a&gt;. &lt;/p&gt;</source>
+        <source>Displays current certificate</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Certificate file to import</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Use the &quot;open&quot; button to select a file using a dialog.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Certificate password</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Displays imported certificate</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Displays new certificate</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>File to export certificate to</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Use the &quot;save as&quot; button to select a file using a dialog.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Your name. For example: John Doe</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Your email address. For example: johndoe@mumble.info</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;Mumble can use certificates to authenticate with servers. Using certificates avoids passwords, meaning you don&apos;t need to disclose any password to the remote site. It also enables very easy user registration and a client side friends list independent of servers.&lt;/p&gt;&lt;p&gt;While Mumble can work without certificates, the majority of servers will expect you to have one.&lt;/p&gt;&lt;p&gt;Creating a new certificate automatically is sufficient for most use cases. But Mumble also supports certificates representing trust in the users ownership of an email address. These certificates are issued by third parties. For more information see our &lt;a href=&quot;https://www.mumble.info/documentation/user/certificates/&quot;&gt;user certificate documentation&lt;/a&gt;. &lt;/p&gt;</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -3117,6 +3305,34 @@ Jste si jisti, že chcete certifikát nahradit?
         <source>IPv6 address</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>This is the connection dialog. There are two different ways to connect to a Mumble server. If the server is listed publicly, you can use the server list to find it. If you know the server IP address, you can manually add a new permanent entry to your favorites.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The server list contains your favorites and all publicly listed servers.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>With this search interface you can filter the Mumble servers displayed in the server list.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Search for servername</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Search for location</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Set filter mode</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Server</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ConnectDialogEdit</name>
@@ -3243,6 +3459,22 @@ Jmenovka serveru. Takto se bude server jmenovat ve Vašem seznamu serverů a mů
     </message>
     <message>
         <source>&amp;Ignore</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Server IP address</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Server port</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Username</source>
+        <translation type="unfinished">Uživatelské jméno</translation>
+    </message>
+    <message>
+        <source>Label for server</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -3436,6 +3668,26 @@ Without this option enabled, using Mumble&apos;s global shortcuts in privileged 
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Mumble&apos;s Global Shortcuts system does currently not work properly in combination with the Wayland protocol. For more information, visit &lt;a href=&quot;https://github.com/mumble-voip/mumble/issues/5257&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0057ae;&quot;&gt;https://github.com/mumble-voip/mumble/issues/5257&lt;/span&gt;&lt;/a&gt;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Configured shortcuts</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Use up and down keys to navigate through your added shortcuts. Use left and right keys to navigate between actions and options for a single shortcut. Entries can be added and deleted with the buttons below.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Add unassigned shortcut</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This adds a new empty entry to the &quot;Configured Shortcut&quot; tree above. The tree will be automatically focused. Assign a key or an action by selecting the entry in the tree above.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This removes the selected entry from the &quot;Configured Shortcut&quot; tree above</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>GlobalShortcutButtons</name>
@@ -3463,6 +3715,18 @@ Without this option enabled, using Mumble&apos;s global shortcuts in privileged 
         <source>Remove</source>
         <translation type="unfinished">Odstranit</translation>
     </message>
+    <message>
+        <source>List of shortcuts</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Toggling this button will make the application listen for a shortcut. Once the shortcut is entered, the application stops listening for a shortcut. Multiple shortcuts can be assigned to the current action. Navigate to the shortcut list above to review the shortcuts currently assigned to the current action.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This button will remove the selected shortcut for the current action. Note that you will have to select a shortcut from the list above first before this button has any effect.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>GlobalShortcutConfig</name>
@@ -3488,7 +3752,27 @@ Without this option enabled, using Mumble&apos;s global shortcuts in privileged 
         <translation>&lt;b&gt;Toto skryje stisknutí tlačítek před ostatními aplikacemi.&lt;/b&gt;&lt;br /&gt;Zapnutí tohoto skryje tlačítko (nebo poslední tlačítko vícetlačítkové kombinace) před jinými aplikacemi. Nezapomeňte, že ne všechny tlačítka mohou být potlačena.</translation>
     </message>
     <message>
-        <source>Configured shortcuts</source>
+        <source>Shortcut action</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Shortcut data</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Shortcut input combinations</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Unassigned</source>
+        <translation type="unfinished">Nepřiřazeno</translation>
+    </message>
+    <message>
+        <source>checked</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>unchecked</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -4059,14 +4343,6 @@ The setting only applies for new messages, the already shown ones will retain th
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Log messages</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>TTS engine volume</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Chat message margins</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4088,10 +4364,6 @@ The setting only applies for new messages, the already shown ones will retain th
     </message>
     <message>
         <source>Limit notifications when there are more than</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>User limit for message limiting</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -4158,6 +4430,74 @@ The setting only applies for new messages, the already shown ones will retain th
         <source>Notification sound volume adjustment</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Log message types and actions</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Use up and down keys to navigate through the message types. Use left and right keys to navigate between notification possibilities for a single message type.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Set length threshold</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Text to speech volume</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Maximum chat log length</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>User limit for notifications</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Message type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Log message to console checkbox</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Display pop-up notification for message checkbox</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Highlight window for message checkbox</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Read message using text to speech checkbox</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Limit message notification if user count is high checkbox</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Play sound file for message checkbox</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Path to sound file</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>checked</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>unchecked</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>decibels</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>LookConfig</name>
@@ -4200,7 +4540,7 @@ The setting only applies for new messages, the already shown ones will retain th
     </message>
     <message>
         <source>This sets which channels to automatically expand. &lt;i&gt;None&lt;/i&gt; and &lt;i&gt;All&lt;/i&gt; will expand no or all channels, while &lt;i&gt;Only with users&lt;/i&gt; will expand and collapse channels as users join and leave them.</source>
-        <translation>Toto nastavuje, který kanál má být automaticky rozšířen. &lt;i&gt;Žádný&lt;i/&gt; a &lt;i&gt;Všechny&lt;/i&gt; rozšíří žádný nebo všechny kanály, zatímco &lt;i&gt;Pouze s uživateli&lt;/i&gt; rozšíří a zúží kanály, jak uživatelé přicházejí a odcházejí.</translation>
+        <translation>Toto nastavuje, který kanál má být automaticky rozšířen. &lt;i&gt;Žádný&lt;/i&gt; a &lt;i&gt;Všechny&lt;/i&gt; rozšíří žádný nebo všechny kanály, zatímco &lt;i&gt;Pouze s uživateli&lt;/i&gt; rozšíří a zúží kanály, jak uživatelé přicházejí a odcházejí.</translation>
     </message>
     <message>
         <source>List users above subchannels (requires restart).</source>
@@ -4508,34 +4848,6 @@ The setting only applies for new messages, the already shown ones will retain th
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Maximum name length</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Relative font size</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Always on top</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Channel dragging</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Automatically expand channels when</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>User dragging behavior</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Silent user lifetime</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Show the local volume adjustment for each user (if any).</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4615,6 +4927,102 @@ The setting only applies for new messages, the already shown ones will retain th
         <source>Always Quit</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source> seconds</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>If this is checked, users will always be visible in the TalkingUI (regardless of talking state).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Always keep users visible</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Channel expand mode</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>User dragging mode</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Channel dragging mode</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Always on top mode</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Quit behavior mode</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Channel separator string</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Maximum channel name length</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Abbreviation replacement characters</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Relative font size (in percent)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Silent user display time (in seconds)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Mumble theme</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>User search action mode</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Channel search action mode</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Clears the TalkingUI background setting.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Clear Background Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Clear</source>
+        <translation type="unfinished">Vyčistit</translation>
+    </message>
+    <message>
+        <source>Color that gets used for the background of the talkingUI.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Choose</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Background color that, if set, overrides the theme background color.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Background Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Choose a Color</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>MainWindow</name>
@@ -4685,10 +5093,6 @@ The setting only applies for new messages, the already shown ones will retain th
     <message>
         <source>Mumble</source>
         <translation>Mumble</translation>
-    </message>
-    <message>
-        <source>Mumble -- %1</source>
-        <translation>Mumble -- %1 </translation>
     </message>
     <message>
         <source>&amp;Window</source>
@@ -4833,10 +5237,6 @@ The setting only applies for new messages, the already shown ones will retain th
     <message>
         <source>&lt;p&gt;%1&lt;/p&gt;&lt;ul&gt;%2&lt;/ul&gt;&lt;p&gt;The specific errors with this certificate are:&lt;/p&gt;&lt;ol&gt;%3&lt;/ol&gt;&lt;p&gt;Do you wish to accept this certificate anyway?&lt;br /&gt;(It will also be stored so you won&apos;t be asked this again.)&lt;/p&gt;</source>
         <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>SSL Version mismatch</source>
-        <translation>Neshoda verze SSL</translation>
     </message>
     <message>
         <source>Server connection failed.</source>
@@ -5060,10 +5460,6 @@ The setting only applies for new messages, the already shown ones will retain th
         <translation>&lt;b&gt;VAROVÁNÍ:&lt;/b&gt; Server předložil certifikát, který se liší od uloženého.</translation>
     </message>
     <message>
-        <source>This server is using an older encryption standard, and is no longer supported by modern versions of Mumble.</source>
-        <translation>Tento server používá starý šifrovací standard, a nebude nadále podporován novými verzemi Mumble.</translation>
-    </message>
-    <message>
         <source>Server connection failed: %1.</source>
         <translation>Připojování k serveru selhalo: %1.</translation>
     </message>
@@ -5212,10 +5608,6 @@ Jinak přerušte a zkontrolujte Váš certifikát a uživatelské jméno.</trans
         <translation>Toto otevře dialogové okno skupin a ACL daného kanálu, pro kontrolu oprávnění.</translation>
     </message>
     <message>
-        <source>&amp;Link</source>
-        <translation>&amp;Propojit</translation>
-    </message>
-    <message>
         <source>Link your channel to another channel</source>
         <translation>Propojí současný kanál s jiným kanálem</translation>
     </message>
@@ -5310,20 +5702,12 @@ Jinak přerušte a zkontrolujte Váš certifikát a uživatelské jméno.</trans
         <translation>Toto resetuje zvukový preprocesor, včetně rušení šumu, automatického získání hlasitosti a detekce hlasové aktivity. Pokud něco náhle zhorší zvukové prostředí (například mikrofon upadne) a je to pouze dočasné, použijte toto, abyste se vyhnuli čekáním, až se preprocesor přizpůsobí.</translation>
     </message>
     <message>
-        <source>&amp;Mute Self</source>
-        <translation>&amp;Zeslabit se</translation>
-    </message>
-    <message>
         <source>Mute yourself</source>
         <translation>Zeslabit se</translation>
     </message>
     <message>
         <source>Mute or unmute yourself. When muted, you will not send any data to the server. Unmuting while deafened will also undeafen.</source>
-        <translation>Zeslabit/zesílit sám sebe.  Když jste zeslabeni, neposíláte žádná data na server. Zesílením při ohlušení zároveň ohlušení zrušíte.</translation>
-    </message>
-    <message>
-        <source>&amp;Deafen Self</source>
-        <translation>&amp;Ohlušit se</translation>
+        <translation>Zeslabit/zesílit sám sebe. Když jste zeslabeni, neposíláte žádná data na server. Zesílením při ohlušení zároveň ohlušení zrušíte.</translation>
     </message>
     <message>
         <source>Deafen yourself</source>
@@ -5560,10 +5944,6 @@ Jinak přerušte a zkontrolujte Váš certifikát a uživatelské jméno.</trans
     <message>
         <source>Welcome message: %1</source>
         <translation>Uvítací zpráva: %1</translation>
-    </message>
-    <message>
-        <source>Mumble: %1</source>
-        <translation>Mumble: %1</translation>
     </message>
     <message>
         <source>You were denied %1 privileges in %2.</source>
@@ -5856,7 +6236,9 @@ Jinak přerušte a zkontrolujte Váš certifikát a uživatelské jméno.</trans
         <source>Remote controlling Mumble:
 
 </source>
-        <translation>Vzdálené ovládání Mumble:</translation>
+        <translation>Vzdálené ovládání Mumble:
+
+</translation>
     </message>
     <message>
         <source>Invocation</source>
@@ -5891,16 +6273,8 @@ Jinak přerušte a zkontrolujte Váš certifikát a uživatelské jméno.</trans
         <translation>Toto nastaví, zda-li okno minimálního zobrazení by mělo mít rámeček pro přesunování a změny velikosti.</translation>
     </message>
     <message>
-        <source>&amp;Unlink All</source>
-        <translation>Odpojit &amp;Vše</translation>
-    </message>
-    <message>
         <source>Reset the comment of the selected user.</source>
         <translation>Resetuje komentář zvoleného uřživatele.</translation>
-    </message>
-    <message>
-        <source>&amp;Join Channel</source>
-        <translation>&amp;Vstoupit do Kanálu</translation>
     </message>
     <message>
         <source>View comment in editor</source>
@@ -5931,10 +6305,6 @@ Jinak přerušte a zkontrolujte Váš certifikát a uživatelské jméno.</trans
         <translation>Změnit obrázek avatara na tomto serveru</translation>
     </message>
     <message>
-        <source>&amp;Remove Avatar</source>
-        <translation>&amp;Odstranit Avatara</translation>
-    </message>
-    <message>
         <source>Remove currently defined avatar image.</source>
         <translation>Odstranit současně nastavený obrázek avatara.</translation>
     </message>
@@ -5947,24 +6317,12 @@ Jinak přerušte a zkontrolujte Váš certifikát a uživatelské jméno.</trans
         <translation>Změnit Váš vlastní komentář</translation>
     </message>
     <message>
-        <source>Recording</source>
-        <translation>Nahrávání</translation>
-    </message>
-    <message>
-        <source>Priority Speaker</source>
-        <translation>Přednostní Řečník</translation>
-    </message>
-    <message>
         <source>&amp;Copy URL</source>
         <translation>&amp;Kopírovat URL</translation>
     </message>
     <message>
         <source>Copies a link to this channel to the clipboard.</source>
         <translation>Zkopíruje odkaz na tento kanál do schránky.</translation>
-    </message>
-    <message>
-        <source>Ignore Messages</source>
-        <translation>Ignorovat zprávy</translation>
     </message>
     <message>
         <source>Locally ignore user&apos;s text chat messages.</source>
@@ -5997,27 +6355,7 @@ kontextové nabídce kanálů.</translation>
         <translation>Ctrl+F</translation>
     </message>
     <message>
-        <source>&amp;Hide Channel when Filtering</source>
-        <translation>&amp;Skrýt kanál při filtrování</translation>
-    </message>
-    <message>
-        <source>Reset the avatar of the selected user.</source>
-        <translation>Resetovat avatar zvoleného uživatele.</translation>
-    </message>
-    <message>
         <source>&amp;Developer</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;Hide Mumble</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Hides the main Mumble window.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Hides the main Mumble window. Restore by clicking on the tray icon or starting Mumble again.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -6033,23 +6371,11 @@ kontextové nabídce kanálů.</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>&amp;Ban list...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;Information...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>&amp;Kick...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>&amp;Ban...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Send &amp;Message...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -6065,23 +6391,7 @@ kontextové nabídce kanálů.</translation>
         <translation type="unfinished">&amp;Upravit...</translation>
     </message>
     <message>
-        <source>Audio S&amp;tatistics...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;Settings...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>&amp;Audio Wizard...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Developer &amp;Console...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;About...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -6089,19 +6399,7 @@ kontextové nabídce kanálů.</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>About &amp;Qt...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>&amp;Certificate Wizard...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;Register...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Registered &amp;Users...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -6109,35 +6407,7 @@ kontextové nabídce kanálů.</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>&amp;Access Tokens...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Reset &amp;Comment...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Reset &amp;Avatar...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>View Comment...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>&amp;Change Comment...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>R&amp;egister...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Show</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Shows the main Mumble window.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -6146,10 +6416,6 @@ kontextové nabídce kanálů.</translation>
     </message>
     <message>
         <source>Protocol violation. Server sent remove for occupied channel.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Listen to channel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -6193,15 +6459,7 @@ kontextové nabídce kanálů.</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Talking UI</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Toggles the visibility of the TalkingUI.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Join user&apos;s channel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -6214,14 +6472,6 @@ kontextové nabídce kanálů.</translation>
     </message>
     <message>
         <source>Activity log</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Chat message</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Disable Text-To-Speech</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -6260,10 +6510,6 @@ kontextové nabídce kanálů.</translation>
     <message>
         <source>Hide/show main window</source>
         <comment>Global Shortcut</comment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;Set Nickname...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -6325,10 +6571,6 @@ Valid actions are:
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Search</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Search for a user or channel (Ctrl+F)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -6347,10 +6589,6 @@ Valid actions are:
     </message>
     <message>
         <source>Undeafen yourself</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Positional &amp;Audio Viewer...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -6408,7 +6646,371 @@ Valid actions are:
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>&amp;Pin Channel when Filtering</source>
+        <source>Connect to a server</source>
+        <comment>Global Shortcut</comment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This will open the server connection dialog</source>
+        <comment>Global Shortcut</comment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Disconnect from server</source>
+        <comment>Global Shortcut</comment>
+        <translation type="unfinished">Odpojit od serveru</translation>
+    </message>
+    <message>
+        <source>This will disconnect you from the server</source>
+        <comment>Global Shortcut</comment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Open server information</source>
+        <comment>Global Shortcut</comment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This will show information about the server connection</source>
+        <comment>Global Shortcut</comment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Open server tokens</source>
+        <comment>Global Shortcut</comment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This will open the server tokens dialog</source>
+        <comment>Global Shortcut</comment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Open server user list</source>
+        <comment>Global Shortcut</comment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This will open the server user list dialog</source>
+        <comment>Global Shortcut</comment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Open server ban list</source>
+        <comment>Global Shortcut</comment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This will open the server ban list dialog</source>
+        <comment>Global Shortcut</comment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Toggle priority speaker</source>
+        <comment>Global Shortcut</comment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This will enable/disable the priority speaker</source>
+        <comment>Global Shortcut</comment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Open recording dialog</source>
+        <comment>Global Shortcut</comment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This will open the recording dialog</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Change comment</source>
+        <comment>Global Shortcut</comment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This will open the change comment dialog</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Change avatar</source>
+        <comment>Global Shortcut</comment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This will open your file explorer to change your avatar image on this server</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Remove avatar</source>
+        <comment>Global Shortcut</comment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This will reset your avatar on the server</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Register on the server</source>
+        <comment>Global Shortcut</comment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This will register you on the server</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Audio statistics</source>
+        <comment>Global Shortcut</comment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This will open the audio statistics dialog</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Open settings</source>
+        <comment>Global Shortcut</comment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This will open the settings dialog</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Start audio wizard</source>
+        <comment>Global Shortcut</comment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This will open the audio wizard dialog</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Start certificate wizard</source>
+        <comment>Global Shortcut</comment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This will open the certificate wizard dialog</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Toggle text to speech</source>
+        <comment>Global Shortcut</comment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This will enable/disable the text to speech</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Open about dialog</source>
+        <comment>Global Shortcut</comment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This will open the about dialog</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Open about Qt dialog</source>
+        <comment>Global Shortcut</comment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This will open the about Qt dialog</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Check for update</source>
+        <comment>Global Shortcut</comment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This will check if mumble is up to date</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>That sound was the mute cue. It activates when you speak while muted. Would you like to keep it enabled?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Yes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enter chat message</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Ban List</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ig&amp;nore Messages</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Send Message...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Set Ni&amp;ckname...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>L&amp;ink</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>U&amp;nlink All</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>M&amp;ute Self</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>D&amp;eafen Self</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Audio &amp;Statistics</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Developer &amp;Console</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Positional &amp;Audio Viewer</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;About</source>
+        <translation type="unfinished">O &amp;modulu</translation>
+    </message>
+    <message>
+        <source>About &amp;Qt</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Re&amp;gister...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Registered &amp;Users</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Access Tokens</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Remo&amp;ve Avatar</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Reset Commen&amp;t...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Remo&amp;ve Avatar...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Remove the avatar of the selected user.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Join</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Hide When Filtering</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Pin When Filtering</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Vie&amp;w Comment</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Priority Speaker</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Record...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Listen To Channel</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Talking &amp;UI</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Join User&apos;s Channel</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>M&amp;ove To Own Channel</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Moves this user to your current channel.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Disable Te&amp;xt-To-Speech</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Search...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Filtered channels and users</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Toggle positional audio</source>
+        <comment>Global Shortcut</comment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This will toggle positional audio on/off</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>SSL error</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Mumble is unable to establish a secure connection to the server. (&quot;%1&quot;)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This could be caused by one of the following scenarios:&lt;ul&gt;&lt;li&gt;Your client and the server use different encryption standards. This could be because you are using a very old client or the server you are connecting to is very old. In the first case, you should update your client and in the second case you should contact the server administrator so that they can update their server.&lt;/li&gt;&lt;li&gt;Either your client or the server is using an old operating system that doesn&apos;t provide up-to-date encryption methods. In this case you should consider updating your OS or contacting the server admin so that they can update theirs.&lt;/li&gt;&lt;li&gt;The server you are connecting to isn&apos;t actually a Mumble server. Please ensure that the used server address really belongs to a Mumble server and not e.g. to a game server.&lt;/li&gt;&lt;li&gt;The port you are connecting to does not belong to a Mumble server but instead is bound to a completely unrelated process on the server-side. Please double-check you have used the correct port.&lt;/li&gt;&lt;/ul&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -6472,7 +7074,30 @@ Valid options are:
                 If the format is invalid, Mumble will error.
                 Otherwise the locale will be permanently saved to
                 Mumble&apos;s settings.
+  --hidden
+                Start Mumble hidden in the system tray.
 </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>M&amp;ove back</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Moves you back to the previous channel</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Move back</source>
+        <comment>Global shortcut</comment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This will move you back into your previous channel</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The channel you have been in previously no longer exists on this server.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -6562,6 +7187,62 @@ Valid options are:
         <source>Silent user displaytime:</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Graphical positional audio simulation view</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This visually represents the positional audio configuration that is currently being used</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Listener Z coordinate</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Listener X coordinate</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Listener Y coordinate</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Silent user display time (in seconds)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Listener azimuth (in degrees)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Listener elevation (in degrees)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Context string</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Use the &quot;set&quot; button to apply the context string</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Apply the context string</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Apply the identity string</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Identity string</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Use the &quot;set&quot; button to apply the identity string</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>NetworkConfig</name>
@@ -6588,7 +7269,7 @@ Valid options are:
     </message>
     <message>
         <source>&lt;b&gt;Reconnect when disconnected&lt;/b&gt;.&lt;br /&gt;This will make Mumble try to automatically reconnect after 10 seconds if your server connection fails.</source>
-        <translation>&lt;b&gt;Při odpojení se znovu připojit&lt;b&gt;.&lt;br /&gt;Toto donutí Mumble se automaticky znovu pokusit o připojení po 10 sekundách od selhání připojení k serveru.</translation>
+        <translation>&lt;b&gt;Při odpojení se znovu připojit&lt;/b&gt;.&lt;br /&gt;Toto donutí Mumble se automaticky znovu pokusit o připojení po 10 sekundách od selhání připojení k serveru.</translation>
     </message>
     <message>
         <source>Reconnect automatically</source>
@@ -6773,6 +7454,26 @@ Prevents the client from sending potentially identifying information about the o
     </message>
     <message>
         <source>Automatically download and install plugin updates</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Proxy type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Proxy hostname</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Proxy port</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Proxy username</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Proxy password</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -6993,7 +7694,7 @@ Pro aktualizaci těchto souborů na jejich poslední verzi, klikněte na tlačí
     </message>
     <message>
         <source>Load…</source>
-        <translation>Nahrát...</translation>
+        <translation>Nahrát…</translation>
     </message>
     <message>
         <source>Save your overlay settings to file</source>
@@ -7001,7 +7702,7 @@ Pro aktualizaci těchto souborů na jejich poslední verzi, klikněte na tlačí
     </message>
     <message>
         <source>Save…</source>
-        <translation>Uložit...</translation>
+        <translation>Uložit…</translation>
     </message>
     <message>
         <source>Set the overlay font.</source>
@@ -7384,6 +8085,42 @@ Pro aktualizaci těchto souborů na jejich poslední verzi, klikněte na tlačí
         <source>Whether this plugin should be enabled</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>List of plugins</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Use up and down keys to navigate through plugins. Use left and right keys to navigate between single plugin permissions.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Plugin name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Plugin enabled checkbox</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Plugin positional audio permission checkbox</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Plugin keyboard event listen permission checkbox</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>checked</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>unchecked</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Not available</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>PluginInstaller</name>
@@ -7479,11 +8216,11 @@ Pro aktualizaci těchto souborů na jejich poslední verzi, klikněte na tlačí
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Non-plugin found in plugin directory: &quot;%1&quot;</source>
+        <source>Failed at loading manual plugin: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Failed at loading manual plugin: %1</source>
+        <source>Non-plugin found in plugin directory: &quot;%1&quot; (%2)</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -7626,11 +8363,6 @@ Pro aktualizaci těchto souborů na jejich poslední verzi, klikněte na tlačí
     </message>
     <message>
         <source>Echo cancellation is not supported for the interface combination &quot;%1&quot; (in) and &quot;%2&quot; (out).</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&lt;p&gt;If you&apos;re using Linux this is most likely because you are using a version from your distribution&apos;s package repository that have their own update cycles.&lt;/p&gt;&lt;p&gt;If you want to always have the most recent Mumble version, you should consider using a different method of installation.
-See &lt;a href=&quot;https://wiki.mumble.info/wiki/Installing_Mumble&quot;&gt;the Mumble wiki&lt;/a&gt; for what alternatives there are.&lt;/p&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -7807,6 +8539,107 @@ You can register them again.</source>
         <source>Unknown Version</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Next</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Back</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This is you</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>friend</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>user</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>status</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>muted and deafened</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>muted</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>locally muted</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>unmuted</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>recording</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>priority speaker</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>has a long comment</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>text messages ignored</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>registered</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>channel</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>your channel</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>accessible</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>inaccessible</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>public</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>filtered</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>pinned</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Listening for input</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Add</source>
+        <translation type="unfinished">Přidat</translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;If you&apos;re using Linux this is most likely because you are using a version from your distribution&apos;s package repository that have their own update cycles.&lt;/p&gt;&lt;p&gt;If you want to always have the most recent Mumble version, you should consider using a different method of installation.
+See &lt;a href=&quot;https://github.com/mumble-voip/mumble&quot;&gt;the project repository&lt;/a&gt; for what alternatives there are.&lt;/p&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>RichTextEditor</name>
@@ -7955,6 +8788,18 @@ You can register them again.</source>
         <source>Whether to search for channels</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Search string</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Search results</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Use up and down keys to navigate through the search results.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ServerHandler</name>
@@ -8003,10 +8848,6 @@ You can register them again.</source>
     </message>
     <message>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Port:&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&lt;b&gt;Users&lt;/b&gt;:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -8102,14 +8943,6 @@ You can register them again.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>&amp;View certificate</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;Ok</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Unknown</source>
         <translation type="unfinished"></translation>
     </message>
@@ -8127,6 +8960,22 @@ You can register them again.</source>
     </message>
     <message>
         <source>No</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;b&gt;Users:&lt;/b&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>TCP Parameters</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;View Certificate</source>
+        <translation type="unfinished">Zobrazit &amp;Certifikát</translation>
+    </message>
+    <message>
+        <source>&amp;OK</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -8317,7 +9166,11 @@ Znak přístupu je textový řetězec, který může být použit jako heslo pro
         <translation>&amp;Odstranit</translation>
     </message>
     <message>
-        <source>Tokens</source>
+        <source>Token List</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Use the arrow keys to navigate this list of access tokens. The tokens are displayed in plain text.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -8368,11 +9221,19 @@ Znak přístupu je textový řetězec, který může být použit jako heslo pro
         </translation>
     </message>
     <message>
-        <source>Search</source>
+        <source>User list</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>User list</source>
+        <source>Search for user</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Set inactivity filter mode</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Filter for inactivity</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -8401,10 +9262,6 @@ Znak přístupu je textový řetězec, který může být použit jako heslo pro
     <message>
         <source>IP Address</source>
         <translation>IP Adresa</translation>
-    </message>
-    <message>
-        <source>Details...</source>
-        <translation>Podrobnosti...</translation>
     </message>
     <message>
         <source>Ping Statistics</source>
@@ -8527,6 +9384,46 @@ Znak přístupu je textový řetězec, který může být použit jako heslo pro
     </message>
     <message>
         <source>Warning: The server seems to report a truncated protocol version for this client. (See: &lt;a href=&quot;https://github.com/mumble-voip/mumble/issues/5827/&quot;&gt;Issue #5827&lt;/a&gt;)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Details</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>to client rolling average</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Last X minutes:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>% lost</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>from client rolling average</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>% late</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Total:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Last %1 %2:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>seconds</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>minutes</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -8723,6 +9620,14 @@ Znak přístupu je textový řetězec, který může být použit jako heslo pro
         <source>Channel will be pinned when filtering is enabled</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Channel Listener</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This channel listener belongs to %1</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>VersionCheck</name>
@@ -8824,7 +9729,7 @@ Znak přístupu je textový řetězec, který může být použit jako heslo pro
     </message>
     <message>
         <source>Digest (SHA-256): %1</source>
-        <translation type="unfinished">Digest ((SHA-1): %1 {256)?}</translation>
+        <translation>Digest (SHA-256): %1</translation>
     </message>
     <message>
         <source>Email: %1</source>
@@ -8871,6 +9776,10 @@ Znak přístupu je textový řetězec, který může být použit jako heslo pro
     </message>
     <message>
         <source>.opus - Lossy compressed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>.mp3 - Lossy compressed</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -8986,15 +9895,31 @@ Prosím kontaktujte Vašeho administrátora serveru pro další informace.</tran
         <source>Unable to start recording - the audio output is miconfigured (0Hz sample rate)</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Multichannel + Transport (JACK)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Transport (JACK, standalone)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This field contains the directory path to store any voice recordings in. Use the &quot;browse&quot; button to open a file dialog.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This field contains the filename any voice recording is saved as. Various variables can be used to augment the filename. For example %time for the current time.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>VolumeSliderWidgetAction</name>
     <message>
-        <source>Slider for volume adjustment</source>
+        <source>Volume Adjustment</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Volume Adjustment</source>
+        <source>Local volume adjustment</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

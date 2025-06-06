@@ -1,4 +1,4 @@
-# Copyright 2020-2023 The Mumble Developers. All rights reserved.
+# Copyright The Mumble Developers. All rights reserved.
 # Use of this source code is governed by a BSD-style license
 # that can be found in the LICENSE file at the root of the
 # Mumble source tree or at <https://www.mumble.info/LICENSE>. 
@@ -34,6 +34,8 @@ if(WIN32)
 		"-DWIN32_LEAN_AND_MEAN"
 		# Prevent Windows headers from defining the macros "min" and "max" that mess up e.g. std::min usage
 		"-DNOMINMAX"
+		# Prevent warnings such as "use strcpy_s instead of strcpy"
+		"-D_CRT_SECURE_NO_WARNINGS"
 	)
 else()
 	if(${CMAKE_SYSTEM_NAME} STREQUAL "FreeBSD")
@@ -42,21 +44,11 @@ else()
 	endif()
 
 	find_pkg(OpenSSL QUIET)
-	find_pkg(Qt5 QUIET)
 
 	if(NOT OpenSSL_FOUND)
 		if(APPLE)
 			# Homebrew
 			set(OPENSSL_ROOT_DIR "/usr/local/opt/openssl")
-		endif()
-	endif()
-
-	if(NOT Qt5_FOUND)
-		if(APPLE)
-			# Homebrew
-			set(Qt5_DIR "/usr/local/opt/qt5/lib/cmake/Qt5")
-		elseif(${CMAKE_SYSTEM_NAME} STREQUAL "OpenBSD")
-			set(Qt5_DIR "/usr/local/lib/qt5/cmake/Qt5")
 		endif()
 	endif()
 endif()

@@ -1,4 +1,4 @@
-// Copyright 2007-2023 The Mumble Developers. All rights reserved.
+// Copyright The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -290,7 +290,8 @@ void ServerHandler::handleVoicePacket(const Mumble::Protocol::AudioData &audioDa
 }
 
 void ServerHandler::sendMessage(const unsigned char *data, int len, bool force) {
-	STACKVAR(unsigned char, crypto, len + 4);
+	static std::vector< unsigned char > crypto;
+	crypto.resize(static_cast< std::size_t >(len + 4));
 
 	QMutexLocker qml(&qmUdp);
 
@@ -309,15 +310,16 @@ void ServerHandler::sendMessage(const unsigned char *data, int len, bool force) 
 		*reinterpret_cast< quint16 * >(&uc[0]) =
 			qToBigEndian(static_cast< quint16 >(Mumble::Protocol::TCPMessageType::UDPTunnel));
 		*reinterpret_cast< quint32 * >(&uc[2]) = qToBigEndian(static_cast< quint32 >(len));
-		memcpy(uc + 6, data, len);
+		memcpy(uc + 6, data, static_cast< std::size_t >(len));
 
 		QApplication::postEvent(this,
 								new ServerHandlerMessageEvent(qba, Mumble::Protocol::TCPMessageType::UDPTunnel, true));
 	} else {
-		if (!connection->csCrypt->encrypt(reinterpret_cast< const unsigned char * >(data), crypto, len)) {
+		if (!connection->csCrypt->encrypt(reinterpret_cast< const unsigned char * >(data), crypto.data(),
+										  static_cast< unsigned int >(len))) {
 			return;
 		}
-		qusUdp->writeDatagram(reinterpret_cast< const char * >(crypto), len + 4, qhaRemote, usResolvedPort);
+		qusUdp->writeDatagram(reinterpret_cast< const char * >(crypto.data()), len + 4, qhaRemote, usResolvedPort);
 	}
 }
 
@@ -436,15 +438,10 @@ void ServerHandler::run() {
 		}
 		bUdp = false;
 
-
-#if QT_VERSION >= 0x050500
-		qtsSock->setProtocol(QSsl::TlsV1_0OrLater);
-#elif QT_VERSION >= 0x050400
-		// In Qt 5.4, QSsl::SecureProtocols is equivalent
-		// to "TLSv1.0 or later", which we require.
-		qtsSock->setProtocol(QSsl::SecureProtocols);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 3, 0)
+		qtsSock->setProtocol(QSsl::TlsV1_2OrLater);
 #else
-		qtsSock->setProtocol(QSsl::TlsV1_0);
+		qtsSock->setProtocol(QSsl::TlsV1_0OrLater);
 #endif
 
 		qtsSock->connectToHost(saTargetServer.host.toAddress(), saTargetServer.port);
@@ -588,29 +585,29 @@ void ServerHandler::sendPingInternal() {
 		m_udpPingEncoder.setProtocolVersion(m_version);
 		gsl::span< const Mumble::Protocol::byte > encodedPacket = m_udpPingEncoder.encodePingPacket(pingData);
 
-		sendMessage(encodedPacket.data(), encodedPacket.size(), true);
+		sendMessage(encodedPacket.data(), static_cast< int >(encodedPacket.size()), true);
 	}
 
 	MumbleProto::Ping mpp;
 
 	mpp.set_timestamp(t);
-	mpp.set_good(connection->csCrypt->uiGood);
-	mpp.set_late(connection->csCrypt->uiLate);
-	mpp.set_lost(connection->csCrypt->uiLost);
-	mpp.set_resync(connection->csCrypt->uiResync);
+	mpp.set_good(connection->csCrypt->m_statsLocal.good);
+	mpp.set_late(connection->csCrypt->m_statsLocal.late);
+	mpp.set_lost(connection->csCrypt->m_statsLocal.lost);
+	mpp.set_resync(connection->csCrypt->m_statsLocal.resync);
 
 
 	if (boost::accumulators::count(accUDP)) {
 		mpp.set_udp_ping_avg(static_cast< float >(boost::accumulators::mean(accUDP)));
 		mpp.set_udp_ping_var(static_cast< float >(boost::accumulators::variance(accUDP)));
 	}
-	mpp.set_udp_packets(static_cast< int >(boost::accumulators::count(accUDP)));
+	mpp.set_udp_packets(static_cast< unsigned int >(boost::accumulators::count(accUDP)));
 
 	if (boost::accumulators::count(accTCP)) {
 		mpp.set_tcp_ping_avg(static_cast< float >(boost::accumulators::mean(accTCP)));
 		mpp.set_tcp_ping_var(static_cast< float >(boost::accumulators::variance(accTCP)));
 	}
-	mpp.set_tcp_packets(static_cast< int >(boost::accumulators::count(accTCP)));
+	mpp.set_tcp_packets(static_cast< unsigned int >(boost::accumulators::count(accTCP)));
 
 	sendMessage(mpp);
 
@@ -632,7 +629,7 @@ void ServerHandler::message(Mumble::Protocol::TCPMessageType type, const QByteAr
 		}
 	} else if (type == Mumble::Protocol::TCPMessageType::Ping) {
 		MumbleProto::Ping msg;
-		if (msg.ParseFromArray(qbaMsg.constData(), qbaMsg.size())) {
+		if (msg.ParseFromArray(qbaMsg.constData(), static_cast< int >(qbaMsg.size()))) {
 			ConnectionPtr connection(cConnection);
 			if (!connection)
 				return;
@@ -642,20 +639,20 @@ void ServerHandler::message(Mumble::Protocol::TCPMessageType type, const QByteAr
 			// connection is still OK.
 			iInFlightTCPPings = 0;
 
-			connection->csCrypt->uiRemoteGood   = msg.good();
-			connection->csCrypt->uiRemoteLate   = msg.late();
-			connection->csCrypt->uiRemoteLost   = msg.lost();
-			connection->csCrypt->uiRemoteResync = msg.resync();
+			connection->csCrypt->m_statsRemote.good   = msg.good();
+			connection->csCrypt->m_statsRemote.late   = msg.late();
+			connection->csCrypt->m_statsRemote.lost   = msg.lost();
+			connection->csCrypt->m_statsRemote.resync = msg.resync();
 			accTCP(static_cast< double >(tTimestamp.elapsed() - msg.timestamp()) / 1000.0);
 
-			if (((connection->csCrypt->uiRemoteGood == 0) || (connection->csCrypt->uiGood == 0)) && bUdp
-				&& (tTimestamp.elapsed() > 20000000ULL)) {
+			if (((connection->csCrypt->m_statsRemote.good == 0) || (connection->csCrypt->m_statsLocal.good == 0))
+				&& bUdp && (tTimestamp.elapsed() > 20000000ULL)) {
 				bUdp = false;
 				if (!NetworkConfig::TcpModeEnabled()) {
-					if ((connection->csCrypt->uiRemoteGood == 0) && (connection->csCrypt->uiGood == 0))
+					if ((connection->csCrypt->m_statsRemote.good == 0) && (connection->csCrypt->m_statsLocal.good == 0))
 						Global::get().mw->msgBox(
 							tr("UDP packets cannot be sent to or received from the server. Switching to TCP mode."));
-					else if (connection->csCrypt->uiRemoteGood == 0)
+					else if (connection->csCrypt->m_statsRemote.good == 0)
 						Global::get().mw->msgBox(
 							tr("UDP packets cannot be sent to the server. Switching to TCP mode."));
 					else
@@ -664,7 +661,8 @@ void ServerHandler::message(Mumble::Protocol::TCPMessageType type, const QByteAr
 
 					database->setUdp(qbaDigest, false);
 				}
-			} else if (!bUdp && (connection->csCrypt->uiRemoteGood > 3) && (connection->csCrypt->uiGood > 3)) {
+			} else if (!bUdp && (connection->csCrypt->m_statsRemote.good > 3)
+					   && (connection->csCrypt->m_statsLocal.good > 3)) {
 				bUdp = true;
 				if (!NetworkConfig::TcpModeEnabled()) {
 					Global::get().mw->msgBox(
@@ -749,11 +747,9 @@ void ServerHandler::serverConnectionConnected() {
 	if (!connection)
 		return;
 
-#if QT_VERSION >= QT_VERSION_CHECK(5, 7, 0)
 	// The ephemeralServerKey property is only a non-null key, if forward secrecy is used.
 	// See also https://doc.qt.io/qt-5/qsslconfiguration.html#ephemeralServerKey
 	connectionUsesPerfectForwardSecrecy = !qtsSock->sslConfiguration().ephemeralServerKey().isNull();
-#endif
 
 	iInFlightTCPPings = 0;
 
@@ -910,11 +906,11 @@ void ServerHandler::joinChannel(unsigned int uiSession, unsigned int channel,
 	sendMessage(mpus);
 }
 
-void ServerHandler::startListeningToChannel(int channel) {
+void ServerHandler::startListeningToChannel(unsigned int channel) {
 	startListeningToChannels({ channel });
 }
 
-void ServerHandler::startListeningToChannels(const QList< int > &channelIDs) {
+void ServerHandler::startListeningToChannels(const QList< unsigned int > &channelIDs) {
 	if (channelIDs.isEmpty()) {
 		return;
 	}
@@ -922,7 +918,7 @@ void ServerHandler::startListeningToChannels(const QList< int > &channelIDs) {
 	MumbleProto::UserState mpus;
 	mpus.set_session(Global::get().uiSession);
 
-	foreach (int currentChannel, channelIDs) {
+	for (unsigned int currentChannel : channelIDs) {
 		// The naming of the function is a bit unfortunate but what this does is to add
 		// the channel ID to the message field listening_channel_add
 		mpus.add_listening_channel_add(currentChannel);
@@ -931,11 +927,11 @@ void ServerHandler::startListeningToChannels(const QList< int > &channelIDs) {
 	sendMessage(mpus);
 }
 
-void ServerHandler::stopListeningToChannel(int channel) {
+void ServerHandler::stopListeningToChannel(unsigned int channel) {
 	stopListeningToChannels({ channel });
 }
 
-void ServerHandler::stopListeningToChannels(const QList< int > &channelIDs) {
+void ServerHandler::stopListeningToChannels(const QList< unsigned int > &channelIDs) {
 	if (channelIDs.isEmpty()) {
 		return;
 	}
@@ -943,7 +939,7 @@ void ServerHandler::stopListeningToChannels(const QList< int > &channelIDs) {
 	MumbleProto::UserState mpus;
 	mpus.set_session(Global::get().uiSession);
 
-	foreach (int currentChannel, channelIDs) {
+	for (unsigned int currentChannel : channelIDs) {
 		// The naming of the function is a bit unfortunate but what this does is to add
 		// the channel ID to the message field listening_channel_remove
 		mpus.add_listening_channel_remove(currentChannel);
@@ -958,7 +954,7 @@ void ServerHandler::createChannel(unsigned int parent_id, const QString &name, c
 	mpcs.set_parent(parent_id);
 	mpcs.set_name(u8(name));
 	mpcs.set_description(u8(description));
-	mpcs.set_position(position);
+	mpcs.set_position(static_cast< int >(position));
 	mpcs.set_temporary(temporary);
 	mpcs.set_max_users(maxUsers);
 	sendMessage(mpcs);

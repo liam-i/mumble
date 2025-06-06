@@ -1,15 +1,13 @@
-// Copyright 2020-2023 The Mumble Developers. All rights reserved.
+// Copyright The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
 
 /*
  * This code implements OCB-AES128.
- * In the US, OCB is covered by patents. The inventor has given a license
- * to all programs distributed under the GPL.
- * Mumble is BSD (revised) licensed, meaning you can use the code in a
- * closed-source program. If you do, you'll have to either replace
- * OCB with something else or get yourself a license.
+ * The algorithm design was dedicated to the public domain.
+ * https://www.cs.ucdavis.edu/~rogaway/ocb/license.htm
+ * https://www.cs.ucdavis.edu/~rogaway/ocb/ocb-faq.htm
  */
 
 #include <QtCore/QtGlobal>
@@ -208,10 +206,21 @@ bool CryptStateOCB2::decrypt(const unsigned char *source, unsigned char *dst, un
 	if (restore)
 		memcpy(decrypt_iv, saveiv, AES_BLOCK_SIZE);
 
-	uiGood++;
-	uiLate += late;
-	uiLost += lost;
+	m_statsLocal.good++;
+	// m_statsLocal.late += late, but we have to make sure we don't cause wrap-arounds on the unsigned lhs
+	if (late > 0) {
+		m_statsLocal.late += static_cast< unsigned int >(late);
+	} else if (static_cast< int >(m_statsLocal.late) > std::abs(late)) {
+		m_statsLocal.late -= static_cast< unsigned int >(std::abs(late));
+	}
+	// m_statsLocal.lost += lost, but we have to make sure we don't cause wrap-arounds on the unsigned lhs
+	if (lost > 0) {
+		m_statsLocal.lost += static_cast< unsigned int >(lost);
+	} else if (static_cast< int >(m_statsLocal.lost) > std::abs(lost)) {
+		m_statsLocal.lost -= static_cast< unsigned int >(std::abs(lost));
+	}
 
+	updateRollingStats();
 	tLastGood.restart();
 	return true;
 }

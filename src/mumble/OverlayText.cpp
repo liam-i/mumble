@@ -1,4 +1,4 @@
-// Copyright 2010-2023 The Mumble Developers. All rights reserved.
+// Copyright The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -11,6 +11,7 @@
 #include <QtGui/QFontMetrics>
 #include <QtGui/QPainter>
 #include <QtGui/QPen>
+#include <QtGui/QTransform>
 
 BasepointPixmap::BasepointPixmap() : qpBasePoint(0, 0), iAscent(-1), iDescent(-1) {
 }
@@ -55,8 +56,8 @@ BasepointPixmap OverlayTextLine::render(int w, int h, const QColor &col, const Q
 	imgp.setPen(Qt::NoPen);
 	imgp.drawPath(qpp);
 
-	img.iAscent  = iroundf(fAscent + 0.5f);
-	img.iDescent = iroundf(fDescent + 0.5f);
+	img.iAscent  = static_cast< int >(fAscent + 0.5f);
+	img.iDescent = static_cast< int >(fDescent + 0.5f);
 	return img;
 }
 
@@ -82,15 +83,16 @@ BasepointPixmap OverlayTextLine::createPixmap(QColor col) {
 			fYCorrection = fEdge - static_cast< float >(qr.top());
 		}
 
-		QMatrix correction;
+		QTransform correction;
 		correction.translate(fXCorrection, fYCorrection);
 		qpp = correction.map(qpp);
 	}
 
 	qr = qpp.controlPointRect();
 
-	return render(iroundf(qr.right() + 2.0f * fEdge + 0.5f), iroundf(qr.bottom() + 2.0f * fEdge + 0.5f), col,
-				  QPoint(iroundf(fXCorrection + 0.5f), iroundf(fYCorrection + fAscent + 0.5f)));
+	return render(static_cast< int >(qr.right() + 2.0f * fEdge + 0.5f),
+				  static_cast< int >(qr.bottom() + 2.0f * fEdge + 0.5f), col,
+				  QPoint(static_cast< int >(fXCorrection + 0.5f), static_cast< int >(fYCorrection + fAscent + 0.5f)));
 }
 
 BasepointPixmap OverlayTextLine::createPixmap(unsigned int maxwidth, unsigned int height, QColor col) {
@@ -158,7 +160,7 @@ BasepointPixmap OverlayTextLine::createPixmap(unsigned int maxwidth, unsigned in
 
 		// eliding by previously calculated width
 		if ((bb.width() * scale) + twice_edge > maxwidth) {
-			int eliding_width = iroundf((static_cast< float >(maxwidth) / scale) - twice_edge + 0.5f);
+			int eliding_width = static_cast< int >((static_cast< float >(maxwidth) / scale) - twice_edge + 0.5f);
 			QString str       = fm.elidedText(qsText, Qt::ElideRight, eliding_width);
 
 			// use ellipsis as shortest possible string
@@ -175,7 +177,7 @@ BasepointPixmap OverlayTextLine::createPixmap(unsigned int maxwidth, unsigned in
 		}
 
 		// translation to "pixmap space":
-		QMatrix correction;
+		QTransform correction;
 		//  * adjust left edge
 		correction.translate(-bb.x() + fEdge, 0.0f);
 		//  * scale overly high text (still on baseline)
@@ -190,14 +192,15 @@ BasepointPixmap OverlayTextLine::createPixmap(unsigned int maxwidth, unsigned in
 		}
 
 		qpp        = correction.map(qpp);
-		iCurWidth  = iroundf(bb.width() * scale + 0.5f);
-		iCurHeight = height;
+		iCurWidth  = static_cast< int >(bb.width() * scale + 0.5f);
+		iCurHeight = static_cast< int >(height);
 	}
 
 	QRectF qr = qpp.controlPointRect();
 
-	return render(iroundf(qr.width() + twice_edge + 0.5f), iroundf(fAscent + fDescent + twice_edge + 0.5f), col,
-				  QPoint(0, iroundf(fAscent + fEdge + 0.5f)));
+	return render(static_cast< int >(qr.width() + twice_edge + 0.5f),
+				  static_cast< int >(fAscent + fDescent + twice_edge + 0.5f), col,
+				  QPoint(0, static_cast< int >(fAscent + fEdge + 0.5f)));
 }
 
 void OverlayTextLine::setFont(const QFont &font) {

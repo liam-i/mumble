@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# Copyright 2020-2023 The Mumble Developers. All rights reserved.
+# Copyright The Mumble Developers. All rights reserved.
 # Use of this source code is governed by a BSD-style license
 # that can be found in the LICENSE file at the root of the
 # Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -37,23 +37,23 @@ def create_disclaimerComment():
 
 def generateFunction(className, functionName, wrapArgs, callArgs):
     function = "void ::MumbleServer::" + className + "I::" + functionName + "_async(" + (", ".join(wrapArgs)) + ") {\n"
-    function += "\t// qWarning() << \"" + functionName + "\" << meta->mp.qsIceSecretRead.isNull() << meta->mp.qsIceSecretRead.isEmpty();\n"
+    function += "\t// qWarning() << \"" + functionName + "\" << ::Meta::mp->qsIceSecretRead.isNull() << ::Meta::mp->qsIceSecretRead.isEmpty();\n"
     function += "#ifndef ACCESS_" + className + "_" + functionName + "_ALL\n"
     function += "#\tifdef ACCESS_" + className + "_" + functionName + "_READ\n"
-    function += "\tif (!meta->mp.qsIceSecretRead.isNull()) {\n"
-    function += "\t\tbool ok = !meta->mp.qsIceSecretRead.isEmpty();\n"
+    function += "\tif (!::Meta::mp->qsIceSecretRead.isNull()) {\n"
+    function += "\t\tbool ok = !::Meta::mp->qsIceSecretRead.isEmpty();\n"
     function += "#\telse\n"
-    function += "\tif (!meta->mp.qsIceSecretRead.isNull() || !meta->mp.qsIceSecretWrite.isNull()) {\n"
-    function += "\t\tbool ok = !meta->mp.qsIceSecretWrite.isEmpty();\n"
+    function += "\tif (!::Meta::mp->qsIceSecretRead.isNull() || !::Meta::mp->qsIceSecretWrite.isNull()) {\n"
+    function += "\t\tbool ok = !::Meta::mp->qsIceSecretWrite.isEmpty();\n"
     function += "#\tendif // ACCESS_" + className + "_" + functionName + "_READ\n"
     function += "\t\t::Ice::Context::const_iterator i = current.ctx.find(\"secret\");\n"
     function += "\t\tok = ok && (i != current.ctx.end());\n"
     function += "\t\tif (ok) {\n"
     function += "\t\t\tconst QString &secret = u8((*i).second);\n"
     function += "#\tifdef ACCESS_" + className + "_" + functionName + "_READ\n"
-    function += "\t\t\tok = ((secret == meta->mp.qsIceSecretRead) || (secret == meta->mp.qsIceSecretWrite));\n"
+    function += "\t\t\tok = ((secret == ::Meta::mp->qsIceSecretRead) || (secret == ::Meta::mp->qsIceSecretWrite));\n"
     function += "#\telse\n"
-    function += "\t\t\tok = (secret == meta->mp.qsIceSecretWrite);\n"
+    function += "\t\t\tok = (secret == ::Meta::mp->qsIceSecretWrite);\n"
     function += "#\tendif // ACCESS_" + className + "_" + functionName + "_READ\n"
     function += "\t\t}\n"
     function += "\n"
@@ -116,7 +116,6 @@ def main():
 
 
     className = ""
-    responseTypes = {}
     for currentLine in generatedIceHeader.split("\n"):
         currentLine = currentLine.strip()
 
@@ -125,15 +124,15 @@ def main():
             continue
 
         # find class name
-        match = re.match("^class\s+AMD_(.+)\s+:\s+(?:public\svirtual|virtual\s+public)\s+::Ice(?:::AMDCallback|Util::Shared)", currentLine)
+        match = re.match(r"^class\s+AMD_(.+)\s+:\s+(?:public\svirtual|virtual\s+public)\s+::Ice(?:::AMDCallback|Util::Shared)", currentLine)
         if match:
             className = "AMD_" + match.group(1)
 
-        match = re.match("virtual\s+void\s+ice_response\\((.*)\\)\s+=\s+0;", currentLine)
+        match = re.match(r"virtual\s+void\s+ice_response\\((.*)\\)\s+=\s+0;", currentLine)
         if match:
             if not className:
                 raise RuntimeError("Expected a className to be found at this time")
-        match = re.match("virtual\s+void\s+(.+)_async\(const\s+(.+?)&\s*\w*,(.*)\s+const\s+::Ice::Current&", currentLine)
+        match = re.match(r"virtual\s+void\s+(.+)_async\(const\s+(.+?)&\s*\w*,(.*)\s+const\s+::Ice::Current&", currentLine)
         if match:
             functionName = match.group(1)
             objectName = match.group(2)

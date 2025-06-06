@@ -1,4 +1,4 @@
-// Copyright 2020-2023 The Mumble Developers. All rights reserved.
+// Copyright The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -78,7 +78,7 @@ void CryptographicHashPrivate::addData(const QByteArray &buf) {
 		return;
 	}
 
-	int err = EVP_DigestUpdate(m_mdctx, buf.constData(), buf.size());
+	int err = EVP_DigestUpdate(m_mdctx, buf.constData(), static_cast< std::size_t >(buf.size()));
 	if (err != 1) {
 		cleanupMdctx();
 	}

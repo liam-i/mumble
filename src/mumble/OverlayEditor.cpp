@@ -1,4 +1,4 @@
-// Copyright 2010-2023 The Mumble Developers. All rights reserved.
+// Copyright The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -22,7 +22,6 @@
 OverlayEditor::OverlayEditor(QWidget *p, QGraphicsItem *qgi, OverlaySettings *osptr)
 	: QDialog(p), qgiPromote(qgi), oes(Global::get().s.os) {
 	setupUi(this);
-	qsZoom->setAccessibleName(tr("Zoom level"));
 	os = osptr ? osptr : &Global::get().s.os;
 
 	connect(qdbbBox->button(QDialogButtonBox::Apply), SIGNAL(clicked()), this, SLOT(apply()));
@@ -32,10 +31,11 @@ OverlayEditor::OverlayEditor(QWidget *p, QGraphicsItem *qgi, OverlaySettings *os
 	if (qgpw) {
 		qgpw->setFlag(QGraphicsItem::ItemIgnoresParentOpacity);
 		if (Global::get().ocIntercept) {
-			qgpw->setPos(iroundf(static_cast< float >(Global::get().ocIntercept->uiWidth) / 16.0f + 0.5f),
-						 iroundf(static_cast< float >(Global::get().ocIntercept->uiHeight) / 16.0f + 0.5f));
-			qgpw->resize(iroundf(static_cast< float >(Global::get().ocIntercept->uiWidth) * 14.0f / 16.0f + 0.5f),
-						 iroundf(static_cast< float >(Global::get().ocIntercept->uiHeight) * 14.0f / 16.0f + 0.5f));
+			qgpw->setPos(static_cast< int >(static_cast< float >(Global::get().ocIntercept->iWidth) / 16.0f + 0.5f),
+						 static_cast< int >(static_cast< float >(Global::get().ocIntercept->iHeight) / 16.0f + 0.5f));
+			qgpw->resize(
+				static_cast< int >(static_cast< float >(Global::get().ocIntercept->iWidth) * 14.0f / 16.0f + 0.5f),
+				static_cast< int >(static_cast< float >(Global::get().ocIntercept->iHeight) * 14.0f / 16.0f + 0.5f));
 		}
 	}
 
@@ -52,7 +52,7 @@ OverlayEditor::~OverlayEditor() {
 		qgiPromote->setZValue(-1.0f);
 }
 
-void OverlayEditor::enterEvent(QEvent *e) {
+void OverlayEditor::enterEvent(QEnterEvent *e) {
 	QGraphicsProxyWidget *qgpw = Global::get().mw->graphicsProxyWidget();
 	if (qgpw)
 		qgpw->setOpacity(0.9f);
@@ -159,6 +159,6 @@ void OverlayEditor::on_qcbBox_clicked() {
 }
 
 void OverlayEditor::on_qsZoom_valueChanged(int zoom) {
-	oes.uiZoom = zoom;
+	oes.uiZoom = static_cast< unsigned int >(zoom);
 	oes.resync();
 }

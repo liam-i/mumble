@@ -1,4 +1,4 @@
-// Copyright 2010-2023 The Mumble Developers. All rights reserved.
+// Copyright The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -15,8 +15,8 @@
 #include "ClientType.h"
 #include "Connection.h"
 #include "HostAddress.h"
+#include "ServerUserInfo.h"
 #include "Timer.h"
-#include "User.h"
 
 #include <QtCore/QElapsedTimer>
 #include <QtCore/QStringList>
@@ -26,6 +26,8 @@
 #else
 #	include <sys/socket.h>
 #endif
+
+#include <vector>
 
 // Unfortunately, this needs to be "large enough" to hold
 // enough frames to account for both short-term and
@@ -52,13 +54,14 @@ struct BandwidthRecord {
 
 struct WhisperTarget {
 	struct Channel {
-		int iId;
-		bool bChildren;
-		bool bLinks;
-		QString qsGroup;
+		unsigned int id;
+		bool includeChildren;
+		bool includeLinks;
+		QString targetGroup;
 	};
-	QList< unsigned int > qlSessions;
-	QList< WhisperTarget::Channel > qlChannels;
+
+	std::vector< unsigned int > sessions;
+	std::vector< WhisperTarget::Channel > channels;
 };
 
 class ServerUser;
@@ -76,13 +79,13 @@ class Server;
 class LeakyBucket {
 private:
 	/// The amount of tokens that are drained per second.
-	/// (The sze of the whole in the bucket)
+	/// (The size of the whole in the bucket)
 	unsigned int m_tokensPerSec;
 	/// The maximum amount of tokens that may be encountered.
 	/// (The capacity of the bucket)
 	unsigned int m_maxTokens;
 	/// The amount of tokens currently stored
-	/// (The amount of whater currently in the bucket)
+	/// (The amount of whatever currently is in the bucket)
 	long m_currentTokens;
 	/// A timer that is used to measure time intervals. It is essential
 	/// that this timer uses a monotonic clock (which is why QElapsedTimer is
@@ -99,7 +102,7 @@ public:
 	LeakyBucket(unsigned int tokensPerSec, unsigned int maxTokens);
 };
 
-class ServerUser : public Connection, public User {
+class ServerUser : public Connection, public ServerUserInfo {
 private:
 	Q_OBJECT
 	Q_DISABLE_COPY(ServerUser)
@@ -115,17 +118,6 @@ public:
 	float dUDPPingAvg, dUDPPingVar;
 	float dTCPPingAvg, dTCPPingVar;
 	quint32 uiUDPPackets, uiTCPPackets;
-
-	Version::full_t m_version;
-	QString qsRelease;
-	QString qsOS;
-	QString qsOSVersion;
-
-	std::string ssContext;
-	QString qsIdentity;
-
-	bool bVerified;
-	QStringList qslEmail;
 
 	HostAddress haAddress;
 

@@ -1,4 +1,4 @@
-// Copyright 2007-2023 The Mumble Developers. All rights reserved.
+// Copyright The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -51,15 +51,18 @@ public:
  *
  * @see GlobalShortcutEngine
  */
-class ShortcutActionWidget : public MUComboBox {
+class ShortcutActionWidget : public QWidget {
 private:
 	Q_OBJECT
 	Q_DISABLE_COPY(ShortcutActionWidget)
 	Q_PROPERTY(unsigned int index READ index WRITE setIndex USER true)
+
+	MUComboBox *m_comboBox;
+
 public:
 	ShortcutActionWidget(QWidget *p = nullptr);
 	unsigned int index() const;
-	void setIndex(int);
+	void setIndex(unsigned int);
 };
 
 class ShortcutToggleWidget : public MUComboBox {
@@ -82,6 +85,20 @@ public:
 
 	ChannelTarget currentChannel() const;
 	void setCurrentChannel(const ChannelTarget &);
+};
+
+class TextEditWidget : public QWidget {
+private:
+	Q_OBJECT
+	Q_DISABLE_COPY(TextEditWidget)
+	Q_PROPERTY(QString currentString READ currentString WRITE setCurrentString USER true)
+
+	QLineEdit *m_lineEdit;
+
+public:
+	TextEditWidget(QWidget *p = nullptr);
+	QString currentString() const;
+	void setCurrentString(const QString &);
 };
 
 /**
@@ -201,7 +218,7 @@ public slots:
 
 struct ShortcutKey {
 	Shortcut s;
-	int iNumUp;
+	qsizetype iNumUp;
 	GlobalShortcut *gs;
 };
 

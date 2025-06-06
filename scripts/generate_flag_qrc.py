@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
-# Copyright 2022-2023 The Mumble Developers. All rights reserved.
+# Copyright The Mumble Developers. All rights reserved.
 # Use of this source code is governed by a BSD-style license
 # that can be found in the LICENSE file at the root of the
 # Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -39,7 +39,7 @@ def main():
     # Get a list of all flag SVGs
     flags = []
 
-    for fn in os.listdir(args.flag_dir):
+    for fn in sorted(os.listdir(args.flag_dir)):
         if not fn.lower().endswith('svg'):
             continue
         

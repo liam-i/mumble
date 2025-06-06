@@ -1,4 +1,4 @@
-# Copyright 2021-2023 The Mumble Developers. All rights reserved.
+# Copyright The Mumble Developers. All rights reserved.
 # Use of this source code is governed by a BSD-style license
 # that can be found in the LICENSE file at the root of the
 # Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -21,6 +21,7 @@
 
 # Always quit on encountered errors
 $ErrorActionPreference = 'Stop'
+
 
 choco install aria2
 
@@ -128,3 +129,33 @@ Invoke-Command 7z x "WixSharp.7z" "-oC:/WixSharp"
 choco install vswhere
 
 Write-Host "Build environment successfully installed"
+
+
+# Setup MySQL and PostgreSQL databases for the Mumble tests
+Write-Host "Available services:"
+Get-Service | Format-Table -Auto
+
+Write-Host "Configuring PostgreSQL..."
+Set-Service -Name "postgresql-x64-17" -StartupType Manual -Status Running
+
+$env:PATH += ";$env:PGBIN"
+$env:PGPASSWORD="root"
+
+Write-Output ("CREATE DATABASE mumble_test_db; " +
+	"CREATE USER mumble_test_user ENCRYPTED PASSWORD 'MumbleTestPassword'; " +
+	"ALTER DATABASE mumble_test_db OWNER TO mumble_test_user;") | psql --username "postgres"
+
+
+Write-Host "Configuring MySQL..."
+
+Write-Output "[mysqld]`nlog-bin-trust-function-creators = 1" | Add-Content -Path C:/Windows/my.ini
+
+mysqld --initialize-insecure --console
+Start-Process mysqld
+
+# Give the MySQL daemon some time to start up
+Start-Sleep -Seconds 5
+
+Write-Output ("CREATE DATABASE mumble_test_db; " +
+	"CREATE USER 'mumble_test_user'@'localhost' IDENTIFIED BY 'MumbleTestPassword'; " +
+	"GRANT ALL PRIVILEGES ON mumble_test_db.* TO 'mumble_test_user'@'localhost';")  | mysql --user=root

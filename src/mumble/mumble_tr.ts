@@ -164,10 +164,6 @@ Bu değer Mumble&apos;ın kanalları kanal ağacında düzenleme şeklini deği�
         <translation>Etkin EKL&apos;ler</translation>
     </message>
     <message>
-        <source>List of entries</source>
-        <translation>Unsur listesi</translation>
-    </message>
-    <message>
         <source>Inherit ACL of parent?</source>
         <translation>Üstten EKL özellikleri alınsın mı?</translation>
     </message>
@@ -419,10 +415,6 @@ Bu değer kanalda izin verilen azami kullanıcı sayısını ayarlamanıza izin 
         <translation>Kanal parolası</translation>
     </message>
     <message>
-        <source>Maximum users</source>
-        <translation>Azami kullanıcı sayısı</translation>
-    </message>
-    <message>
         <source>Channel name</source>
         <translation>Kanal adı</translation>
     </message>
@@ -431,20 +423,60 @@ Bu değer kanalda izin verilen azami kullanıcı sayısını ayarlamanıza izin 
         <translation>Devralınan grup üyeleri</translation>
     </message>
     <message>
-        <source>Foreign group members</source>
-        <translation>Yabancı grup üyeleri</translation>
-    </message>
-    <message>
         <source>Inherited channel members</source>
         <translation>Devralınan kanal üyeleri</translation>
     </message>
     <message>
-        <source>Add members to group</source>
-        <translation>Gruba üye ekle</translation>
-    </message>
-    <message>
         <source>List of ACL entries</source>
         <translation>ACL girdilerinin listesi</translation>
+    </message>
+    <message>
+        <source>Channel position</source>
+        <translation>Kanal konumu</translation>
+    </message>
+    <message>
+        <source>Channel maximum users</source>
+        <translation>Kanaldaki azami kullanıcı sayısı</translation>
+    </message>
+    <message>
+        <source>Channel description</source>
+        <translation>Kanal açıklaması</translation>
+    </message>
+    <message>
+        <source>Select member to add</source>
+        <translation>Eklemek için üye seçin</translation>
+    </message>
+    <message>
+        <source>Excluded group members</source>
+        <translation>Hariç tutulan grup üyeleri</translation>
+    </message>
+    <message>
+        <source>Select member to remove</source>
+        <translation>Kaldırmak için üye seçin</translation>
+    </message>
+    <message>
+        <source>List of access control list entries</source>
+        <translation>Erişim denetim listesi unsurları listesi</translation>
+    </message>
+    <message>
+        <source>Select group</source>
+        <translation>Grup seç</translation>
+    </message>
+    <message>
+        <source>Selects a group this ACL entry applies to. Selecting a group and selecting a user are mutually exclusive.</source>
+        <translation>Bu ACL unsurunun uygulanacağı grubu seçer. Aynı anda hem bir grup hem de bir kullanıcı seçilemez.</translation>
+    </message>
+    <message>
+        <source>Select user</source>
+        <translation>Kullanıcı seç</translation>
+    </message>
+    <message>
+        <source>Selects a user this ACL entry applies to. Selecting a group and selecting a user are mutually exclusive.</source>
+        <translation>Bu ACL unsurunun uygulanacağı kullanıcıyı seçer. Aynı anda hem bir grup hem de bir kullanıcı seçilemez.</translation>
+    </message>
+    <message>
+        <source>List of available permissions</source>
+        <translation>Kullanılabilir izinlerin listesi</translation>
     </message>
 </context>
 <context>
@@ -595,6 +627,30 @@ Bu değer kanalda izin verilen azami kullanıcı sayısını ayarlamanıza izin 
         <source>List of speakers</source>
         <translation>Hoparlörlerin listesi</translation>
     </message>
+    <message>
+        <source>Device list</source>
+        <translation>Aygıt listesi</translation>
+    </message>
+    <message>
+        <source>Move from unused to microphone list</source>
+        <translation>Kullanılmayanlardan mikrofon listesine taşı</translation>
+    </message>
+    <message>
+        <source>Move from microphone to unused list</source>
+        <translation>Mikrofondan kullanılmayanlar listesine taşı</translation>
+    </message>
+    <message>
+        <source>List of unused devices</source>
+        <translation>Kullanılmayan aygıtların listesi</translation>
+    </message>
+    <message>
+        <source>Move from unused to speakers list</source>
+        <translation>Kullanılmayanlardan hoparlörler listesine taşı</translation>
+    </message>
+    <message>
+        <source>Move from speakers to unused list</source>
+        <translation>Hoparlörlerden kullanılmayanlar listesine taşı</translation>
+    </message>
 </context>
 <context>
     <name>ASIOInput</name>
@@ -665,10 +721,6 @@ Bu değer kanalda izin verilen azami kullanıcı sayısını ayarlamanıza izin 
         <translation>Sistem</translation>
     </message>
     <message>
-        <source>Input method for audio</source>
-        <translation>Ses için girdi metodu</translation>
-    </message>
-    <message>
         <source>Device</source>
         <translation>Aygıt</translation>
     </message>
@@ -731,10 +783,6 @@ Bu değer kanalda izin verilen azami kullanıcı sayısını ayarlamanıza izin 
     <message>
         <source>On</source>
         <translation>Açık</translation>
-    </message>
-    <message>
-        <source>Preview the audio cues</source>
-        <translation>Ses işaretleri önizlemesi</translation>
     </message>
     <message>
         <source>Use SNR based speech detection</source>
@@ -803,10 +851,6 @@ Bu değer kanalda izin verilen azami kullanıcı sayısını ayarlamanıza izin 
     <message>
         <source>&lt;b&gt;This selects how many audio frames should be put in one packet.&lt;/b&gt;&lt;br /&gt;Increasing this will increase the latency of your voice, but will also reduce bandwidth requirements.</source>
         <translation>&lt;b&gt;Paket başına konulacak ses veri miktarını belirler.&lt;/b&gt;&lt;br /&gt;Bu değeri arttırmanız konuşmanızın gecikmesini arttıracaktır, ancak aynı zamanda bant genişliği gereksinimlerini azaltacaktır.</translation>
-    </message>
-    <message>
-        <source>&lt;b&gt;This shows peak outgoing bandwidth used.&lt;/b&gt;&lt;br /&gt;This shows the peak amount of bandwidth sent out from your machine. Audio bitrate is the maximum bitrate (as we use VBR) for the audio data alone. Position is the bitrate used for positional information. Overhead is our framing and the IP packet headers (IP and UDP is 75% of this overhead).</source>
-        <translation>&lt;b&gt;Dışarıya giden azami bant genişliğini gösterir.&lt;/b&gt;&lt;br /&gt;Bilgisayarınızdan gönderilen azami bant genişliğini gösterir. Ses veri akışı (bitrate) sadece ses verileri için azami veri akışıdır (VBR kullandığımız için). Konum, konumsal veriler için kullanılan veri akışıdır. Yük ise veri bölme ve İP paket başlıklarıdır (İP ve UDP bu yükün %75&apos;ini oluşturur).</translation>
     </message>
     <message>
         <source>Audio Processing</source>
@@ -1056,6 +1100,138 @@ Bu değer kanalda izin verilen azami kullanıcı sayısını ayarlamanıza izin 
         <source>Voice Activity</source>
         <translation>Ses Etkinliği</translation>
     </message>
+    <message>
+        <source>Input backend for audio</source>
+        <translation>Ses için girdi arka ucu</translation>
+    </message>
+    <message>
+        <source>Audio input system</source>
+        <translation>Ses girdi sistemi</translation>
+    </message>
+    <message>
+        <source>Audio input device</source>
+        <translation>Ses girdi aygıtı</translation>
+    </message>
+    <message>
+        <source>Transmission mode</source>
+        <translation>Aktarım modu</translation>
+    </message>
+    <message>
+        <source>Push to talk lock threshold</source>
+        <translation>Bas ve konuş kilit eşiği</translation>
+    </message>
+    <message>
+        <source>Switch between push to talk and continuous mode by double tapping in this time frame</source>
+        <translation>Bu zaman diliminde çift dokunarak bas ve konuş ile sürekli mod arasında geçiş yap</translation>
+    </message>
+    <message>
+        <source>&lt;b&gt;Voice hold Time&lt;/b&gt;&lt;br /&gt;After you release the push-to-talk key Mumble will keep transmitting for the selected amount of time.</source>
+        <translation>&lt;b&gt;Ses aktarım süresi&lt;/b&gt;&lt;br /&gt;Bas ve konuş tuşunu bıraktıktan sonra Mumble seçilen süre boyunca aktarıma devam edecektir.</translation>
+    </message>
+    <message>
+        <source>Push to talk hold threshold</source>
+        <translation>Bas ve konuş aktarım eşiği</translation>
+    </message>
+    <message>
+        <source>Extend push to talk send time after the key is released by this amount of time</source>
+        <translation>Tuş bırakıldıktan sonra bas ve konuş aktarım süresini bu süre kadar uzat</translation>
+    </message>
+    <message>
+        <source>Voice hold time</source>
+        <translation>Ses muhafaza süresi</translation>
+    </message>
+    <message>
+        <source>Silence below threshold</source>
+        <translation>Sessizlik alt eşiği</translation>
+    </message>
+    <message>
+        <source>This sets the threshold when Mumble will definitively consider a signal silence</source>
+        <translation>Bu, Mumble&apos;ın bir sinyali kesin olarak sessizlik şeklinde değerlendireceği eşiği ayarlar</translation>
+    </message>
+    <message>
+        <source>Speech above threshold</source>
+        <translation>Konuşma üst eşiği</translation>
+    </message>
+    <message>
+        <source>This sets the threshold when Mumble will definitively consider a signal speech</source>
+        <translation>Bu, Mumble&apos;ın bir sinyali kesin olarak konuşma şeklinde değerlendireceği eşiği ayarlar</translation>
+    </message>
+    <message>
+        <source>This sets how much speech is packed into a single network package</source>
+        <translation>Bu, tek bir şebeke paketinde ne kadar konuşmanın bulunacağını ayarlar</translation>
+    </message>
+    <message>
+        <source>Audio compression quality</source>
+        <translation>Ses sıkıştırma kalitesi</translation>
+    </message>
+    <message>
+        <source>This sets the target compression bitrate</source>
+        <translation>Bu, hedef sıkıştırma bit akış oranını ayarlar</translation>
+    </message>
+    <message>
+        <source>Maximum amplification</source>
+        <translation>Azami Yükseltme</translation>
+    </message>
+    <message>
+        <source>Speech is dynamically amplified by at most this amount</source>
+        <translation>Konuşma, dinamik olarak en çok bu miktarda güçlendirilecektir</translation>
+    </message>
+    <message>
+        <source>Noise suppression strength</source>
+        <translation>Gürültü bastırma gücü</translation>
+    </message>
+    <message>
+        <source>Echo cancellation mode</source>
+        <translation>Yankı iptal kipi</translation>
+    </message>
+    <message>
+        <source>Path to audio file</source>
+        <translation>Ses dosyasının yolu</translation>
+    </message>
+    <message>
+        <source>Path to audio cue file when stopping to speak. Use the &quot;browse&quot; button to open a file dialog.</source>
+        <translation>Konuşma durduğunda kullanılacak ses işaret doyasının yolu. Bir dosya diyaloğu açmak için &quot;tara&quot; düğmesini kullanın.</translation>
+    </message>
+    <message>
+        <source>Idle action time threshold (in minutes)</source>
+        <translation>Boşta kalma süre eşiği (dakika olarak)</translation>
+    </message>
+    <message>
+        <source>Select what to do when being idle for a configurable amount of time. Default: nothing</source>
+        <translation>Yapılandırılabilir bir süre boyunca boşta kalındığında ne yapılacağını seçin. Varsayılan: hiçbir şey</translation>
+    </message>
+    <message>
+        <source>Gets played when you are trying to speak while being muted</source>
+        <translation>Susturulmuş olduğunuzda konuşmaya çalışırsanız çalınır</translation>
+    </message>
+    <message>
+        <source>Path to mute cue file. Use the &quot;browse&quot; button to open a file dialog.</source>
+        <translation>Susturma işaret dosyasının yolu. Bir dosya diyaloğu açmak için &quot;tara&quot; düğmesini kullanın.</translation>
+    </message>
+    <message>
+        <source>Browse for mute cue audio file</source>
+        <translation>Susturma işaret ses dosyası için tara</translation>
+    </message>
+    <message>
+        <source>Path to audio cue file when starting to speak. Use the &quot;browse&quot; button to open a file dialog.</source>
+        <translation>Konuşmaya başlandığında kullanılacak ses işaret dosyasının yolu. Bir dosya diyaloğu açmak için &quot;tara&quot; düğmesini kullanın.</translation>
+    </message>
+    <message>
+        <source>Preview the mute cue</source>
+        <translation>Susturma işaretini önizle</translation>
+    </message>
+    <message>
+        <source>The mute cue is an audio sample which plays when you are trying to speak while being muted</source>
+        <translation>Susturma işareti, susturulmuş olduğunuzda konuşmaya çalışırsanız çalınacak ses örneğidir</translation>
+    </message>
+    <message>
+        <source>Preview both audio cues</source>
+        <translation>Her iki ses işaretini önizle</translation>
+    </message>
+    <message>
+        <source>&lt;b&gt;This shows peak outgoing bandwidth used.&lt;/b&gt;&lt;br /&gt;This shows the peak amount of bandwidth sent out from your machine. Audio bitrate is the maximum bitrate for the audio data alone. Position is the bitrate used for positional information. Overhead is our framing and the IP packet headers (IP and UDP is 75% of this overhead).</source>
+        <translation>&lt;b&gt;Bu, kullanılan en yüksek giden bant genişliğini gösterir.&lt;/b&gt;&lt;br /&gt;Bu, makinenizden gönderilen en yüksek bant genişliği miktarını gösterir. Ses bit hızı, yalnızca ses verileri için en yüksek bit hızıdır. Konum, konumsal bilgiler için kullanılan bit hızıdır. Ek yük bizim çerçeveleme ve IP paket başlıklarımızdır (IP ve UDP bu ek yükün %75&apos;idir).</translation>
+    </message>
 </context>
 <context>
     <name>AudioInputDialog</name>
@@ -1100,78 +1276,6 @@ Bu değer kanalda izin verilen azami kullanıcı sayısını ayarlamanıza izin 
         <translation>%1 kbit/s (Ses %2, Konum %4, Yük %3)</translation>
     </message>
     <message>
-        <source>Audio system</source>
-        <translation>Ses sistemi</translation>
-    </message>
-    <message>
-        <source>Input device</source>
-        <translation>Girdi aygıtı</translation>
-    </message>
-    <message>
-        <source>Echo cancellation mode</source>
-        <translation>Yankı iptal modu</translation>
-    </message>
-    <message>
-        <source>Transmission mode</source>
-        <translation>Aktarım modu</translation>
-    </message>
-    <message>
-        <source>PTT lock threshold</source>
-        <translation>PTT kilit eşiği</translation>
-    </message>
-    <message>
-        <source>PTT hold threshold</source>
-        <translation>PTT tutma eşiği</translation>
-    </message>
-    <message>
-        <source>Silence below</source>
-        <translation>Aşağısında sessizlik</translation>
-    </message>
-    <message>
-        <source>Current speech detection chance</source>
-        <translation>Güncel konuşma tespit ihtimâli</translation>
-    </message>
-    <message>
-        <source>Speech above</source>
-        <translation>Üstünde Konuşma</translation>
-    </message>
-    <message>
-        <source>Speech below</source>
-        <translation>Aşağıdaki konuşma</translation>
-    </message>
-    <message>
-        <source>Audio per packet</source>
-        <translation>Paket başına ses</translation>
-    </message>
-    <message>
-        <source>Quality of compression (peak bandwidth)</source>
-        <translation>Sıkıştırma kalitesi (azami bant genişliği)</translation>
-    </message>
-    <message>
-        <source>Noise suppression</source>
-        <translation>Gürültü bastırma</translation>
-    </message>
-    <message>
-        <source>Maximum amplification</source>
-        <translation>Azami Yükseltme</translation>
-    </message>
-    <message>
-        <source>Transmission started sound</source>
-        <translation>İletim başladı sesi</translation>
-    </message>
-    <message>
-        <source>Transmission stopped sound</source>
-        <translation>İletim durdu sesi</translation>
-    </message>
-    <message>
-        <source>Initiate idle action after (in minutes)</source>
-        <translation>(Dakika olarak) sonra boşta kalma eylemini başlat</translation>
-    </message>
-    <message>
-        <source>Idle action</source>
-        <translation>Boşta kalma eylemi</translation>
-    </message>
-    <message>
         <source>Access to the microphone was denied. Please allow Mumble to use the microphone by changing the settings in System Preferences -&gt; Security &amp; Privacy -&gt; Privacy -&gt; Microphone.</source>
         <translation>Mikrofona erişim reddedildi. Lütfen Sistem Tercihleri -&gt; Güvenlik ve Gizlilik -&gt; Gizlilik -&gt; Mikrofon&apos;daki ayarları değiştirerek Mumble&apos;ın mikrofonu kullanmasına izin verin.</translation>
     </message>
@@ -1186,6 +1290,22 @@ Bu değer kanalda izin verilen azami kullanıcı sayısını ayarlamanıza izin 
     <message>
         <source>Disable echo cancellation.</source>
         <translation>Yankı iptalini devre dışı bırakın.</translation>
+    </message>
+    <message>
+        <source>milliseconds</source>
+        <translation>milisaniye</translation>
+    </message>
+    <message>
+        <source>seconds</source>
+        <translation>saniye</translation>
+    </message>
+    <message>
+        <source>kilobits per second</source>
+        <translation>kilobit/saniye</translation>
+    </message>
+    <message>
+        <source>decibels</source>
+        <translation>desibel</translation>
     </message>
 </context>
 <context>
@@ -1460,6 +1580,58 @@ Bu değer kanalda izin verilen azami kullanıcı sayısını ayarlamanıza izin 
         <source>Positional audio cannot work with mono output devices!</source>
         <translation>Konumsal ses, mono çıkış aygıtlarıyla çalışamaz!</translation>
     </message>
+    <message>
+        <source>Audio output system</source>
+        <translation>Ses çıktı sistemi</translation>
+    </message>
+    <message>
+        <source>Audio output device</source>
+        <translation>Ses çıktı aygıtı</translation>
+    </message>
+    <message>
+        <source>Output delay of incoming speech</source>
+        <translation>Gelen konuşmanın çıktı gecikmesi</translation>
+    </message>
+    <message>
+        <source>Jitter buffer time</source>
+        <translation>Jitter arabelleğe alış süresi</translation>
+    </message>
+    <message>
+        <source>Attenuation percentage</source>
+        <translation>Zayıflatma yüzdesi</translation>
+    </message>
+    <message>
+        <source>During speech, the volume of other applications will be reduced by this amount</source>
+        <translation>Konuşma esnasında, diğer uygulamaların ses seviyesi bu miktarda azaltılacaktır</translation>
+    </message>
+    <message>
+        <source>Minimum volume</source>
+        <translation>Asgari ses seviyesi</translation>
+    </message>
+    <message>
+        <source>Minimum distance</source>
+        <translation>Asgari mesafe</translation>
+    </message>
+    <message>
+        <source>Maximum distance</source>
+        <translation>Azami mesafe</translation>
+    </message>
+    <message>
+        <source>Loopback artificial delay</source>
+        <translation>Geri döngü suni gecikmesi</translation>
+    </message>
+    <message>
+        <source>Loopback artificial packet loss</source>
+        <translation>Geri döngü suni paket kaybı</translation>
+    </message>
+    <message>
+        <source>Loopback test mode</source>
+        <translation>Geri döngü deneme kipi</translation>
+    </message>
+    <message>
+        <source>The loopback test can be used to test your audio configuration. While the loopback test is enabled, others will not be able to hear you.</source>
+        <translation>Geri döngü testi ses yapılandırmanızı denemek için kullanılabilir. Geri döngü denemesi faalken başkaları sizi duyamaz.</translation>
+    </message>
 </context>
 <context>
     <name>AudioOutputDialog</name>
@@ -1488,58 +1660,6 @@ Bu değer kanalda izin verilen azami kullanıcı sayısını ayarlamanıza izin 
         <translation>%1 %</translation>
     </message>
     <message>
-        <source>Output system</source>
-        <translation>Çıkış sistemi</translation>
-    </message>
-    <message>
-        <source>Output device</source>
-        <translation>Çıktı aygıtı</translation>
-    </message>
-    <message>
-        <source>Default jitter buffer</source>
-        <translation>Varsayılan titreşim arabelleği</translation>
-    </message>
-    <message>
-        <source>Volume of incoming speech</source>
-        <translation>Gelen konuşma için ses düzeyi</translation>
-    </message>
-    <message>
-        <source>Output delay</source>
-        <translation>Çıkış gecikmesi</translation>
-    </message>
-    <message>
-        <source>Attenuation of other applications during speech</source>
-        <translation>Diğer tüm uygulamaları konuşma sırasında kıs</translation>
-    </message>
-    <message>
-        <source>Minimum distance</source>
-        <translation>Asgari Mesafe</translation>
-    </message>
-    <message>
-        <source>Maximum distance</source>
-        <translation>Azami Mesafe</translation>
-    </message>
-    <message>
-        <source>Minimum volume</source>
-        <translation>En düşük ses seviyesi</translation>
-    </message>
-    <message>
-        <source>Bloom</source>
-        <translation>Genişletme</translation>
-    </message>
-    <message>
-        <source>Delay variance</source>
-        <translation>Gecikme Değişikliği</translation>
-    </message>
-    <message>
-        <source>Packet loss</source>
-        <translation>Paket kaybı</translation>
-    </message>
-    <message>
-        <source>Loopback</source>
-        <translation>Geridöngü</translation>
-    </message>
-    <message>
         <source>Distance at which audio volume from another player starts decreasing</source>
         <translation>Başka bir oyuncunun ses seviyesinin azalmaya başladığı mesafe</translation>
     </message>
@@ -1554,6 +1674,14 @@ Bu değer kanalda izin verilen azami kullanıcı sayısını ayarlamanıza izin 
     <message>
         <source>If an audio source is close enough, blooming will cause the audio to be played on all speakers more or less regardless of their position (albeit with lower volume)</source>
         <translation>Genişletme; bir ses kaynağı yeterince yakınsa, sesin tüm hoparlörlerde konumlarından bağımsız olarak (daha düşük ses seviyesinde de olsa) aşağı yukarı aynı çalınmasına neden olacaktır</translation>
+    </message>
+    <message>
+        <source>milliseconds</source>
+        <translation>milisaniye</translation>
+    </message>
+    <message>
+        <source>meters</source>
+        <translation>metre</translation>
     </message>
 </context>
 <context>
@@ -1712,8 +1840,8 @@ Bu değer kanalda izin verilen azami kullanıcı sayısını ayarlamanıza izin 
         <translation>Yankı iptalinin ağırlığını gösterir, zaman aşağıya doğru artar ve frekans sağda artar.&lt;br /&gt;İdeal durumda hiçbir yankının olmadığını siyah renk ile gösterir. Genel durumda bir ya da daha fazla mavimtırak yatay çizgiler görürsünüz ki bunlar yankıları gösterir. Ağırlıkların gerçek zamanlı güncellemelerinizi görmeniz gerekir.&lt;br /&gt;Yankı yaratacak hiçbir şey olmadığı sürece burada dikkate değer veri görmeyeceğinizi unutmayınız. Müzik çalarsanız durum açıklaşır ve sabitleşir.&lt;br /&gt;Frekans-alanı ağırlıklarının gerçek ya da sanal kısımlarını, veya hesaplanan modül ve fazı görüntülemeyi seçebilirsiniz. Muhtemelen bunların en yararlısı yankının amplitüdü olan modüldür ve gönderilen sinyalin bu zaman çerçevesinde ne kadarının kaldırıldığını gösterir. Diğer görüntüleme kipleri en çok yankı algoritmaları ayarlamak isteyen kişilerin işine yarar&lt;br /&gt;Lütfen dikkat: Modül kipinde bütün görüntü önemli bir şekilde dalgalanırsa, bu yankı iptalinin iki girdi kaynağı (mikrofon ve hoparlörler) arasında hiçbir korelasyon bulamadığı anlamına gelir. Ya yankı için çok yüksek bir süre bulunduğunu, ya da girdi kaynaklarının yanlış yapılandırılmış olduğunu gösterir bu.</translation>
     </message>
     <message>
-        <source>This is the audio bitrate of the last compressed frame (20 ms), and as such will jump up and down as the VBR adjusts the quality. The peak bitrate can be adjusted in the Settings dialog.</source>
-        <translation>Son sıkıştırılmış çerçevenin (20 ms) ses veri akış oranıdır ve VBR kaliteyi ayarladıkça bu değer düşecek ve artacaktır. Azami veri akış oranı Ayarlar diyaloğunda belirtilebilir.</translation>
+        <source>This is the audio bitrate of the last compressed frame (20 ms). The peak bitrate can be adjusted in the Settings dialog.</source>
+        <translation>Bu, son sıkıştırılan karenin (20 ms) ses bit hızıdır. En yüksek bit hızı Ayarlar iletişim kutusunda ayarlanabilir.</translation>
     </message>
 </context>
 <context>
@@ -2075,7 +2203,7 @@ Sinirli ya da coştuğunuz zamanlardaki gibi yüksek sesle konuşunuz. Kontrol p
         <translation>&lt;b&gt;Bu, ses için kullanılacak Çıktı metodudur.&lt;/b&gt;</translation>
     </message>
     <message>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This is the audio tuning wizard for Mumble. This will help you correctly set the input levels of your sound card, and also set the correct parameters for sound processing in Mumble. &lt;/p&gt;&lt;p&gt;Please be aware that as long as this wizard is active, audio will be looped locally to allow you to listen to it, and no audio will be sent to the server. &lt;/p&gt;&lt;p&gt;Note that you can cancel this wizard at any time without it having an effect on your current audio systems. The settings are only once this wizard has been completed.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This is the audio tuning wizard for Mumble. This will help you correctly set the input levels of your sound card, and also set the correct parameters for sound processing in Mumble. &lt;/p&gt;&lt;p&gt;Please be aware that as long as this wizard is active, audio will be looped locally to allow you to listen to it, and no audio will be sent to the server. &lt;/p&gt;&lt;p&gt;Note that you can cancel this wizard at any time without it having an effect on your current audio systems. The settings are only applied once this wizard has been completed.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Bu, Mumble için ses ayarı sihirbazıdır. Ses kartınız için girdi seviyelerini doğru olarak seçmenizi ve Mumble&apos;ın ses işlemesi için doğru ayarları yapılandırmanıza yardımcı olacaktır.&lt;/p&gt;&lt;p&gt; Lütfen bu sihirbaz etkin olduğu sürece, dinleyebilmeniz için sesin yerel döngüde olacağını ve sunucuya hiçbir sesin gönderilmeyeceğini unutmayınız.&lt;/p&gt;&lt;p&gt; Bu sihirbazı herhangi bir zaman güncel ses sisteminizde hiçbir değişiklik olmadan kapatabileceğinizi unutmayınız. Ayarlar sadece bu sihirbaz tamamlandığında kaydedilecektir.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
@@ -2083,40 +2211,80 @@ Sinirli ya da coştuğunuz zamanlardaki gibi yüksek sesle konuşunuz. Kontrol p
         <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Mumble bazı oyunlar için konumsal sesi destekler ve diğer kullanıcıların seslerini oyunda bulundukları yere uygun olarak konumlar. Bulundukları yere göre, konuşanların seslerinin seviyesi, diğer kullanıcılara göre yön ve mesafeyi taklit edecek şekilde değiştirilecektir. Bu tip konumlama işletim sisteminizde hoparlör yapılandırmanızın doğru olmasına dayanır, dolayısıyla bu burada denenecektir. &lt;/p&gt;&lt;p&gt;Aşağıdaki grafik kuşbaşı görünüşle &lt;span style=&quot; color:#56b4e9;&quot;&gt;sizin&lt;/span&gt; konumunuzu, &lt;span style=&quot; color:#d55e00;&quot;&gt;hoparlörlerinizi&lt;/span&gt; ve &lt;span style=&quot; color:#009e73;&quot;&gt;hareket hâlinde bir ses kaynağı&lt;/span&gt; gösterir. Sesi kanallarda hareket hâlinde olarak duymanız gerekir. &lt;/p&gt;&lt;p&gt; &lt;span style=&quot; color:#009e73;&quot;&gt;Ses kaynağını&lt;/span&gt;el ile konumlandırmak için farenizi de kullanabilirsiniz.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <source>Input system</source>
-        <translation>Giriş sistemi</translation>
-    </message>
-    <message>
-        <source>Input device</source>
-        <translation>Girdi aygıtı</translation>
-    </message>
-    <message>
-        <source>Output system</source>
-        <translation>Çıkış sistemi</translation>
-    </message>
-    <message>
-        <source>Output device</source>
-        <translation>Çıktı aygıtı</translation>
-    </message>
-    <message>
-        <source>Output delay</source>
-        <translation>Çıkış gecikmesi</translation>
-    </message>
-    <message>
         <source>Maximum amplification</source>
         <translation>Azami Yükseltme</translation>
     </message>
     <message>
-        <source>VAD level</source>
-        <translation>VAD düzeyi</translation>
-    </message>
-    <message>
-        <source>PTT shortcut</source>
-        <translation>PTT kısayolu</translation>
-    </message>
-    <message>
         <source>No buttons assigned</source>
         <translation>Hiçbir düğme atanmadı</translation>
+    </message>
+    <message>
+        <source>Audio input system</source>
+        <translation>Ses girdi sistemi</translation>
+    </message>
+    <message>
+        <source>Audio input device</source>
+        <translation>Ses girdi aygıtı</translation>
+    </message>
+    <message>
+        <source>Select audio output device</source>
+        <translation>Ses çıktı aygıtını seç</translation>
+    </message>
+    <message>
+        <source>Audio output system</source>
+        <translation>Ses çıktı sistemi</translation>
+    </message>
+    <message>
+        <source>Audio output device</source>
+        <translation>Ses çıktı aygıtı</translation>
+    </message>
+    <message>
+        <source>The Mumble positional audio system enables users to link the relative position of their voice to third party applications such as games.</source>
+        <translation>Mumble konumsal ses sistemi, kullanıcıların seslerinin göreceli konumunu oyunlar gibi üçüncü taraf uygulamalara bağlamalarına imkân verir.</translation>
+    </message>
+    <message>
+        <source>Output delay for incoming speech</source>
+        <translation>Gelen konuşma için çıktı gecikmesi</translation>
+    </message>
+    <message>
+        <source>Maximum amplification of input sound</source>
+        <translation>Girdi sesinin azami yükseltilmesi</translation>
+    </message>
+    <message>
+        <source>Speech is dynamically amplified by at most this amount</source>
+        <translation>Konuşma dinamik olarak en çok bu miktarda güçlendirilecektir</translation>
+    </message>
+    <message>
+        <source>Voice activity detection level</source>
+        <translation>Konuşma etkinliği tespit seviyesi</translation>
+    </message>
+    <message>
+        <source>This will set the range in which Mumble will consider a signal speech. Increase value to make voice activation more sensitive.</source>
+        <translation>Bu, Mumble&apos;ın bir sinyali konuşma olarak değerlendireceği aralığı ayarlar. Konuşma etkinleştirmesini daha hassas hale getirmek için değeri arttırın.</translation>
+    </message>
+    <message>
+        <source>Push to talk</source>
+        <translation>Bas ve konuş</translation>
+    </message>
+    <message>
+        <source>Use the &quot;push to talk shortcut&quot; button to assign a key</source>
+        <translation>Bir tuş atamak için &quot;bas ve konuş kısayolu&quot; düğmesini kullanın</translation>
+    </message>
+    <message>
+        <source>Set push to talk shortcut</source>
+        <translation>Bas ve konuş kısayolu ayarla</translation>
+    </message>
+    <message>
+        <source>This will open a shortcut edit dialog</source>
+        <translation>Bu, bir kısayol düzenleme diyaloğu açacaktır</translation>
+    </message>
+    <message>
+        <source>Graphical positional audio simulation view</source>
+        <translation>Grafik konumsal ses simülasyonu görünümü</translation>
+    </message>
+    <message>
+        <source>This visually represents the positional audio that is currently being played</source>
+        <translation>Bu, görsel olarak şimdi çalınan konumsal sesi temsil eder</translation>
     </message>
 </context>
 <context>
@@ -2256,24 +2424,40 @@ Sinirli ya da coştuğunuz zamanlardaki gibi yüksek sesle konuşunuz. Kontrol p
         </translation>
     </message>
     <message>
-        <source>Search</source>
-        <translation>Ara</translation>
-    </message>
-    <message>
-        <source>IP Address</source>
-        <translation>IP Adresi</translation>
-    </message>
-    <message>
         <source>Mask</source>
         <translation>Maske</translation>
     </message>
     <message>
-        <source>Start date/time</source>
-        <translation>Başlangıç tarihi / saati</translation>
+        <source>Search for banned user</source>
+        <translation>Yasaklı kullanıcı ara</translation>
     </message>
     <message>
-        <source>End date/time</source>
-        <translation>Bitiş tarihi / saati</translation>
+        <source>Username to ban</source>
+        <translation>Yasaklanacak kullanıcı adı</translation>
+    </message>
+    <message>
+        <source>IP address to ban</source>
+        <translation>Yasaklanacak IP adresi</translation>
+    </message>
+    <message>
+        <source>Ban reason</source>
+        <translation>Yasaklama sebebi</translation>
+    </message>
+    <message>
+        <source>Ban start date/time</source>
+        <translation>Yasak başlangıç tarihi/saati</translation>
+    </message>
+    <message>
+        <source>Ban end date/time</source>
+        <translation>Yasak bitiş tarihi/saati</translation>
+    </message>
+    <message>
+        <source>Certificate hash to ban</source>
+        <translation>Yasaklanacak sertifika hash değeri</translation>
+    </message>
+    <message>
+        <source>List of banned users</source>
+        <translation>Yasaklanan kullanıcıların listesi</translation>
     </message>
 </context>
 <context>
@@ -2356,38 +2540,6 @@ Sinirli ya da coştuğunuz zamanlardaki gibi yüksek sesle konuşunuz. Kontrol p
     <message>
         <source>&lt;b&gt;Certificate Expiry:&lt;/b&gt; Your certificate is about to expire. You need to renew it, or you will no longer be able to connect to servers you are registered on.</source>
         <translation>&lt;b&gt;Sertifika Ömrü:&lt;/b&gt; Sertifikanızın süresi dolmak üzere ve yenilemeniz lazım, aksi takdirde oturumunuz bulunan sunuculara bağlanamayacaksınız.</translation>
-    </message>
-    <message>
-        <source>Current certificate</source>
-        <translation>Geçerli sertifika</translation>
-    </message>
-    <message>
-        <source>Certificate file to import</source>
-        <translation>İçe aktarılacak sertifika dosyası</translation>
-    </message>
-    <message>
-        <source>Certificate password</source>
-        <translation>Sertifika parolası</translation>
-    </message>
-    <message>
-        <source>Certificate to import</source>
-        <translation>İçe aktarılacak sertifika</translation>
-    </message>
-    <message>
-        <source>New certificate</source>
-        <translation>Yeni sertifika</translation>
-    </message>
-    <message>
-        <source>File to export certificate to</source>
-        <translation>Dışa aktarılacak dosya için sertifika</translation>
-    </message>
-    <message>
-        <source>Email address</source>
-        <translation>E-posta adresi</translation>
-    </message>
-    <message>
-        <source>Your name</source>
-        <translation>Adınız</translation>
     </message>
 </context>
 <context>
@@ -2476,10 +2628,6 @@ Sinirli ya da coştuğunuz zamanlardaki gibi yüksek sesle konuşunuz. Kontrol p
     <message>
         <source>Select file to import from</source>
         <translation>İçe aktarım için dosya</translation>
-    </message>
-    <message>
-        <source>This opens a file selection dialog to choose a file to import a certificate from.</source>
-        <translation>Bu, hangi dosyadan sertifika içe aktarılacağını belirlemek için dosya seçme diyaloğunu açar.</translation>
     </message>
     <message>
         <source>Open...</source>
@@ -2603,7 +2751,7 @@ Sertifikanızı değiştirmek istediğinize emin misiniz?
     </message>
     <message>
         <source>Your name (e.g. John Doe)</source>
-        <translation>İsminiz (mesela Namık Kemal)</translation>
+        <translation>Adınız (mesela Namık Kemal)</translation>
     </message>
     <message>
         <source>This is your name, and will be filled out in the certificate. This field is entirely optional.</source>
@@ -2632,8 +2780,48 @@ Sertifikanızı değiştirmek istediğinize emin misiniz?
 &lt;p&gt;Bu dosyanın şifrelenmeyeceğini, ve bu dosyayı ele geçiren birinin sizi taklit edebileceğinden ona iyi bakmanız gerektiğini dikkatinize sunarız.&lt;/p&gt;</translation>
     </message>
     <message>
-        <source>&lt;p&gt;Mumble can use certificates to authenticate with servers. Using certificates avoids passwords, meaning you don&apos;t need to disclose any password to the remote site. It also enables very easy user registration and a client side friends list independent of servers.&lt;/p&gt;&lt;p&gt;While Mumble can work without certificates, the majority of servers will expect you to have one.&lt;/p&gt;&lt;p&gt;Creating a new certificate automatically is sufficient for most use cases. But Mumble also supports certificates representing trust in the users ownership of an email address. These certificates are issued by third parties. For more information see our &lt;a href=&quot;http://mumble.info/certificate.php&quot;&gt;user certificate documentation&lt;/a&gt;. &lt;/p&gt;</source>
-        <translation>&lt;p&gt;Mumble, sunucularla kimlik doğrulamak için sertifika kullanabilir. Sertifika kullanmak parola kullanımına gerek bırakmaz, yani uzaktaki siteye hiçbir parola ifşa etmeniz gerekmez. Aynı zamanda çok kolay kullanıcı kaydı yapmayı ve sunuculardan bağımsız olarak istemci tarafında arkadaş listelerine imkân verir.&lt;/p&gt;&lt;p&gt;Mumble sertifika olmadan da çalışabilir fakat sunucuların ekseriyeti bir sertifikanız olmasını bekleyecektir.&lt;/p&gt;&lt;p&gt;Çoğu kullanım için otomatik sertifika oluşturmak kafi gelecektir. Ancak Mumble, kullanıcıların e-posta adreslerinin sahipliği konusunda güven temsil eden sertifikaları da destekler. Bu sertifikalar üçüncü taraflar tarafından verilir. Daha fazla bilgi için &lt;a href=&quot;http://mumble.info/certificate.php&quot;&gt;kullanıcı sertifikaları belgelendirmemize&lt;/a&gt; bakınız.&lt;/p&gt;</translation>
+        <source>Displays current certificate</source>
+        <translation>Geçerli sertifikayı görüntüler</translation>
+    </message>
+    <message>
+        <source>Certificate file to import</source>
+        <translation>İçe aktarılacak sertifika dosyası</translation>
+    </message>
+    <message>
+        <source>Use the &quot;open&quot; button to select a file using a dialog.</source>
+        <translation>Diyalog kullanarak bir dosya seçmek için &quot;Aç&quot; düğmesini kullanın.</translation>
+    </message>
+    <message>
+        <source>Certificate password</source>
+        <translation>Sertifika parolası</translation>
+    </message>
+    <message>
+        <source>Displays imported certificate</source>
+        <translation>İçe aktarılan sertifikayı görüntüler</translation>
+    </message>
+    <message>
+        <source>Displays new certificate</source>
+        <translation>Yeni sertifikayı görüntüler</translation>
+    </message>
+    <message>
+        <source>File to export certificate to</source>
+        <translation>Sertifikanın dışa aktarılacağı dosya</translation>
+    </message>
+    <message>
+        <source>Use the &quot;save as&quot; button to select a file using a dialog.</source>
+        <translation>Diyalog kullanarak bir dosya seçmek için &quot;farklı kaydet&quot; düğmesini kullanın.</translation>
+    </message>
+    <message>
+        <source>Your name. For example: John Doe</source>
+        <translation>Adınız. Örneğin: Namık Kemal</translation>
+    </message>
+    <message>
+        <source>Your email address. For example: johndoe@mumble.info</source>
+        <translation>E-posta adresiniz. Örneğin: namikkemal@mumble.info</translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;Mumble can use certificates to authenticate with servers. Using certificates avoids passwords, meaning you don&apos;t need to disclose any password to the remote site. It also enables very easy user registration and a client side friends list independent of servers.&lt;/p&gt;&lt;p&gt;While Mumble can work without certificates, the majority of servers will expect you to have one.&lt;/p&gt;&lt;p&gt;Creating a new certificate automatically is sufficient for most use cases. But Mumble also supports certificates representing trust in the users ownership of an email address. These certificates are issued by third parties. For more information see our &lt;a href=&quot;https://www.mumble.info/documentation/user/certificates/&quot;&gt;user certificate documentation&lt;/a&gt;. &lt;/p&gt;</source>
+        <translation>&lt;p&gt;Mumble, sunucularla kimlik doğrulaması yapmak için sertifikaları kullanabilir. Sertifikaları kullanmak parolaları ortadan kaldırır, yani uzak siteye herhangi bir parola vermeniz gerekmez. Ayrıca çok kolay kullanıcı kaydı ve sunuculardan bağımsız bir istemci tarafı arkadaş listesi sağlar.&lt;/p&gt;&lt;p&gt;Mumble sertifikasız çalışabilse de, sunucuların çoğu bir sertifikaya sahip olmanızı bekleyecektir.&lt;/p&gt;&lt;p&gt;Otomatik olarak yeni bir sertifika oluşturmak çoğu kullanım durumu için yeterlidir. Ancak Mumble, kullanıcıların bir e-posta adresine sahip olduğuna dair güveni temsil eden sertifikaları da destekler. Bu sertifikalar üçüncü taraflarca verilir. Daha fazla bilgi için &lt;a href=&quot;https://www.mumble.info/documentation/user/certificates/&quot;&gt;kullanıcı sertifikası belgelerimize&lt;/a&gt; bakın.&lt;/p&gt;</translation>
     </message>
 </context>
 <context>
@@ -3115,6 +3303,34 @@ Sertifikanızı değiştirmek istediğinize emin misiniz?
         <source>IPv6 address</source>
         <translation>IPv6 adresi</translation>
     </message>
+    <message>
+        <source>This is the connection dialog. There are two different ways to connect to a Mumble server. If the server is listed publicly, you can use the server list to find it. If you know the server IP address, you can manually add a new permanent entry to your favorites.</source>
+        <translation>Bu, bağlantı diyaloğudur. Bir Mumble sunucusuna bağlanmak için iki değişik yöntem mevcuttur. Şayet sunucu herkese açık olarak listelenmişse, onu bulmak için sunucu listesini kullanabilirsiniz. Eğer sunucunun IP adresini biliyorsanız, favorilerinize yeni bir daimi girdiyi elle ilave edebilirsiniz.</translation>
+    </message>
+    <message>
+        <source>The server list contains your favorites and all publicly listed servers.</source>
+        <translation>Sunucu listesi favorilerinizi ve tüm herkese açık şekilde listelenmiş sunucuları içerir.</translation>
+    </message>
+    <message>
+        <source>With this search interface you can filter the Mumble servers displayed in the server list.</source>
+        <translation>Bu arama arayüzüyle, sunucu listesinde görüntülenen Mumble sunucularını filtreleyebilirsiniz.</translation>
+    </message>
+    <message>
+        <source>Search for servername</source>
+        <translation>Sunucu adı ara</translation>
+    </message>
+    <message>
+        <source>Search for location</source>
+        <translation>Konum ara</translation>
+    </message>
+    <message>
+        <source>Set filter mode</source>
+        <translation>Filtre kipini ayarla</translation>
+    </message>
+    <message>
+        <source>Server</source>
+        <translation>Sunucu</translation>
+    </message>
 </context>
 <context>
     <name>ConnectDialogEdit</name>
@@ -3246,6 +3462,22 @@ Sunucunun etiketi. Bu, sunucu listenizde sunucunun ismidir ve istediğinizi seç
     <message>
         <source>&amp;Ignore</source>
         <translation>&amp;Yok say</translation>
+    </message>
+    <message>
+        <source>Server IP address</source>
+        <translation>Sunucu IP adresi</translation>
+    </message>
+    <message>
+        <source>Server port</source>
+        <translation>Sunucu bağlantı noktası</translation>
+    </message>
+    <message>
+        <source>Username</source>
+        <translation>Kullanıcı adı</translation>
+    </message>
+    <message>
+        <source>Label for server</source>
+        <translation>Sunucu etiketi</translation>
     </message>
 </context>
 <context>
@@ -3440,6 +3672,26 @@ Bu seçenek seçilmediyse, yetkili programlarda Mumble&apos;ın genel kısayolla
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Mumble&apos;s Global Shortcuts system does currently not work properly in combination with the Wayland protocol. For more information, visit &lt;a href=&quot;https://github.com/mumble-voip/mumble/issues/5257&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0057ae;&quot;&gt;https://github.com/mumble-voip/mumble/issues/5257&lt;/span&gt;&lt;/a&gt;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Mumble&apos;ın Genel Kısayollar sistemi şu anda Wayland protokolü ile birlikte düzgün çalışmıyor. Daha fazla bilgi için &lt;a href=&quot;https://github.com/mumble-voip/mumble/issues/5257&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0057ae;&quot;&gt;https://github.com/mumble-voip/mumble/issues/5257&lt;/span&gt;&lt;/a&gt; adresini ziyaret edin.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
+    <message>
+        <source>Configured shortcuts</source>
+        <translation>Yapılandırılan kısayollar</translation>
+    </message>
+    <message>
+        <source>Use up and down keys to navigate through your added shortcuts. Use left and right keys to navigate between actions and options for a single shortcut. Entries can be added and deleted with the buttons below.</source>
+        <translation>Eklenen kısayollarınızda gezinmek için aşağı ve yukarı imleç tuşlarını kullanın. Sağ ve sol tuşlarını eylemler ve tek bir kısayol için seçenekler arasında gezinmek için kullanın. Girdiler aşağıdaki düğmelerle eklenebilir ve silinebilir.</translation>
+    </message>
+    <message>
+        <source>Add unassigned shortcut</source>
+        <translation>Atanmamış kısayol ekle</translation>
+    </message>
+    <message>
+        <source>This adds a new empty entry to the &quot;Configured Shortcut&quot; tree above. The tree will be automatically focused. Assign a key or an action by selecting the entry in the tree above.</source>
+        <translation>Bu, yukarıdaki &quot;Yapılandırılmış Kısayol&quot; ağacına yeni boş bir girdi ekler. Ağaç, otomatik olarak odağı alacaktır. Bir tuş veya eylemi yukarıdaki ağaçta girdiyi seçerek atayın.</translation>
+    </message>
+    <message>
+        <source>This removes the selected entry from the &quot;Configured Shortcut&quot; tree above</source>
+        <translation>Bu, yukarıdaki &quot;Yapılandırılmış Kısayol&quot; ağacından seçili girdiyi kaldırır</translation>
+    </message>
 </context>
 <context>
     <name>GlobalShortcutButtons</name>
@@ -3467,6 +3719,18 @@ Bu seçenek seçilmediyse, yetkili programlarda Mumble&apos;ın genel kısayolla
         <source>Remove</source>
         <translation>Kaldır</translation>
     </message>
+    <message>
+        <source>List of shortcuts</source>
+        <translation>Kısayolların listesi</translation>
+    </message>
+    <message>
+        <source>Toggling this button will make the application listen for a shortcut. Once the shortcut is entered, the application stops listening for a shortcut. Multiple shortcuts can be assigned to the current action. Navigate to the shortcut list above to review the shortcuts currently assigned to the current action.</source>
+        <translation>Bu düğmeyi kullanmak, uygulamanın bir kısayol için dinlemeye geçmesini sağlar. Kısayol girildiğinde uygulama bir kısayol için dinlemeyi bırakır. Güncel eylem için birden çok kısayol atanabilir. Güncel eyleme şu an atanmış olan kısayolları gözden geçirmek için yukarıdaki kısayol listesine gidin.</translation>
+    </message>
+    <message>
+        <source>This button will remove the selected shortcut for the current action. Note that you will have to select a shortcut from the list above first before this button has any effect.</source>
+        <translation>Bu düğme, güncel eylem için seçili kısayolu kaldıracaktır. Bu düğmenin bir etkisi olması için yukarıdaki listeden bir kısayol seçmeniz gerekeceğini unutmayın.</translation>
+    </message>
 </context>
 <context>
     <name>GlobalShortcutConfig</name>
@@ -3492,8 +3756,28 @@ Bu seçenek seçilmediyse, yetkili programlarda Mumble&apos;ın genel kısayolla
         <translation>&lt;b&gt; Bu, basılan tuşları diğer uygulamalardan saklar.&lt;/b&gt;&lt;br /&gt;Bu seçeneği etkinleştirmek basılan tuşu (ya da çok tuşlu bir birleşimin son tuşunu) diğer uygulamalardan saklayacaktır. Tüm tuşların saklanamayacağını unutmayınız.</translation>
     </message>
     <message>
-        <source>Configured shortcuts</source>
-        <translation>Yapılandırılmış kısayollar</translation>
+        <source>Shortcut action</source>
+        <translation>Kısayol eylemi</translation>
+    </message>
+    <message>
+        <source>Shortcut data</source>
+        <translation>Kısayol verisi</translation>
+    </message>
+    <message>
+        <source>Shortcut input combinations</source>
+        <translation>Kısayol girdi birleşmeleri</translation>
+    </message>
+    <message>
+        <source>Unassigned</source>
+        <translation>Atanmadı</translation>
+    </message>
+    <message>
+        <source>checked</source>
+        <translation>işaretli</translation>
+    </message>
+    <message>
+        <source>unchecked</source>
+        <translation>işaretli değil</translation>
     </message>
 </context>
 <context>
@@ -4065,14 +4349,6 @@ Bu ayar sadece yeni mesajlara uygulanır, zaten görüntülenmiş olanlar öncek
         <translation>Mesaj kenar boşlukları</translation>
     </message>
     <message>
-        <source>Log messages</source>
-        <translation>Günlük mesajları</translation>
-    </message>
-    <message>
-        <source>TTS engine volume</source>
-        <translation>TTS motoru sesi</translation>
-    </message>
-    <message>
         <source>Chat message margins</source>
         <translation>Sohbet mesajı kenar boşlukları</translation>
     </message>
@@ -4095,10 +4371,6 @@ Bu ayar sadece yeni mesajlara uygulanır, zaten görüntülenmiş olanlar öncek
     <message>
         <source>Limit notifications when there are more than</source>
         <translation>Daha fazlası olduğunda bildirimleri sınırla</translation>
-    </message>
-    <message>
-        <source>User limit for message limiting</source>
-        <translation>Mesaj sınırlaması için kullanıcı sınırı</translation>
     </message>
     <message>
         <source>Click here to toggle message limiting for all events - If using this option be sure to change the user limit below.</source>
@@ -4163,6 +4435,74 @@ Bu ayar sadece yeni mesajlara uygulanır, zaten görüntülenmiş olanlar öncek
     <message>
         <source>Notification sound volume adjustment</source>
         <translation>Bildirim sesi ses seviyesi ayarı</translation>
+    </message>
+    <message>
+        <source>Log message types and actions</source>
+        <translation>Günlük mesajı türleri ve eylemleri</translation>
+    </message>
+    <message>
+        <source>Use up and down keys to navigate through the message types. Use left and right keys to navigate between notification possibilities for a single message type.</source>
+        <translation>Mesaj türleri arasında gezinmek için yukarı ve aşağı tuşlarını kullanın. Sağ ve sol tuşlarını tek bir mesaj türü için bildirim imkânları arasında gezinmek için kullanın.</translation>
+    </message>
+    <message>
+        <source>Set length threshold</source>
+        <translation>Uzunluk eşiğini ayarla</translation>
+    </message>
+    <message>
+        <source>Text to speech volume</source>
+        <translation>Konuşma sentezi ses seviyesi</translation>
+    </message>
+    <message>
+        <source>Maximum chat log length</source>
+        <translation>Azami sohbet kütük boyutu</translation>
+    </message>
+    <message>
+        <source>User limit for notifications</source>
+        <translation>Bildirimler için kullanıcı sınırı</translation>
+    </message>
+    <message>
+        <source>Message type</source>
+        <translation>Mesaj türü</translation>
+    </message>
+    <message>
+        <source>Log message to console checkbox</source>
+        <translation>Mesajı konsol kütüğüne ekle onay kutusu</translation>
+    </message>
+    <message>
+        <source>Display pop-up notification for message checkbox</source>
+        <translation>Mesaj için açılır bildirim görüntüle onay kutusu</translation>
+    </message>
+    <message>
+        <source>Highlight window for message checkbox</source>
+        <translation>Mesaj için pencereyi vurgula onay kutusu</translation>
+    </message>
+    <message>
+        <source>Read message using text to speech checkbox</source>
+        <translation>Mesajı konuşma sentezi kullanarak oku onay kutusu</translation>
+    </message>
+    <message>
+        <source>Limit message notification if user count is high checkbox</source>
+        <translation>Kullanıcı sayısı yüksekse mesaj bildirimini sınırla onay kutusu</translation>
+    </message>
+    <message>
+        <source>Play sound file for message checkbox</source>
+        <translation>Mesaj için ses dosyası çal onay kutusu</translation>
+    </message>
+    <message>
+        <source>Path to sound file</source>
+        <translation>Ses dosyasının yolu</translation>
+    </message>
+    <message>
+        <source>checked</source>
+        <translation>işaretli</translation>
+    </message>
+    <message>
+        <source>unchecked</source>
+        <translation>işaretli değil</translation>
+    </message>
+    <message>
+        <source>decibels</source>
+        <translation>desibel</translation>
     </message>
 </context>
 <context>
@@ -4514,34 +4854,6 @@ Bu ayar sadece yeni mesajlara uygulanır, zaten görüntülenmiş olanlar öncek
         <translation>Sonek karakter sayısı</translation>
     </message>
     <message>
-        <source>Maximum name length</source>
-        <translation>Maksimum isim uzunluğu</translation>
-    </message>
-    <message>
-        <source>Relative font size</source>
-        <translation>Göreli yazı tipi boyutu</translation>
-    </message>
-    <message>
-        <source>Always on top</source>
-        <translation>Her zaman üstte</translation>
-    </message>
-    <message>
-        <source>Channel dragging</source>
-        <translation>Kanal Kaydırma</translation>
-    </message>
-    <message>
-        <source>Automatically expand channels when</source>
-        <translation>Kanalları otomatik olarak genişletirken</translation>
-    </message>
-    <message>
-        <source>User dragging behavior</source>
-        <translation>Kullanıcı sürükleme davranışı</translation>
-    </message>
-    <message>
-        <source>Silent user lifetime</source>
-        <translation>Sessiz kullanıcı ömrü</translation>
-    </message>
-    <message>
         <source>Show the local volume adjustment for each user (if any).</source>
         <translation>Her kullanıcı için yerel ses ayarını gösterin (varsa).</translation>
     </message>
@@ -4621,6 +4933,102 @@ Bu ayar sadece yeni mesajlara uygulanır, zaten görüntülenmiş olanlar öncek
         <source>Always Quit</source>
         <translation>Her Zaman Çık</translation>
     </message>
+    <message>
+        <source> seconds</source>
+        <translation> saniye</translation>
+    </message>
+    <message>
+        <source>If this is checked, users will always be visible in the TalkingUI (regardless of talking state).</source>
+        <translation>Şayet bu şık seçiliyse, kullanıcılar Konuşmq Arayüzü&apos;nde daime görünür olacaklardır (konuşma durumlarından bağımsız bir şekilde).</translation>
+    </message>
+    <message>
+        <source>Always keep users visible</source>
+        <translation>Kullanıcıları daima görünür yap</translation>
+    </message>
+    <message>
+        <source>Channel expand mode</source>
+        <translation>Kanal genişletme kipi</translation>
+    </message>
+    <message>
+        <source>User dragging mode</source>
+        <translation>Kullanıcı sürükleme kipi</translation>
+    </message>
+    <message>
+        <source>Channel dragging mode</source>
+        <translation>Kanal sürükleme kipi</translation>
+    </message>
+    <message>
+        <source>Always on top mode</source>
+        <translation>Her zaman üstte modu</translation>
+    </message>
+    <message>
+        <source>Quit behavior mode</source>
+        <translation>Sessiz davranış modu</translation>
+    </message>
+    <message>
+        <source>Channel separator string</source>
+        <translation>Kanal ayırıcı dizgesi</translation>
+    </message>
+    <message>
+        <source>Maximum channel name length</source>
+        <translation>Azami kanal adı uzunluğu</translation>
+    </message>
+    <message>
+        <source>Abbreviation replacement characters</source>
+        <translation>Kısaltma için yerine koyma karakterleri</translation>
+    </message>
+    <message>
+        <source>Relative font size (in percent)</source>
+        <translation>Göreceli yazı tipi boyutu (yüzde olarak)</translation>
+    </message>
+    <message>
+        <source>Silent user display time (in seconds)</source>
+        <translation>Sessiz kullanıcı görüntüleme süresi (saniye olarak)</translation>
+    </message>
+    <message>
+        <source>Mumble theme</source>
+        <translation>Mumble teması</translation>
+    </message>
+    <message>
+        <source>User search action mode</source>
+        <translation>Kullanıcı arama eylem kipi</translation>
+    </message>
+    <message>
+        <source>Channel search action mode</source>
+        <translation>Kanal arama eylem kipi</translation>
+    </message>
+    <message>
+        <source>Clears the TalkingUI background setting.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Clear Background Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Clear</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Color that gets used for the background of the talkingUI.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Choose</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Background color that, if set, overrides the theme background color.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Background Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Choose a Color</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>MainWindow</name>
@@ -4691,10 +5099,6 @@ Bu ayar sadece yeni mesajlara uygulanır, zaten görüntülenmiş olanlar öncek
     <message>
         <source>Mumble</source>
         <translation>Mumble</translation>
-    </message>
-    <message>
-        <source>Mumble -- %1</source>
-        <translation>Mumble -- %1</translation>
     </message>
     <message>
         <source>&amp;Window</source>
@@ -4839,10 +5243,6 @@ Bu ayar sadece yeni mesajlara uygulanır, zaten görüntülenmiş olanlar öncek
     <message>
         <source>&lt;p&gt;%1&lt;/p&gt;&lt;ul&gt;%2&lt;/ul&gt;&lt;p&gt;The specific errors with this certificate are:&lt;/p&gt;&lt;ol&gt;%3&lt;/ol&gt;&lt;p&gt;Do you wish to accept this certificate anyway?&lt;br /&gt;(It will also be stored so you won&apos;t be asked this again.)&lt;/p&gt;</source>
         <translation>&lt;p&gt;%1&lt;/p&gt;&lt;ul&gt;%2&lt;/ul&gt;&lt;p&gt;Bu sertifikayla ilgili hatalar şunlardır:&lt;/p&gt;&lt;ol&gt;%3&lt;/ol&gt;&lt;p&gt;Buna rağmen bu sertifikayı kabul etmek istiyor musunuz?&lt;br /&gt;(Sertifika saklanacaktır ve bu soru tekrar sorulmayacaktır.)&lt;/p&gt;</translation>
-    </message>
-    <message>
-        <source>SSL Version mismatch</source>
-        <translation>SSL Sürüm uyumsuzluğu</translation>
     </message>
     <message>
         <source>Server connection failed.</source>
@@ -5066,10 +5466,6 @@ Bu ayar sadece yeni mesajlara uygulanır, zaten görüntülenmiş olanlar öncek
         <translation>&lt;b&gt;UYARI:&lt;/b&gt; Sunucu sakladığımız sertifikadan değişik bir sertifika sundu.</translation>
     </message>
     <message>
-        <source>This server is using an older encryption standard, and is no longer supported by modern versions of Mumble.</source>
-        <translation>Bu sunucu Mumble&apos;ın modern sürümleri tarafından artık desteklenmeyen eski bir şifreleme standardı kullanmaktadır.</translation>
-    </message>
-    <message>
         <source>Server connection failed: %1.</source>
         <translation>Sunucuyla bağlantı başarısız oldu: %1.</translation>
     </message>
@@ -5218,10 +5614,6 @@ deneyiniz. Yoksa iptal edip parolanızı kontrol ediniz.</translation>
         <translation>İzinleri denetlemek için Grup ve Erişim Kontrol Listesi diyaloğunu açar.</translation>
     </message>
     <message>
-        <source>&amp;Link</source>
-        <translation>&amp;Bağla</translation>
-    </message>
-    <message>
         <source>Link your channel to another channel</source>
         <translation>Kanalınızı başka bir kanala bağla</translation>
     </message>
@@ -5316,20 +5708,12 @@ deneyiniz. Yoksa iptal edip parolanızı kontrol ediniz.</translation>
         <translation>Gürültü iptali, otomatik kazanım ve ses etkinliği tespiti de dahil olmak üzere ses ön işlemcisini sıfırlar. Ses ortamında herhangi bir şey aniden kötüleşirse ve bu geçiciyse (mikrofonun yere düşmesi gibi), ön işlemcinin yeniden ayarlanmasını beklememek için kullanabilirsiniz.</translation>
     </message>
     <message>
-        <source>&amp;Mute Self</source>
-        <translation>&amp;Kendini Sustur</translation>
-    </message>
-    <message>
         <source>Mute yourself</source>
         <translation>Kendini sustur</translation>
     </message>
     <message>
         <source>Mute or unmute yourself. When muted, you will not send any data to the server. Unmuting while deafened will also undeafen.</source>
         <translation>Sizi susturur ya da susturulmanızı kaldırır. Susturulduğunuzda sunucuya hiçbir veri göndermezsiniz. Sağırken susturulma kaldırılırsa, bu aynı zamanda sağırlığı da kaldırır.</translation>
-    </message>
-    <message>
-        <source>&amp;Deafen Self</source>
-        <translation>&amp;Kendini Sağır Et</translation>
     </message>
     <message>
         <source>Deafen yourself</source>
@@ -5566,10 +5950,6 @@ deneyiniz. Yoksa iptal edip parolanızı kontrol ediniz.</translation>
     <message>
         <source>Welcome message: %1</source>
         <translation>Hoş geldiniz mesajı: %1</translation>
-    </message>
-    <message>
-        <source>Mumble: %1</source>
-        <translation>Mumble: %1</translation>
     </message>
     <message>
         <source>You were denied %1 privileges in %2.</source>
@@ -5899,16 +6279,8 @@ deneyiniz. Yoksa iptal edip parolanızı kontrol ediniz.</translation>
         <translation>Küçük pencerenin taşıma ve boyutlandırma için bir çerçevesinin olup olmayacağını ayarlar.</translation>
     </message>
     <message>
-        <source>&amp;Unlink All</source>
-        <translation>Tüm &amp;Bağlantıları Sil</translation>
-    </message>
-    <message>
         <source>Reset the comment of the selected user.</source>
         <translation>Seçilen kullanıcının yorumunu sıfırla.</translation>
-    </message>
-    <message>
-        <source>&amp;Join Channel</source>
-        <translation>Kanala Ka&amp;tıl</translation>
     </message>
     <message>
         <source>View comment in editor</source>
@@ -5939,10 +6311,6 @@ deneyiniz. Yoksa iptal edip parolanızı kontrol ediniz.</translation>
         <translation>Bu sunucuda havari görselinizi değiştirin</translation>
     </message>
     <message>
-        <source>&amp;Remove Avatar</source>
-        <translation>&amp;Havariyi Kaldır</translation>
-    </message>
-    <message>
         <source>Remove currently defined avatar image.</source>
         <translation>Güncel olarak tanımlı havari görselini kaldır.</translation>
     </message>
@@ -5955,24 +6323,12 @@ deneyiniz. Yoksa iptal edip parolanızı kontrol ediniz.</translation>
         <translation>Kendi yorumunuzu değiştirin</translation>
     </message>
     <message>
-        <source>Recording</source>
-        <translation>Ses Kaydı</translation>
-    </message>
-    <message>
-        <source>Priority Speaker</source>
-        <translation>Öncelikli Konuşmacı</translation>
-    </message>
-    <message>
         <source>&amp;Copy URL</source>
         <translation>URL&apos;i &amp;Kopyala</translation>
     </message>
     <message>
         <source>Copies a link to this channel to the clipboard.</source>
         <translation>Panoya bu kanal için bağlantı kopyalar.</translation>
-    </message>
-    <message>
-        <source>Ignore Messages</source>
-        <translation>Mesajları Görmezden Gel</translation>
     </message>
     <message>
         <source>Locally ignore user&apos;s text chat messages.</source>
@@ -6005,28 +6361,8 @@ filtrelenmesi için ilave kanallar ekleyebilirsiniz.</translation>
         <translation>Ctrl+F</translation>
     </message>
     <message>
-        <source>&amp;Hide Channel when Filtering</source>
-        <translation>&amp;Filtrelerken kanalı gizle</translation>
-    </message>
-    <message>
-        <source>Reset the avatar of the selected user.</source>
-        <translation>Seçilen kullanıcının havarisini sıfırla.</translation>
-    </message>
-    <message>
         <source>&amp;Developer</source>
         <translation>&amp;Geliştirici</translation>
-    </message>
-    <message>
-        <source>&amp;Hide Mumble</source>
-        <translation>&amp;Mumble&apos;ı Sakla</translation>
-    </message>
-    <message>
-        <source>Hides the main Mumble window.</source>
-        <translation>Ana Mumble penceresini saklar.</translation>
-    </message>
-    <message>
-        <source>Hides the main Mumble window. Restore by clicking on the tray icon or starting Mumble again.</source>
-        <translation>Ana Mumble penceresini saklar. Geri getirmek için sistem çekmecesi ikonuna tıklayın ya da Mumble&apos;ı tekrar başlatın.</translation>
     </message>
     <message>
         <source>Show the Developer Console</source>
@@ -6041,24 +6377,12 @@ filtrelenmesi için ilave kanallar ekleyebilirsiniz.</translation>
         <translation>&amp;Bağlan...</translation>
     </message>
     <message>
-        <source>&amp;Ban list...</source>
-        <translation>&amp;Yasaklama listesi...</translation>
-    </message>
-    <message>
-        <source>&amp;Information...</source>
-        <translation>&amp;Bilgi...</translation>
-    </message>
-    <message>
         <source>&amp;Kick...</source>
         <translation>&amp;Kov...</translation>
     </message>
     <message>
         <source>&amp;Ban...</source>
         <translation>&amp;Yasakla...</translation>
-    </message>
-    <message>
-        <source>Send &amp;Message...</source>
-        <translation>&amp;Mesaj Gönder...</translation>
     </message>
     <message>
         <source>&amp;Add...</source>
@@ -6073,80 +6397,24 @@ filtrelenmesi için ilave kanallar ekleyebilirsiniz.</translation>
         <translation>&amp;Düzenle...</translation>
     </message>
     <message>
-        <source>Audio S&amp;tatistics...</source>
-        <translation>Ses İs&amp;tatistikleri...</translation>
-    </message>
-    <message>
-        <source>&amp;Settings...</source>
-        <translation>&amp;Ayarlar...</translation>
-    </message>
-    <message>
         <source>&amp;Audio Wizard...</source>
         <translation>&amp;Ses Sihirbazı...</translation>
-    </message>
-    <message>
-        <source>Developer &amp;Console...</source>
-        <translation>Geliştirici &amp;Konsolu...</translation>
-    </message>
-    <message>
-        <source>&amp;About...</source>
-        <translation>&amp;Hakkında...</translation>
     </message>
     <message>
         <source>About &amp;Speex...</source>
         <translation>&amp;Speex Hakkında...</translation>
     </message>
     <message>
-        <source>About &amp;Qt...</source>
-        <translation>&amp;Qt Hakkında...</translation>
-    </message>
-    <message>
         <source>&amp;Certificate Wizard...</source>
         <translation>&amp;Sertifika Sihirbazı...</translation>
-    </message>
-    <message>
-        <source>&amp;Register...</source>
-        <translation>&amp;Kaydol...</translation>
-    </message>
-    <message>
-        <source>Registered &amp;Users...</source>
-        <translation>Kayıtlı K&amp;ullanıcılar...</translation>
     </message>
     <message>
         <source>Change &amp;Avatar...</source>
         <translation>&amp;Havariyi Değiştir...</translation>
     </message>
     <message>
-        <source>&amp;Access Tokens...</source>
-        <translation>&amp;Erişim Jetonları...</translation>
-    </message>
-    <message>
-        <source>Reset &amp;Comment...</source>
-        <translation>&amp;Yorumu Sıfırla...</translation>
-    </message>
-    <message>
-        <source>Reset &amp;Avatar...</source>
-        <translation>&amp;Havariyi Sıfırla...</translation>
-    </message>
-    <message>
-        <source>View Comment...</source>
-        <translation>Yorumu Görüntüle...</translation>
-    </message>
-    <message>
         <source>&amp;Change Comment...</source>
         <translation>Yorumu &amp;Değiştir...</translation>
-    </message>
-    <message>
-        <source>R&amp;egister...</source>
-        <translation>K&amp;aydet...</translation>
-    </message>
-    <message>
-        <source>Show</source>
-        <translation>Göster</translation>
-    </message>
-    <message>
-        <source>Shows the main Mumble window.</source>
-        <translation>Ana Mumble penceresini gösterir.</translation>
     </message>
     <message>
         <source>Server sync protocol violation. No user profile received.</source>
@@ -6155,10 +6423,6 @@ filtrelenmesi için ilave kanallar ekleyebilirsiniz.</translation>
     <message>
         <source>Protocol violation. Server sent remove for occupied channel.</source>
         <translation>Protokol ihlali. Sunucu boş olmayan kanal için kaldır gönderdi.</translation>
-    </message>
-    <message>
-        <source>Listen to channel</source>
-        <translation>Kanalı dinle</translation>
     </message>
     <message>
         <source>Listen to this channel without joining it</source>
@@ -6201,16 +6465,8 @@ filtrelenmesi için ilave kanallar ekleyebilirsiniz.</translation>
         <translation>%1 kanalınızı dinlemeye son verdi</translation>
     </message>
     <message>
-        <source>Talking UI</source>
-        <translation>Konuşma Arayüzü</translation>
-    </message>
-    <message>
         <source>Toggles the visibility of the TalkingUI.</source>
         <translation>Konuşma Arayüzü&apos;nün görünürlüğünü değiştirir.</translation>
-    </message>
-    <message>
-        <source>Join user&apos;s channel</source>
-        <translation>Kullanıcının kanalına katıl</translation>
     </message>
     <message>
         <source>Joins the channel of this user.</source>
@@ -6223,14 +6479,6 @@ filtrelenmesi için ilave kanallar ekleyebilirsiniz.</translation>
     <message>
         <source>Activity log</source>
         <translation>Etkinlik günlüğü</translation>
-    </message>
-    <message>
-        <source>Chat message</source>
-        <translation>Sohbet mesajı</translation>
-    </message>
-    <message>
-        <source>Disable Text-To-Speech</source>
-        <translation>TTS&apos;yi devre dışı bırak</translation>
     </message>
     <message>
         <source>Locally disable Text-To-Speech for this user&apos;s text chat messages.</source>
@@ -6270,10 +6518,6 @@ filtrelenmesi için ilave kanallar ekleyebilirsiniz.</translation>
         <source>Hide/show main window</source>
         <comment>Global Shortcut</comment>
         <translation>Ana pencereyi gizle/göster</translation>
-    </message>
-    <message>
-        <source>&amp;Set Nickname...</source>
-        <translation>&amp; Takma Adı Ayarla ...</translation>
     </message>
     <message>
         <source>Set a local nickname</source>
@@ -6358,10 +6602,6 @@ Geçerli eylemler şunlardır:
         <translation>Alt+F</translation>
     </message>
     <message>
-        <source>Search</source>
-        <translation>Ara</translation>
-    </message>
-    <message>
         <source>Search for a user or channel (Ctrl+F)</source>
         <translation>Bir kullanıcı veya kanal ara (Ctrl+F)</translation>
     </message>
@@ -6381,10 +6621,6 @@ Geçerli eylemler şunlardır:
     <message>
         <source>Undeafen yourself</source>
         <translation>Kendi sağırlaştırmanı kaldır</translation>
-    </message>
-    <message>
-        <source>Positional &amp;Audio Viewer...</source>
-        <translation>Konumsal ve Ses Görüntüleyici...</translation>
     </message>
     <message>
         <source>Show the Positional Audio Viewer</source>
@@ -6441,8 +6677,372 @@ Geçerli eylemler şunlardır:
         <translation>Kanal &amp;Filtresi</translation>
     </message>
     <message>
-        <source>&amp;Pin Channel when Filtering</source>
-        <translation>Filtreleme Sırasında Kanalı &amp;Sabitle</translation>
+        <source>Connect to a server</source>
+        <comment>Global Shortcut</comment>
+        <translation>Bir sunucuya bağlan</translation>
+    </message>
+    <message>
+        <source>This will open the server connection dialog</source>
+        <comment>Global Shortcut</comment>
+        <translation>Bu, sunucuya bağlantı diyaloğunu açar</translation>
+    </message>
+    <message>
+        <source>Disconnect from server</source>
+        <comment>Global Shortcut</comment>
+        <translation>Sunucuyla bağlantıyı kes</translation>
+    </message>
+    <message>
+        <source>This will disconnect you from the server</source>
+        <comment>Global Shortcut</comment>
+        <translation>Bu, sunucuyla olan bağlantınızı keser</translation>
+    </message>
+    <message>
+        <source>Open server information</source>
+        <comment>Global Shortcut</comment>
+        <translation>Sunucu bilgilerini aç</translation>
+    </message>
+    <message>
+        <source>This will show information about the server connection</source>
+        <comment>Global Shortcut</comment>
+        <translation>Bu, sunucu bağlantısına dair bilgi gösterecektir</translation>
+    </message>
+    <message>
+        <source>Open server tokens</source>
+        <comment>Global Shortcut</comment>
+        <translation>Sunucu jetonlarını aç</translation>
+    </message>
+    <message>
+        <source>This will open the server tokens dialog</source>
+        <comment>Global Shortcut</comment>
+        <translation>Bu, sunucu jetonları diyaloğunu açacaktır</translation>
+    </message>
+    <message>
+        <source>Open server user list</source>
+        <comment>Global Shortcut</comment>
+        <translation>Sunucu kullanıcı listesini aç</translation>
+    </message>
+    <message>
+        <source>This will open the server user list dialog</source>
+        <comment>Global Shortcut</comment>
+        <translation>Bu, sunucu kullanıcı listesi diyaloğunu açacaktır</translation>
+    </message>
+    <message>
+        <source>Open server ban list</source>
+        <comment>Global Shortcut</comment>
+        <translation>Sunucu yasaklama listesini aç</translation>
+    </message>
+    <message>
+        <source>This will open the server ban list dialog</source>
+        <comment>Global Shortcut</comment>
+        <translation>Bu, sunucu yasaklama listesi diyaloğunu açacaktır</translation>
+    </message>
+    <message>
+        <source>Toggle priority speaker</source>
+        <comment>Global Shortcut</comment>
+        <translation>Öncelikli konuşmacı durumunu değiştir</translation>
+    </message>
+    <message>
+        <source>This will enable/disable the priority speaker</source>
+        <comment>Global Shortcut</comment>
+        <translation>Bu, öncelikli konuşmacı durumunu etkinleştirir/devre dışı bırakır</translation>
+    </message>
+    <message>
+        <source>Open recording dialog</source>
+        <comment>Global Shortcut</comment>
+        <translation>Kayıt diyaloğunu aç</translation>
+    </message>
+    <message>
+        <source>This will open the recording dialog</source>
+        <translation>Bu, kayıt diyaloğunu açacaktır</translation>
+    </message>
+    <message>
+        <source>Change comment</source>
+        <comment>Global Shortcut</comment>
+        <translation>Yorum değiştir</translation>
+    </message>
+    <message>
+        <source>This will open the change comment dialog</source>
+        <translation>Bu, yorum değiştirme diyaloğunu açacaktır</translation>
+    </message>
+    <message>
+        <source>Change avatar</source>
+        <comment>Global Shortcut</comment>
+        <translation>Havari değiştir</translation>
+    </message>
+    <message>
+        <source>This will open your file explorer to change your avatar image on this server</source>
+        <translation>Bu, bu sunucudaki havari resminizi değiştirmek için dosya tarayıcınızı açacaktır</translation>
+    </message>
+    <message>
+        <source>Remove avatar</source>
+        <comment>Global Shortcut</comment>
+        <translation>Havari kaldır</translation>
+    </message>
+    <message>
+        <source>This will reset your avatar on the server</source>
+        <translation>Bu, sunucudaki havarinizi sıfırlayacaktır</translation>
+    </message>
+    <message>
+        <source>Register on the server</source>
+        <comment>Global Shortcut</comment>
+        <translation>Sunucuya kaydol</translation>
+    </message>
+    <message>
+        <source>This will register you on the server</source>
+        <translation>Bu, sizi sunucuya kaydedecektir</translation>
+    </message>
+    <message>
+        <source>Audio statistics</source>
+        <comment>Global Shortcut</comment>
+        <translation>Ses istatistikleri</translation>
+    </message>
+    <message>
+        <source>This will open the audio statistics dialog</source>
+        <translation>Bu, ses istatistikleri diyaloğunu açacaktır</translation>
+    </message>
+    <message>
+        <source>Open settings</source>
+        <comment>Global Shortcut</comment>
+        <translation>Ayarları aç</translation>
+    </message>
+    <message>
+        <source>This will open the settings dialog</source>
+        <translation>Bu, ayarlar diyaloğunu açacaktır</translation>
+    </message>
+    <message>
+        <source>Start audio wizard</source>
+        <comment>Global Shortcut</comment>
+        <translation>Ses sihirbazını başlat</translation>
+    </message>
+    <message>
+        <source>This will open the audio wizard dialog</source>
+        <translation>Bu, ses sihirbazı diyaloğunu açacaktır</translation>
+    </message>
+    <message>
+        <source>Start certificate wizard</source>
+        <comment>Global Shortcut</comment>
+        <translation>Sertifika sihirbazını başlat</translation>
+    </message>
+    <message>
+        <source>This will open the certificate wizard dialog</source>
+        <translation>Bu, sertifika sihirbazı diyaloğunu açacaktır</translation>
+    </message>
+    <message>
+        <source>Toggle text to speech</source>
+        <comment>Global Shortcut</comment>
+        <translation>Konuşma sentezi durumunu değiştir</translation>
+    </message>
+    <message>
+        <source>This will enable/disable the text to speech</source>
+        <translation>Bu, konuşma sentezini etkinleştirecek/devre dışı bırakacaktır</translation>
+    </message>
+    <message>
+        <source>Open about dialog</source>
+        <comment>Global Shortcut</comment>
+        <translation>Hakkında diyaloğunu aç</translation>
+    </message>
+    <message>
+        <source>This will open the about dialog</source>
+        <translation>Bu, hakkında diyaloğunu açacaktır</translation>
+    </message>
+    <message>
+        <source>Open about Qt dialog</source>
+        <comment>Global Shortcut</comment>
+        <translation>Qt hakkında diyaloğunu aç</translation>
+    </message>
+    <message>
+        <source>This will open the about Qt dialog</source>
+        <translation>Bu, Qt hakkında diyaloğunu açacaktır</translation>
+    </message>
+    <message>
+        <source>Check for update</source>
+        <comment>Global Shortcut</comment>
+        <translation>Güncellemeleri kontrol et</translation>
+    </message>
+    <message>
+        <source>This will check if mumble is up to date</source>
+        <translation>Bu, mumble&apos;ın güncel olup olmadığını kontrol edecektir</translation>
+    </message>
+    <message>
+        <source>That sound was the mute cue. It activates when you speak while muted. Would you like to keep it enabled?</source>
+        <translation>Bu ses, susturulduğunuzun işaretiydi. Susturulduğunuzda konuşursanız etkinleşir. Bunu faal olarak muhafaza etmek ister misiniz?</translation>
+    </message>
+    <message>
+        <source>Yes</source>
+        <translation>Evet</translation>
+    </message>
+    <message>
+        <source>No</source>
+        <translation>Hayır</translation>
+    </message>
+    <message>
+        <source>Enter chat message</source>
+        <translation>Sohbet mesajı gir</translation>
+    </message>
+    <message>
+        <source>&amp;Ban List</source>
+        <translation>&amp;Yasaklama Listesi</translation>
+    </message>
+    <message>
+        <source>&amp;Information</source>
+        <translation>B&amp;ilgi</translation>
+    </message>
+    <message>
+        <source>Ig&amp;nore Messages</source>
+        <translation>Mesajları görmezde&amp;n gel</translation>
+    </message>
+    <message>
+        <source>&amp;Send Message...</source>
+        <translation>Me&amp;saj Gönder...</translation>
+    </message>
+    <message>
+        <source>Set Ni&amp;ckname...</source>
+        <translation>&amp;Rumuz Ayarla...</translation>
+    </message>
+    <message>
+        <source>L&amp;ink</source>
+        <translation>Ba&amp;ğla</translation>
+    </message>
+    <message>
+        <source>U&amp;nlink All</source>
+        <translation>T&amp;ümünün bağlantısını kaldır</translation>
+    </message>
+    <message>
+        <source>M&amp;ute Self</source>
+        <translation>Kendini S&amp;ustur</translation>
+    </message>
+    <message>
+        <source>D&amp;eafen Self</source>
+        <translation>K&amp;endini Sağır Yap</translation>
+    </message>
+    <message>
+        <source>Audio &amp;Statistics</source>
+        <translation>&amp;Ses İstatistikleri</translation>
+    </message>
+    <message>
+        <source>&amp;Settings</source>
+        <translation>&amp;Ayarlar</translation>
+    </message>
+    <message>
+        <source>Developer &amp;Console</source>
+        <translation>Geliştiri&amp;ci Konsolu</translation>
+    </message>
+    <message>
+        <source>Positional &amp;Audio Viewer</source>
+        <translation>Konums&amp;al Ses Görüntüleyici</translation>
+    </message>
+    <message>
+        <source>&amp;About</source>
+        <translation>&amp;Hakkında</translation>
+    </message>
+    <message>
+        <source>About &amp;Qt</source>
+        <translation>&amp;Qt Hakkında</translation>
+    </message>
+    <message>
+        <source>Re&amp;gister...</source>
+        <translation>Ka&amp;ydol...</translation>
+    </message>
+    <message>
+        <source>Registered &amp;Users</source>
+        <translation>Kayıtlı K&amp;ullanıcılar</translation>
+    </message>
+    <message>
+        <source>&amp;Access Tokens</source>
+        <translation>Erişim Jetonl&amp;arı</translation>
+    </message>
+    <message>
+        <source>Remo&amp;ve Avatar</source>
+        <translation>Ha&amp;variyi Kaldır</translation>
+    </message>
+    <message>
+        <source>Reset Commen&amp;t...</source>
+        <translation>Aç&amp;ıklamayı Sıfırla...</translation>
+    </message>
+    <message>
+        <source>Remo&amp;ve Avatar...</source>
+        <translation>Ha&amp;variyi Kaldır...</translation>
+    </message>
+    <message>
+        <source>Remove the avatar of the selected user.</source>
+        <translation>Seçili kullanıcının havarisini kaldır.</translation>
+    </message>
+    <message>
+        <source>&amp;Join</source>
+        <translation>&amp;Katıl</translation>
+    </message>
+    <message>
+        <source>&amp;Hide When Filtering</source>
+        <translation>Filtrelerken &amp;Gizle</translation>
+    </message>
+    <message>
+        <source>&amp;Pin When Filtering</source>
+        <translation>Filtrelerken &amp;İğnele</translation>
+    </message>
+    <message>
+        <source>Vie&amp;w Comment</source>
+        <translation>A&amp;çıklamayı Görüntüle</translation>
+    </message>
+    <message>
+        <source>&amp;Priority Speaker</source>
+        <translation>&amp;İmtiyazlı Konuşmacı</translation>
+    </message>
+    <message>
+        <source>&amp;Record...</source>
+        <translation>&amp;Kaydet...</translation>
+    </message>
+    <message>
+        <source>&amp;Listen To Channel</source>
+        <translation>Kana&amp;lı Dinle</translation>
+    </message>
+    <message>
+        <source>Talking &amp;UI</source>
+        <translation>Kon&amp;uşma Arayüzü</translation>
+    </message>
+    <message>
+        <source>&amp;Join User&apos;s Channel</source>
+        <translation>K&amp;ullanıcının Kanalına Katıl</translation>
+    </message>
+    <message>
+        <source>M&amp;ove To Own Channel</source>
+        <translation>Kendi Kanalına Ta&amp;şı</translation>
+    </message>
+    <message>
+        <source>Moves this user to your current channel.</source>
+        <translation>Bu kullanıcıyı geçerli kanalınıza taşır.</translation>
+    </message>
+    <message>
+        <source>Disable Te&amp;xt-To-Speech</source>
+        <translation>Konuşma &amp;Sentezini Devre Dışı Bırak</translation>
+    </message>
+    <message>
+        <source>&amp;Search...</source>
+        <translation>&amp;Ara...</translation>
+    </message>
+    <message>
+        <source>Filtered channels and users</source>
+        <translation>Filtrelenmiş kanallar ve kullanıcılar</translation>
+    </message>
+    <message>
+        <source>Toggle positional audio</source>
+        <comment>Global Shortcut</comment>
+        <translation>Konumsal sesi aç/kapat</translation>
+    </message>
+    <message>
+        <source>This will toggle positional audio on/off</source>
+        <translation>Bu, konumsal sesi açıp kapatacaktır</translation>
+    </message>
+    <message>
+        <source>SSL error</source>
+        <translation>SSL hatası</translation>
+    </message>
+    <message>
+        <source>Mumble is unable to establish a secure connection to the server. (&quot;%1&quot;)</source>
+        <translation>Mumble sunucuyla güvenli bir bağlantı kuramıyor. (&quot;%1&quot;)</translation>
+    </message>
+    <message>
+        <source>This could be caused by one of the following scenarios:&lt;ul&gt;&lt;li&gt;Your client and the server use different encryption standards. This could be because you are using a very old client or the server you are connecting to is very old. In the first case, you should update your client and in the second case you should contact the server administrator so that they can update their server.&lt;/li&gt;&lt;li&gt;Either your client or the server is using an old operating system that doesn&apos;t provide up-to-date encryption methods. In this case you should consider updating your OS or contacting the server admin so that they can update theirs.&lt;/li&gt;&lt;li&gt;The server you are connecting to isn&apos;t actually a Mumble server. Please ensure that the used server address really belongs to a Mumble server and not e.g. to a game server.&lt;/li&gt;&lt;li&gt;The port you are connecting to does not belong to a Mumble server but instead is bound to a completely unrelated process on the server-side. Please double-check you have used the correct port.&lt;/li&gt;&lt;/ul&gt;</source>
+        <translation>Bunun nedeni şu durumlardan biri olabilir:&lt;ul&gt;&lt;li&gt;İstemciniz ve sunucunuz farklı şifreleme standartları kullanmaktadır. Bunun nedeni çok eski bir istemci kullanıyor olmanız veya bağlandığınız sunucunun çok eski olması olabilir. İlk durumda, istemcinizi güncellemelisiniz ve ikinci durumda sunucularını güncelleyebilmeleri için sunucu yöneticisiyle iletişime geçmelisiniz.&lt;/li&gt;&lt;li&gt;Ya istemciniz ya da sunucunuz güncel şifreleme yöntemleri sağlamayan eski bir işletim sistemi kullanıyordur. Bu durumda işletim sisteminizi güncellemeyi düşünmeli ya da sunucu yöneticisiyle iletişime geçerek kendi işletim sistemlerini güncellemelerini sağlamalısınız.&lt;/li&gt;&lt;li&gt;Bağlandığınız sunucu aslında bir Mumble sunucusu değil. Lütfen kullanılan sunucu adresinin gerçekten bir Mumble sunucusuna ait olduğundan ve örneğin bir oyun sunucusuna ait olmadığından emin olun.&lt;/li&gt;&lt;li&gt;Bağlandığınız bağlantı noktası bir Mumble sunucusuna ait değil, bunun yerine sunucu tarafında tamamen ilgisiz bir işleme bağlı. Lütfen doğru bağlantı noktasını kullandığınızı iki kez gözden geçirin.&lt;/li&gt;&lt;/ul&gt;</translation>
     </message>
     <message>
         <source>Usage: mumble [options] [&lt;url&gt; | &lt;plugin_list&gt;]
@@ -6505,70 +7105,93 @@ Valid options are:
                 If the format is invalid, Mumble will error.
                 Otherwise the locale will be permanently saved to
                 Mumble&apos;s settings.
+  --hidden
+                Start Mumble hidden in the system tray.
 </source>
         <translation>Kullanım: mumble [seçenekler] [&lt;url&gt; | &lt;eklenti_listesi&gt;]
 
-&lt;url&gt;başlangıçta bağlantı penceresinin gösterilmesi yerine
-bağlanılacak bir URL belirtir ve aşağıdaki biçime sahiptir:
-mumble://[&lt;kullanıcıismi&gt;[:&lt;parola&gt;]@]&lt;makine&gt;[:&lt;port&gt;][/&lt;salon&gt;[/&lt;altsalon&gt;...]][?sürüm=&lt;x.y.z&gt;]
+&lt;url&gt;, başlangıçtan sonra bağlantı penceresinin gösterilmesi yerine
+bağlanılacak bir URL belirtir, ve şu şekildedir:
+mumble://[&lt;kullanıcıismi&gt;[:&lt;parola&gt;]@]&lt;makine&gt;[:&lt;bağlantı_noktası&gt;][/&lt;kanal&gt;[/&lt;alt_kanal&gt;...]][?sürüm=&lt;x.y.z&gt;]
 
-&lt;eklenti_listesi&gt;, kurulması gereken eklenti dosyaları listesidir
+&lt;plugin_list&gt;, kurulacak eklenti dosyalarının bir listesidir
 Sürüm sorgulama parametresi doğru istemci sürümünün
-çağrılabilmesi için ayarlanmalıdır. Güncel olarak varsayılan 1.2.0.
+çağrılması için ayarlanmalıdır. Güncel olarak varsayılan şudur: 1.2.0.
 
 Geçerli seçenekler şunlardır:
-  -h, --help    Bu yardımı görüntüle ve çık.
-  --version     Sürüm bilgisini göster ve çık
+  -h, --help    Bu yardımı gösterir ve çıkar.
+  --version     Sürüm bilgilerini göster ve çık
   -m, --multiple
-                İstemcinin birden fazla örneklemesinin başlatılmasına izin ver.
+                İstemcinin çoklu örneklemelerinin başlatılmalarına izin verir.
   -c, --config
-                Alternatif bir yapılandırma dosyası belirt.
-                Eğer bunu Mumble birden fazla örneklemesini ayna anda
-                çalıştırmak için kullanıyorsanız, yapılandırmada alternatif bir
-                &apos;database&apos; değeri ayarladığınızdan emin olun.
+                Alternatif yapılandırma dosyası belirt.
+                Şayet bunu aynı zamanda Mumble&apos;ın çoklu örneklemelerini çalıştırmak
+                için kullanıyorsanız, yapılandırmada alternatif bir &apos;database&apos; değeri kullanın.
   --default-certificate-dir &lt;dizin&gt;
                 Alternatif bir varsayılan sertifika yolu belirt.
-                Bu yol sadece ayarlardan hiçbir sertifika yüklenmedi
-                ise kullanılır.
+                Bu yol sadece ayarlardan hiçbir sertifika yüklenmedi ise
+                kullanılır.
   -n, --noidentity
-                Kimlik dosyalarının (yani sertifikaların) yüklenmelerini engelle.
+                Kimlik dosyalarının (yani sertifikaların) yüklenmesini bastır.
   -jn, --jackname &lt;arg&gt;
-                Kişiselleştirilmiş bir Jack istemcisi ismi ayarla.
+                Kişiselleştirilmiş Jack istemci ismi ayarla.
   --license
-                Mumble&apos;ın lisansını göster.
+                Mumble lisansını göster.
   --authors
-                Mumble&apos;ın yazarlarını göster.
+                Mumble yazarlarını göster.
   --third-party-licenses
-                Mumble tarafından kullanılan üçüncü taraf yazılımların
-                lisanslarını göster.
+                Mumble tarafından kullanılan üçüncü taraf yazılımların lisanslarını göster.
   --window-title-ext &lt;arg&gt;
-                Kişiselleştirilmiş bir pencere başlığı uzantısı ayarlar.
+                Kişiselleştirilmiş bir pencere başlık uzantısı ayarla.
   --dump-input-streams
-                Girdi dizelerinin çeşitli bölümlerinden PCM akımlarını dök
-                (hata ayıklama maksadı için yararlıdır)
+                PCM akımlarını girdi zincirinin çeşitli bölümlerine dök
+                (hata ayıklama için faydalıdır)
                 - ham mikrofon girdisi
-                - yankı iptali için hoparlörlerden geri okuma
+                - yankı iptali için hoparlör geri okuması
                 - işlenmiş mikrofon girdisi
   --print-echocancel-queue
-                stdout üzerinde yankı iptal kuyruğunun durumunu göster
-                (hata ayıklama maksadı için yararlıdır)
+                stdout üzerinde yankı iptal kuyruğunun durumunu yaz
+                (hata ayıklama için faydalıdır)
   --translation-dir &lt;dizin&gt;
-                İlave bir &lt;dizin&gt; tercüme dizini belirtir, ki Mumble burada
-                yazılımla gelen tercüme dosyalarının üzerine yazılacak
-                tercüme dosyalarını arayacaktır
-                Bu şekilde eklenen dizinlerin önceliği diğer durumlarda
-                kullanılan varsayılan konumlardan daha yüksektir
+                İlave bir tercüme dizini &lt;dizin&gt; belirtir, burada
+                Mumble kendisiyle gelen dosyaların yerine geçecek
+                tercüme dosyalarını arayacaktır.
+                Bu şekilde eklenen dizinler, diğer şartlarda kullanılan
+                varsayılan konumlardan daha yüksek öneliğe sahip olurlar.
   --print-translation-dirs
-                Mumble&apos;ın yazılımla gelen tercüme dosyalarının üzerine
-                yazılacak tercüme dosyalarını arayacağı yolları göster.
-                (Çevirilerini deneyen tercümanlar için yararlıdır)
+                Mumble&apos;ın kendisiyle gelen tercüme dosyalarını ezecek
+                dosyaları arayacağı yolları yaz.
+                (Tercümanların tercümelerini denemeleri için faydalıdır)
   --locale &lt;locale&gt;
-                Mumble ayarlarındaki yerel ayarın verilen yerel ayar
-                 dizesine karşılık gelen bir yerel ile üzerine yazar.
+                Mumble ayarlarındaki yerellik ayarını girilen yerellik dizesine
+                tekabül eden yerellik ayarıyla ez.
                 Şayet biçim geçersizse, Mumble bir hata gösterecektir.
-                Yoksa yerel ayar daimi olarak Mumble&apos;ın ayarlarına
+                Aksi takdirde yerellik ayarı Mumble ayarlarında daimi olarak
                 kaydedilecektir.
+  --hidden
+                Mumble&apos;ı sistem tepsisinde saklı başlat.
 </translation>
+    </message>
+    <message>
+        <source>M&amp;ove back</source>
+        <translation>G&amp;eri git</translation>
+    </message>
+    <message>
+        <source>Moves you back to the previous channel</source>
+        <translation>Sizi bir önceki kanala taşır</translation>
+    </message>
+    <message>
+        <source>Move back</source>
+        <comment>Global shortcut</comment>
+        <translation>Geri git</translation>
+    </message>
+    <message>
+        <source>This will move you back into your previous channel</source>
+        <translation>Bu, sizi bir önceki kanalınıza taşıyacaktır</translation>
+    </message>
+    <message>
+        <source>The channel you have been in previously no longer exists on this server.</source>
+        <translation>Daha önce içinde bulunduğunuz kanal artık bu sunucuda mevcut değildir.</translation>
     </message>
 </context>
 <context>
@@ -6656,6 +7279,62 @@ Geçerli seçenekler şunlardır:
     <message>
         <source>Silent user displaytime:</source>
         <translation>Sessiz kullanıcı görüntüleme süresi:</translation>
+    </message>
+    <message>
+        <source>Graphical positional audio simulation view</source>
+        <translation>Grafik konumsal ses simülasyonu görünümü</translation>
+    </message>
+    <message>
+        <source>This visually represents the positional audio configuration that is currently being used</source>
+        <translation>Bu, görsel olarak şu an kullanılan konumsal ses yapılandırmasını tasvir eder</translation>
+    </message>
+    <message>
+        <source>Listener Z coordinate</source>
+        <translation>Dinleyici Z koordinatı</translation>
+    </message>
+    <message>
+        <source>Listener X coordinate</source>
+        <translation>Dinleyici X koordinatı</translation>
+    </message>
+    <message>
+        <source>Listener Y coordinate</source>
+        <translation>Dinleyici Y koordinatı</translation>
+    </message>
+    <message>
+        <source>Silent user display time (in seconds)</source>
+        <translation>Sessiz kullanıcı görüntüleme süresi (saniye olarak)</translation>
+    </message>
+    <message>
+        <source>Listener azimuth (in degrees)</source>
+        <translation>Dinleyici yön açısı (derece olarak)</translation>
+    </message>
+    <message>
+        <source>Listener elevation (in degrees)</source>
+        <translation>Dinleyici yüksekliği (derece olarak)</translation>
+    </message>
+    <message>
+        <source>Context string</source>
+        <translation>Bağlam dizesi</translation>
+    </message>
+    <message>
+        <source>Use the &quot;set&quot; button to apply the context string</source>
+        <translation>Bağlam dizesini uygulamak için &quot;ayarla&quot; düğmesini kullanın</translation>
+    </message>
+    <message>
+        <source>Apply the context string</source>
+        <translation>Bağlam dizesini uygula</translation>
+    </message>
+    <message>
+        <source>Apply the identity string</source>
+        <translation>Kimlik dizesini uygula</translation>
+    </message>
+    <message>
+        <source>Identity string</source>
+        <translation>Kimlik dizesi</translation>
+    </message>
+    <message>
+        <source>Use the &quot;set&quot; button to apply the identity string</source>
+        <translation>Kimlik dizesini uygulamak için &quot;ayarla&quot; düğmesini kullanın</translation>
     </message>
 </context>
 <context>
@@ -6870,6 +7549,26 @@ Prevents the client from sending potentially identifying information about the o
     <message>
         <source>Automatically download and install plugin updates</source>
         <translation>Eklenti güncellemelerini otomatik olarak indirin ve yükleyin</translation>
+    </message>
+    <message>
+        <source>Proxy type</source>
+        <translation>Vekil türü</translation>
+    </message>
+    <message>
+        <source>Proxy hostname</source>
+        <translation>Vekil makine ismi</translation>
+    </message>
+    <message>
+        <source>Proxy port</source>
+        <translation>Vekil bağlantı noktası</translation>
+    </message>
+    <message>
+        <source>Proxy username</source>
+        <translation>Vekil kullanıcı ismi</translation>
+    </message>
+    <message>
+        <source>Proxy password</source>
+        <translation>Vekil parolası</translation>
     </message>
 </context>
 <context>
@@ -7480,6 +8179,42 @@ Bu dosyaları son sürümlerine güncellemek için aşağıdaki düğmeyi tıkla
         <source>Whether this plugin should be enabled</source>
         <translation>Bu eklentinin etkinleştirilip etkinleştirilmeyeceği</translation>
     </message>
+    <message>
+        <source>List of plugins</source>
+        <translation>Eklenti listesi</translation>
+    </message>
+    <message>
+        <source>Use up and down keys to navigate through plugins. Use left and right keys to navigate between single plugin permissions.</source>
+        <translation>Eklentiler arasında gezinmek için yukarı ve aşağı tuşlarını kullanın. Bir eklentinin izinleri arasında gezinmek için sol ve sağ tuşlarını kullanın.</translation>
+    </message>
+    <message>
+        <source>Plugin name</source>
+        <translation>Eklenti adı</translation>
+    </message>
+    <message>
+        <source>Plugin enabled checkbox</source>
+        <translation>Eklenti etkin onay kutusu</translation>
+    </message>
+    <message>
+        <source>Plugin positional audio permission checkbox</source>
+        <translation>Eklenti konumsal ses izni onay kutusu</translation>
+    </message>
+    <message>
+        <source>Plugin keyboard event listen permission checkbox</source>
+        <translation>Eklenti klavye olayı dinleme izni onay kutusu</translation>
+    </message>
+    <message>
+        <source>checked</source>
+        <translation>işaretli</translation>
+    </message>
+    <message>
+        <source>unchecked</source>
+        <translation>işaretli değil</translation>
+    </message>
+    <message>
+        <source>Not available</source>
+        <translation>Kullanılabilir değil</translation>
+    </message>
 </context>
 <context>
     <name>PluginInstaller</name>
@@ -7575,12 +8310,12 @@ Bu dosyaları son sürümlerine güncellemek için aşağıdaki düğmeyi tıkla
         <translation>&quot;%1&quot; eklentisi konumsal veri toplamada kalıcı bir hatayla karşılaştı</translation>
     </message>
     <message>
-        <source>Non-plugin found in plugin directory: &quot;%1&quot;</source>
-        <translation>Eklenti dizininde eklenti olmayan bir şey bulundu: &quot;%1&quot;</translation>
-    </message>
-    <message>
         <source>Failed at loading manual plugin: %1</source>
         <translation>Manuel eklenti yüklenirken başarısız oldu: %1</translation>
+    </message>
+    <message>
+        <source>Non-plugin found in plugin directory: &quot;%1&quot; (%2)</source>
+        <translation>Eklenti dizininde eklenti olmayan bir şey bulundu: &quot;%1&quot; (%2)</translation>
     </message>
 </context>
 <context>
@@ -7723,12 +8458,6 @@ Bu dosyaları son sürümlerine güncellemek için aşağıdaki düğmeyi tıkla
     <message>
         <source>Echo cancellation is not supported for the interface combination &quot;%1&quot; (in) and &quot;%2&quot; (out).</source>
         <translation>Yankı iptali, &quot;%1&quot; (giriş) ve &quot;%2&quot; (çıkış) arayüz birleşimi için desteklenmez.</translation>
-    </message>
-    <message>
-        <source>&lt;p&gt;If you&apos;re using Linux this is most likely because you are using a version from your distribution&apos;s package repository that have their own update cycles.&lt;/p&gt;&lt;p&gt;If you want to always have the most recent Mumble version, you should consider using a different method of installation.
-See &lt;a href=&quot;https://wiki.mumble.info/wiki/Installing_Mumble&quot;&gt;the Mumble wiki&lt;/a&gt; for what alternatives there are.&lt;/p&gt;</source>
-        <translation>&lt;p&gt; Linux kullanıyorsanız, bunun nedeni büyük olasılıkla dağıtımınızın paket havuzundan kendi güncelleme döngüleri olan bir sürümü kullanıyor olmanızdır. &lt;/p&gt;&lt;p&gt;Her zaman en yeni Mumble sürümüne sahip olmak istiyorsanız, farklı bir kurulum yöntemi kullanmayı düşünmelisiniz.
-Ne tür alternatifler olduğunu görmek için &lt;a href=&quot;https://wiki.mumble.info/wiki/Installing_Mumble&quot;&gt;Mumble wiki&lt;/a&gt; sayfasına bakın.&lt;/p&gt;</translation>
     </message>
     <message>
         <source>Local Mute</source>
@@ -7906,6 +8635,108 @@ Bunları tekrar kaydedebilirsiniz.</translation>
         <source>Unknown Version</source>
         <translation>Bilinmeyen Sürüm</translation>
     </message>
+    <message>
+        <source>Next</source>
+        <translation>Sonraki</translation>
+    </message>
+    <message>
+        <source>Back</source>
+        <translation>Geri</translation>
+    </message>
+    <message>
+        <source>This is you</source>
+        <translation>Bu sizsiniz</translation>
+    </message>
+    <message>
+        <source>friend</source>
+        <translation>arkadaş</translation>
+    </message>
+    <message>
+        <source>user</source>
+        <translation>kullanıcı</translation>
+    </message>
+    <message>
+        <source>status</source>
+        <translation>durum</translation>
+    </message>
+    <message>
+        <source>muted and deafened</source>
+        <translation>susturuldu ve sağır edildi</translation>
+    </message>
+    <message>
+        <source>muted</source>
+        <translation>susturuldu</translation>
+    </message>
+    <message>
+        <source>locally muted</source>
+        <translation>yerel olarak susturuldu</translation>
+    </message>
+    <message>
+        <source>unmuted</source>
+        <translation>susturulma kaldırıldı</translation>
+    </message>
+    <message>
+        <source>recording</source>
+        <translation>kaydediliyor</translation>
+    </message>
+    <message>
+        <source>priority speaker</source>
+        <translation>imtiyazlı konuşmacı</translation>
+    </message>
+    <message>
+        <source>has a long comment</source>
+        <translation>uzun bir açıklaması var</translation>
+    </message>
+    <message>
+        <source>text messages ignored</source>
+        <translation>metin mesajları görmezden gelindi</translation>
+    </message>
+    <message>
+        <source>registered</source>
+        <translation>kayıtlı</translation>
+    </message>
+    <message>
+        <source>channel</source>
+        <translation>kanal</translation>
+    </message>
+    <message>
+        <source>your channel</source>
+        <translation>kanalınız</translation>
+    </message>
+    <message>
+        <source>accessible</source>
+        <translation>erişilebilir</translation>
+    </message>
+    <message>
+        <source>inaccessible</source>
+        <translation>erişilemez</translation>
+    </message>
+    <message>
+        <source>public</source>
+        <translation>herkese açık</translation>
+    </message>
+    <message>
+        <source>filtered</source>
+        <translation>filtrelenmiş</translation>
+    </message>
+    <message>
+        <source>pinned</source>
+        <translation>iğnelenmiş</translation>
+    </message>
+    <message>
+        <source>Listening for input</source>
+        <translation>Girdi için dinleniyor</translation>
+    </message>
+    <message>
+        <source>Add</source>
+        <translation>Ekle</translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;If you&apos;re using Linux this is most likely because you are using a version from your distribution&apos;s package repository that have their own update cycles.&lt;/p&gt;&lt;p&gt;If you want to always have the most recent Mumble version, you should consider using a different method of installation.
+See &lt;a href=&quot;https://github.com/mumble-voip/mumble&quot;&gt;the project repository&lt;/a&gt; for what alternatives there are.&lt;/p&gt;</source>
+        <translation>&lt;p&gt;Linux kullanıyorsanız, bunun nedeni büyük olasılıkla dağıtımınızın kendi güncelleme döngülerine sahip paket deposundaki bir sürümü kullanıyor olmanızdır.&lt;/p&gt;&lt;p&gt;Her zaman en güncel Mumble sürümüne sahip olmak istiyorsanız, farklı bir kurulum yöntemi kullanmayı düşünmelisiniz.
+Hangi alternatiflerin olduğunu görmek için &lt;a href=&quot;https://github.com/mumble-voip/mumble&quot;&gt;proje deposuna&lt;/a&gt; bakın.&lt;/p&gt;</translation>
+    </message>
 </context>
 <context>
     <name>RichTextEditor</name>
@@ -8054,6 +8885,18 @@ Bunları tekrar kaydedebilirsiniz.</translation>
         <source>Whether to search for channels</source>
         <translation>Kanal aranıp aranmayacağı</translation>
     </message>
+    <message>
+        <source>Search string</source>
+        <translation>Arama dizesi</translation>
+    </message>
+    <message>
+        <source>Search results</source>
+        <translation>Arama sonuçları</translation>
+    </message>
+    <message>
+        <source>Use up and down keys to navigate through the search results.</source>
+        <translation>Arama sonuçları arasında gezinmek için yukarı ve aşağı tuşlarını kullanın.</translation>
+    </message>
 </context>
 <context>
     <name>ServerHandler</name>
@@ -8103,10 +8946,6 @@ Bunları tekrar kaydedebilirsiniz.</translation>
     <message>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Port:&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation>&lt;html&gt; &lt;head/&gt; &lt;body&gt; &lt;p&gt; &lt;span style=&quot; font-weight:600;&quot;&gt; Bağlantı Noktası: &lt;/span&gt; &lt;/p&gt; &lt;/body&gt; &lt;/html&gt;</translation>
-    </message>
-    <message>
-        <source>&lt;b&gt;Users&lt;/b&gt;:</source>
-        <translation>&lt;b&gt; Kullanıcılar &lt;/b&gt;:</translation>
     </message>
     <message>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Protocol:&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
@@ -8201,14 +9040,6 @@ Bunları tekrar kaydedebilirsiniz.</translation>
         <translation>&lt;iletme gizliliği&gt;</translation>
     </message>
     <message>
-        <source>&amp;View certificate</source>
-        <translation>&amp;Sertifika Görüntüle</translation>
-    </message>
-    <message>
-        <source>&amp;Ok</source>
-        <translation>&amp;Tamam</translation>
-    </message>
-    <message>
         <source>Unknown</source>
         <translation>Bilinmiyor</translation>
     </message>
@@ -8227,6 +9058,22 @@ Bunları tekrar kaydedebilirsiniz.</translation>
     <message>
         <source>No</source>
         <translation>Hayır</translation>
+    </message>
+    <message>
+        <source>&lt;b&gt;Users:&lt;/b&gt;</source>
+        <translation>&lt;b&gt;Kullanıcılar:&lt;/b&gt;</translation>
+    </message>
+    <message>
+        <source>TCP Parameters</source>
+        <translation>TCP Parametreleri</translation>
+    </message>
+    <message>
+        <source>&amp;View Certificate</source>
+        <translation>&amp;Sertifika Görüntüle</translation>
+    </message>
+    <message>
+        <source>&amp;OK</source>
+        <translation>&amp;Tamam</translation>
     </message>
 </context>
 <context>
@@ -8416,8 +9263,12 @@ Erişim jetonu bir metindir ve kanallara erişimin çok basit bir şekilde yöne
         <translation>&amp;Kaldır</translation>
     </message>
     <message>
-        <source>Tokens</source>
-        <translation>Jetonlar</translation>
+        <source>Token List</source>
+        <translation>Jeton Listesi</translation>
+    </message>
+    <message>
+        <source>Use the arrow keys to navigate this list of access tokens. The tokens are displayed in plain text.</source>
+        <translation>Bu erişim jeton listesinde gezinmek için imleç tuşlarını kullanın. Jetonlar düz metin olarak görüntülenir.</translation>
     </message>
 </context>
 <context>
@@ -8465,12 +9316,20 @@ Erişim jetonu bir metindir ve kanallara erişimin çok basit bir şekilde yöne
         </translation>
     </message>
     <message>
-        <source>Search</source>
-        <translation>Ara</translation>
-    </message>
-    <message>
         <source>User list</source>
         <translation>Kullanıcı listesi</translation>
+    </message>
+    <message>
+        <source>Search for user</source>
+        <translation>Kullanıcı ara</translation>
+    </message>
+    <message>
+        <source>Set inactivity filter mode</source>
+        <translation>Faaliyetsizlik filtre kipini ayarla</translation>
+    </message>
+    <message>
+        <source>Filter for inactivity</source>
+        <translation>Faaliyetsizlik için filtre</translation>
     </message>
 </context>
 <context>
@@ -8498,10 +9357,6 @@ Erişim jetonu bir metindir ve kanallara erişimin çok basit bir şekilde yöne
     <message>
         <source>IP Address</source>
         <translation>İP Adresi</translation>
-    </message>
-    <message>
-        <source>Details...</source>
-        <translation>Ayrıntılar...</translation>
     </message>
     <message>
         <source>Ping Statistics</source>
@@ -8625,6 +9480,46 @@ Erişim jetonu bir metindir ve kanallara erişimin çok basit bir şekilde yöne
     <message>
         <source>Warning: The server seems to report a truncated protocol version for this client. (See: &lt;a href=&quot;https://github.com/mumble-voip/mumble/issues/5827/&quot;&gt;Issue #5827&lt;/a&gt;)</source>
         <translation>Uyarı: Sunucu bu istemci için kesilmiş bir protokol sürümü bildiriyor gibi görünüyor. (Bkz: &lt;a href=&quot;https://github.com/mumble-voip/mumble/issues/5827/&quot;&gt;Sorun #5827&lt;/a&gt;)</translation>
+    </message>
+    <message>
+        <source>Details</source>
+        <translation>Ayrıntılar</translation>
+    </message>
+    <message>
+        <source>to client rolling average</source>
+        <translation>istemcinin hareketli ortalamasına</translation>
+    </message>
+    <message>
+        <source>Last X minutes:</source>
+        <translation>Son X dakika:</translation>
+    </message>
+    <message>
+        <source>% lost</source>
+        <translation>% kayıp</translation>
+    </message>
+    <message>
+        <source>from client rolling average</source>
+        <translation>istemcinin hareketli ortalamasından</translation>
+    </message>
+    <message>
+        <source>% late</source>
+        <translation>% gecikme</translation>
+    </message>
+    <message>
+        <source>Total:</source>
+        <translation>Toplam:</translation>
+    </message>
+    <message>
+        <source>Last %1 %2:</source>
+        <translation>Son %1 %2:</translation>
+    </message>
+    <message>
+        <source>seconds</source>
+        <translation>saniye</translation>
+    </message>
+    <message>
+        <source>minutes</source>
+        <translation>dakika</translation>
     </message>
 </context>
 <context>
@@ -8820,6 +9715,14 @@ Erişim jetonu bir metindir ve kanallara erişimin çok basit bir şekilde yöne
         <source>Channel will be pinned when filtering is enabled</source>
         <translation>Filtreleme etkinleştirildiğinde kanal sabitlenecektir</translation>
     </message>
+    <message>
+        <source>Channel Listener</source>
+        <translation>Kanal Dinleyici</translation>
+    </message>
+    <message>
+        <source>This channel listener belongs to %1</source>
+        <translation>Bu kanal dinleyicisi %1 unsuruna ait</translation>
+    </message>
 </context>
 <context>
     <name>VersionCheck</name>
@@ -8970,6 +9873,10 @@ Erişim jetonu bir metindir ve kanallara erişimin çok basit bir şekilde yöne
         <source>.opus - Lossy compressed</source>
         <translation>.opus - Kayıplı sıkıştırılmış</translation>
     </message>
+    <message>
+        <source>.mp3 - Lossy compressed</source>
+        <translation>.mp3 - Kayıplı sıkıştırılmış</translation>
+    </message>
 </context>
 <context>
     <name>VoiceRecorderDialog</name>
@@ -9083,16 +9990,32 @@ Daha fazla bilgi için sunucu yöneticisi ile irtibata geçiniz.</translation>
         <source>Unable to start recording - the audio output is miconfigured (0Hz sample rate)</source>
         <translation>Kayıt başlatılamıyor - ses çıktısı yanlış yapılandırıldı (0Hz örnekleme hızı)</translation>
     </message>
+    <message>
+        <source>Multichannel + Transport (JACK)</source>
+        <translation>Çoklu kanal + Taşıma (JACK)</translation>
+    </message>
+    <message>
+        <source>Transport (JACK, standalone)</source>
+        <translation>Taşıma (JACK, bağımsız)</translation>
+    </message>
+    <message>
+        <source>This field contains the directory path to store any voice recordings in. Use the &quot;browse&quot; button to open a file dialog.</source>
+        <translation>Bu alan, konuşma kayıtlarını saklamak için dizin yolunu içerir. Bir dosya diyaloğu açmak için &quot;tara&quot; düğmesini kullanın.</translation>
+    </message>
+    <message>
+        <source>This field contains the filename any voice recording is saved as. Various variables can be used to augment the filename. For example %time for the current time.</source>
+        <translation>Bu alan, herhangi bir konuşma kaydının kaydedildiği dosya ismini içerir. Dosya ismini genişletmek için çeşitli değişkenler kullanılabilir. Mesela güncel saat için %time kullanabilirsiniz.</translation>
+    </message>
 </context>
 <context>
     <name>VolumeSliderWidgetAction</name>
     <message>
-        <source>Slider for volume adjustment</source>
-        <translation>Ses seviyesi ayarı için kaydırıcı</translation>
-    </message>
-    <message>
         <source>Volume Adjustment</source>
         <translation>Ses Ayarı</translation>
+    </message>
+    <message>
+        <source>Local volume adjustment</source>
+        <translation>Yerel ses seviye ayarı</translation>
     </message>
 </context>
 <context>

@@ -1,4 +1,4 @@
-// Copyright 2021-2023 The Mumble Developers. All rights reserved.
+// Copyright The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -106,8 +106,6 @@ public:
 	/// Refer to searchInBuffer() for the pattern format.
 	/// Returns 0 if the pattern is not found.
 	procptr_t findPattern(const std::vector< uint8_t > &pattern, procptr_t address, const size_t size);
-
-	static procid_t find(const std::string &name, const std::multimap< std::wstring, unsigned long long int > &pids);
 
 	ProcessBase(const procid_t id, const std::string &name);
 	virtual ~ProcessBase();

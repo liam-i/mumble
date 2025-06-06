@@ -1,6 +1,6 @@
 #!/bin/bash -ex
 #
-# Copyright 2020-2023 The Mumble Developers. All rights reserved.
+# Copyright The Mumble Developers. All rights reserved.
 # Use of this source code is governed by a BSD-style license
 # that can be found in the LICENSE file at the root of the
 # Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -36,9 +36,13 @@ BUILD_NUMBER=$("./scripts/mumble-build-number.py" --commit "${BUILD_SOURCEVERSIO
 
 cd $BUILD_BINARIESDIRECTORY
 
-cmake -G Ninja -DCMAKE_TOOLCHAIN_FILE=$MUMBLE_ENVIRONMENT_TOOLCHAIN -DIce_HOME="$MUMBLE_ENVIRONMENT_PATH/installed/x64-osx" \
+# Note: We can't use MySQL - see install script for details
+cmake -G Ninja -DVCPKG_TARGET_TRIPLET=$MUMBLE_ENVIRONMENT_TRIPLET -DCMAKE_TOOLCHAIN_FILE=$MUMBLE_ENVIRONMENT_TOOLCHAIN \
+      -DIce_HOME="$MUMBLE_ENVIRONMENT_PATH/installed/$MUMBLE_ENVIRONMENT_TRIPLET" \
       -DCMAKE_BUILD_TYPE=Release -DCMAKE_UNITY_BUILD=ON -DBUILD_NUMBER=$BUILD_NUMBER \
       -Dtests=ON -Dstatic=ON -Dsymbols=ON \
+	  -Denable-mysql=OFF \
+	  -Ddatabase-sqlite-tests=ON -Ddatabase-postgresql-tests=ON \
       -Ddisplay-install-paths=ON $BUILD_SOURCESDIRECTORY
 
 cmake --build .

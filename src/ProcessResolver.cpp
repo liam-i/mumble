@@ -1,4 +1,4 @@
-// Copyright 2021-2023 The Mumble Developers. All rights reserved.
+// Copyright The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -154,15 +154,15 @@ void ProcessResolver::doResolve() {
 				QByteArray cmdline = f.readAll();
 				f.close();
 
-				int nul = cmdline.indexOf('\0');
+				const auto nul = cmdline.indexOf('\0');
 				if (nul != -1) {
 					cmdline.truncate(nul);
 				}
 
 				QString exe = QString::fromUtf8(cmdline);
 				if (exe.contains(QLatin1String("\\"))) {
-					int lastBackslash = exe.lastIndexOf(QLatin1String("\\"));
-					if (exe.count() > lastBackslash + 1) {
+					const auto lastBackslash = exe.lastIndexOf(QLatin1String("\\"));
+					if (exe.length() > lastBackslash + 1) {
 						baseName = exe.mid(lastBackslash + 1);
 					}
 				}
@@ -181,13 +181,13 @@ void ProcessResolver::doResolve() {
 
 void ProcessResolver::doResolve() {
 	pid_t pids[2048];
-	int bytes  = proc_listpids(PROC_ALL_PIDS, 0, pids, sizeof(pids));
-	int n_proc = bytes / sizeof(pids[0]);
-	for (int i = 0; i < n_proc; i++) {
+	unsigned int bytes  = static_cast< unsigned int >(proc_listpids(PROC_ALL_PIDS, 0, pids, sizeof(pids)));
+	unsigned int n_proc = static_cast< unsigned int >(bytes / sizeof(pids[0]));
+	for (unsigned int i = 0; i < n_proc; i++) {
 		struct proc_bsdinfo proc;
 		int st = proc_pidinfo(pids[i], PROC_PIDTBSDINFO, 0, &proc, PROC_PIDTBSDINFO_SIZE);
 		if (st == PROC_PIDTBSDINFO_SIZE) {
-			addEntry(pids[i], proc.pbi_name, m_processMap);
+			addEntry(static_cast< std::uint64_t >(pids[i]), proc.pbi_name, m_processMap);
 		}
 	}
 }
@@ -208,7 +208,7 @@ void ProcessResolver::doResolve() {
 	}
 
 	for (int i = 0; i < n_procs; ++i) {
-		addEntry(procs_info[i].ki_pid, procs_info[i].ki_comm, m_processMap);
+		addEntry(static_cast< uint64_t >(procs_info[i].ki_pid), procs_info[i].ki_comm, m_processMap);
 	}
 
 	free(procs_info);
